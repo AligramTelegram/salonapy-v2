@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
-export const revalidate = 60 // ISR: revalidate every 60s
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Blog - Salonapy',
@@ -22,21 +22,38 @@ const COVER_GRADIENTS = [
   'from-yellow-400 via-amber-500 to-orange-600',
 ]
 
+type BlogPostRow = {
+  id: string
+  slug: string
+  title: string
+  excerpt: string
+  tags: string[]
+  publishedAt: Date | null
+  coverImage: string | null
+  author: string
+}
+
 export default async function BlogPage() {
-  const posts = await prisma.blogPost.findMany({
-    where: { published: true },
-    orderBy: { publishedAt: 'desc' },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      excerpt: true,
-      tags: true,
-      publishedAt: true,
-      coverImage: true,
-      author: true,
-    },
-  })
+  let posts: BlogPostRow[] = []
+
+  try {
+    posts = await prisma.blogPost.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: 'desc' },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        excerpt: true,
+        tags: true,
+        publishedAt: true,
+        coverImage: true,
+        author: true,
+      },
+    })
+  } catch {
+    // DB not available — show empty state
+  }
 
   return (
     <section className="min-h-screen pb-24 pt-32">

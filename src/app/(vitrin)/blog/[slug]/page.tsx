@@ -6,18 +6,15 @@ import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 
 interface Props {
   params: { slug: string }
 }
 
 export async function generateStaticParams() {
-  const posts = await prisma.blogPost.findMany({
-    where: { published: true },
-    select: { slug: true },
-  })
-  return posts.map((p) => ({ slug: p.slug }))
+  return []
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
