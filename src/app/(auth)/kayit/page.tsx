@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
@@ -46,7 +46,7 @@ const PLAN_LABELS: Record<string, string> = {
   ISLETME: 'İşletme',
 }
 
-export default function KayitPage() {
+function KayitContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planParam = searchParams.get('plan')?.toUpperCase() ?? ''
@@ -448,10 +448,18 @@ export default function KayitPage() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-8 text-center text-sm text-gray-500"
           >
-            
+
           </motion.div>
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function KayitPage() {
+  return (
+    <Suspense>
+      <KayitContent />
+    </Suspense>
   )
 }
