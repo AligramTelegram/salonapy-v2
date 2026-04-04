@@ -15,7 +15,6 @@ const FOOTER_LINKS = [
     title: 'Şirket',
     links: [
       { href: '/hakkimizda', label: 'Hakkımızda' },
-      { href: '/blog', label: 'Blog' },
       { href: '/iletisim', label: 'İletişim' },
       { href: '/kariyer', label: 'Kariyer' },
     ],
