@@ -1,0 +1,29 @@
+{
+  "name": "Salonapy - Randevu Yönetim Platformu",
+  "short_name": "Salonapy",
+  "description": "Kuaför, berber ve güzellik salonları için akıllı randevu yönetim sistemi.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8ff",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "lang": "tr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

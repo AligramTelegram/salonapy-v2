@@ -1,0 +1,190 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const IyzipayLib = require('iyzipay')
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const iyzipay: any = process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY
+  ? new IyzipayLib({
+      apiKey: process.env.IYZICO_API_KEY,
+      secretKey: process.env.IYZICO_SECRET_KEY,
+      uri: process.env.IYZICO_BASE_URL || 'https://sandbox.iyzipay.com',
+    })
+  : null
+
+export type IyzicoCheckoutResult = {
+  status: 'success' | 'failure'
+  paymentPageUrl?: string
+  token?: string
+  checkoutFormContent?: string
+  errorMessage?: string
+  errorCode?: string
+}
+
+export type IyzicoPaymentResult = {
+  status: 'success' | 'failure'
+  paymentStatus?: string   // 'SUCCESS' | 'FAILURE'
+  price?: string
+  paidPrice?: string
+  currency?: string
+  conversationId?: string  // contains tenantId|plan|timestamp
+  paymentId?: string
+  errorMessage?: string
+  errorCode?: string
+}
+
+/**
+ * conversationId format: "${tenantId}|${plan}|${timestamp}"
+ * Parse it back with parseConversationId()
+ */
+export function buildConversationId(tenantId: string, plan: string): string {
+  return `${tenantId}|${plan}|${Date.now()}`
+}
+
+export function parseConversationId(conversationId: string): { tenantId: string; plan: string } | null {
+  const parts = conversationId.split('|')
+  if (parts.length < 2) return null
+  return { tenantId: parts[0], plan: parts[1] }
+}
+
+/**
+ * Create İyzico Checkout Form.
+ * Returns paymentPageUrl to redirect the user to.
+ * Falls back to mock mode if IYZICO_API_KEY is not set.
+ */
+export async function createCheckoutForm(params: {
+  tenantId: string
+  tenantName: string
+  email: string
+  phone: string
+  plan: string
+  amount: number
+  currency: string
+}): Promise<IyzicoCheckoutResult> {
+  const conversationId = buildConversationId(params.tenantId, params.plan)
+  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/iyzico/callback`
+
+  // Mock mode
+  if (!iyzipay) {
+    const mockToken = `mock-${Date.now()}`
+    const mockUrl = `${callbackUrl}?mock=1&cid=${encodeURIComponent(conversationId)}&token=${mockToken}`
+    console.log(`[IYZICO MOCK] Checkout: ${params.plan} ${params.amount} ${params.currency}`)
+    return { status: 'success', token: mockToken, paymentPageUrl: mockUrl }
+  }
+
+  const amountStr = params.amount.toFixed(2)
+  const rawPhone = params.phone.replace(/\D/g, '')
+  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : '+' + rawPhone
+
+  const nameParts = params.tenantName.trim().split(/\s+/)
+  const buyerName = nameParts[0] || 'İşletme'
+  const buyerSurname = nameParts.slice(1).join(' ') || 'Sahibi'
+
+  const request = {
+    locale: 'tr',
+    conversationId,
+    price: amountStr,
+    paidPrice: amountStr,
+    currency: params.currency,
+    basketId: conversationId,
+    paymentGroup: 'SUBSCRIPTION',
+    callbackUrl,
+    buyer: {
+      id: params.tenantId,
+      name: buyerName,
+      surname: buyerSurname,
+      email: params.email || `tenant-${params.tenantId}@salonapy.com`,
+      identityNumber: '74300864791',  // sandbox placeholder
+      registrationAddress: 'Türkiye',
+      ip: '85.34.78.112',             // will be overridden in real env
+      city: 'Istanbul',
+      country: 'Turkey',
+      gsmNumber: formattedPhone || '+905551234567',
+    },
+    shippingAddress: {
+      contactName: params.tenantName,
+      city: 'Istanbul',
+      country: 'Turkey',
+      address: 'Türkiye',
+      zipCode: '34000',
+    },
+    billingAddress: {
+      contactName: params.tenantName,
+      city: 'Istanbul',
+      country: 'Turkey',
+      address: 'Türkiye',
+      zipCode: '34000',
+    },
+    basketItems: [
+      {
+        id: `SALONAPY_${params.plan}`,
+        name: `Salonapy ${params.plan} Plan (Aylık)`,
+        category1: 'Yazılım',
+        itemType: 'VIRTUAL',
+        price: amountStr,
+      },
+    ],
+  }
+
+  return new Promise((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    iyzipay.checkoutFormInitialize.create(request, (err: Error, result: any) => {
+      if (err) {
+        console.error('[Iyzico] Checkout form error:', err)
+        resolve({ status: 'failure', errorMessage: err.message })
+        return
+      }
+      console.log('[Iyzico] Checkout result:', result?.status)
+      resolve(result as IyzicoCheckoutResult)
+    })
+  })
+}
+
+/**
+ * Retrieve payment result after callback.
+ * Falls back to mock success if not configured.
+ */
+export async function retrieveCheckoutForm(token: string): Promise<IyzicoPaymentResult> {
+  if (!iyzipay) {
+    return { status: 'success', paymentStatus: 'SUCCESS' }
+  }
+
+  return new Promise((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    iyzipay.checkoutForm.retrieve({ locale: 'tr', token }, (err: Error, result: any) => {
+      if (err) {
+        console.error('[Iyzico] Retrieve error:', err)
+        resolve({ status: 'failure', errorMessage: err.message })
+        return
+      }
+      resolve(result as IyzicoPaymentResult)
+    })
+  })
+}
+
+/**
+ * Cancel subscription via İyzico (for recurring subscriptions).
+ * For manual monthly subscriptions, only DB update is needed.
+ */
+export async function cancelIyzicoSubscription(
+  subscriptionReferenceCode: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!iyzipay) {
+    console.log(`[IYZICO MOCK] Abonelik iptal: ${subscriptionReferenceCode}`)
+    return { success: true }
+  }
+
+  return new Promise((resolve) => {
+    iyzipay.subscriptionCancel.update(
+      { subscriptionReferenceCode },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (err: Error, result: any) => {
+        if (err || result?.status !== 'success') {
+          resolve({ success: false, error: err?.message ?? result?.errorMessage })
+          return
+        }
+        resolve({ success: true })
+      }
+    )
+  })
+}
+
+export const isIyzicoConfigured = !!(process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY)

@@ -1,0 +1,268 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* shadcn/ui HSL değişkenleri */
+    --background: 250 100% 99%;
+    --foreground: 240 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 263 70% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 50% 96%;
+    --secondary-foreground: 263 70% 40%;
+    --muted: 250 30% 96%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 263 60% 95%;
+    --accent-foreground: 263 70% 40%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 30% 90%;
+    --input: 250 30% 90%;
+    --ring: 263 70% 50%;
+    --radius: 0.75rem;
+
+    /* Chart renkleri */
+    --chart-1: 263 70% 50%;
+    --chart-2: 196 80% 50%;
+    --chart-3: 142 70% 45%;
+    --chart-4: 43 96% 56%;
+    --chart-5: 27 96% 61%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border box-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#faf8ff] text-foreground font-sans antialiased;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* Glass Kart */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(124, 58, 237, 0.10);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 12px 48px rgba(124, 58, 237, 0.18);
+    transform: translateY(-2px);
+  }
+
+  /* Gradient Border Card */
+  .gradient-card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, #ede9fe, #ffffff, #ddd6fe);
+  }
+
+  .gradient-card-inner {
+    background: white;
+    border-radius: 15px;
+    height: 100%;
+    width: 100%;
+  }
+
+  /* Purple Gradient Background */
+  .purple-gradient-bg {
+    background: linear-gradient(135deg, #faf8ff 0%, #ede9fe 50%, #f5f3ff 100%);
+  }
+
+  /* Glow Efekt */
+  .purple-glow {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.25);
+  }
+
+  .purple-glow:hover {
+    box-shadow: 0 0 50px rgba(124, 58, 237, 0.35);
+  }
+
+  /* Section padding */
+  .section-padding {
+    @apply px-4 md:px-8 lg:px-16 xl:px-24;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Mor renk utilities */
+  .text-purple {
+    color: #7c3aed;
+  }
+
+  .bg-purple-main {
+    background-color: #7c3aed;
+  }
+
+  .bg-purple-light {
+    background-color: #faf8ff;
+  }
+
+  /* Animasyon utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Blog içerik stilleri */
+.blog-content {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.blog-content p {
+  margin-bottom: 1.25rem;
+  color: #4b5563;
+}
+.blog-content h2 {
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+.blog-content h3 {
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.blog-content ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.25rem;
+}
+.blog-content ul li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+.blog-content ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #7c3aed;
+}
+.blog-content strong {
+  font-weight: 600;
+  color: #111827;
+}
+.blog-content a {
+  color: #7c3aed;
+  text-decoration: none;
+}
+.blog-content a:hover {
+  text-decoration: underline;
+}
+
+/* ── react-big-calendar tema override ─────────────────────────────────────── */
+.rbc-wrapper .rbc-calendar {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px;
+}
+.rbc-wrapper .rbc-toolbar button {
+  color: #6d28d9;
+  border-color: #ddd6fe;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.rbc-wrapper .rbc-toolbar button:hover,
+.rbc-wrapper .rbc-toolbar button:focus {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+.rbc-wrapper .rbc-toolbar button.rbc-active {
+  background-color: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+}
+.rbc-wrapper .rbc-today {
+  background-color: #f5f3ff;
+}
+.rbc-wrapper .rbc-header {
+  color: #6d28d9;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 4px;
+  border-color: #ede9fe;
+}
+.rbc-wrapper .rbc-time-slot {
+  color: #a78bfa;
+  font-size: 11px;
+}
+.rbc-wrapper .rbc-event {
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600;
+}
+.rbc-wrapper .rbc-event:focus,
+.rbc-wrapper .rbc-event.rbc-selected {
+  outline: 2px solid #7c3aed;
+  outline-offset: 1px;
+}
+.rbc-wrapper .rbc-off-range-bg {
+  background-color: #faf8ff;
+}
