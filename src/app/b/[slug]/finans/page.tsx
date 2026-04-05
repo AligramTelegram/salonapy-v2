@@ -109,10 +109,10 @@ function TransactionRow({
   const isIncome = tx.type === 'GELIR'
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50/50 transition-colors">
+    <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50/50 transition-colors">
       {/* Renk indikatör */}
       <div
-        className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${
+        className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
           isIncome ? 'bg-green-100' : 'bg-red-100'
         }`}
       >
@@ -123,37 +123,36 @@ function TransactionRow({
         )}
       </div>
 
-      {/* Tarih */}
-      <div className="w-24 shrink-0">
-        <span className="text-sm text-gray-500">
-          {format(new Date(tx.date), 'd MMM', { locale: tr })}
-        </span>
-      </div>
-
-      {/* Kategori + açıklama */}
+      {/* Sol: tarih + kategori + açıklama */}
       <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium text-gray-800">{tx.category}</span>
-        {tx.description && (
-          <p className="text-xs text-gray-400 truncate">{tx.description}</p>
-        )}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <div>
+            <span className="text-sm font-medium text-gray-800">{tx.category}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400">
+                {format(new Date(tx.date), 'd MMM', { locale: tr })}
+              </span>
+              <Badge
+                className={`text-xs hidden sm:inline-flex ${
+                  isIncome
+                    ? 'bg-green-100 text-green-700 hover:bg-green-100'
+                    : 'bg-red-100 text-red-600 hover:bg-red-100'
+                }`}
+                variant="secondary"
+              >
+                {isIncome ? 'Gelir' : 'Gider'}
+              </Badge>
+            </div>
+            {tx.description && (
+              <p className="text-xs text-gray-400 break-words">{tx.description}</p>
+            )}
+          </div>
+          {/* Tutar */}
+          <div className={`text-sm font-bold shrink-0 ${isIncome ? 'text-green-600' : 'text-red-500'}`}>
+            {isIncome ? '+' : '-'}₺{tx.amount.toLocaleString('tr-TR')}
+          </div>
+        </div>
       </div>
-
-      {/* Tutar */}
-      <div className={`text-sm font-bold shrink-0 ${isIncome ? 'text-green-600' : 'text-red-500'}`}>
-        {isIncome ? '+' : '-'}₺{tx.amount.toLocaleString('tr-TR')}
-      </div>
-
-      {/* Tip badge */}
-      <Badge
-        className={`text-xs shrink-0 hidden sm:inline-flex ${
-          isIncome
-            ? 'bg-green-100 text-green-700 hover:bg-green-100'
-            : 'bg-red-100 text-red-600 hover:bg-red-100'
-        }`}
-        variant="secondary"
-      >
-        {isIncome ? 'Gelir' : 'Gider'}
-      </Badge>
 
       {/* Eylemler */}
       <div className="flex items-center gap-1 shrink-0">

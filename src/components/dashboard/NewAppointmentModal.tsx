@@ -305,13 +305,13 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
                 )}
               />
 
-              {/* Tarih + Saat (yan yana) */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Tarih + Saat */}
+              <div className="flex flex-col sm:flex-row gap-3">
                 <FormField
                   control={form.control}
                   name="date"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Tarih</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
@@ -324,7 +324,7 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
                   control={form.control}
                   name="startTime"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Saat</FormLabel>
                       <FormControl>
                         <select
