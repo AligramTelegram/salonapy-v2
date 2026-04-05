@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminSecret } from '@/lib/admin-auth'
 
 export const dynamic = 'force-dynamic'
 
 // GET /api/admin/tenants?search=&plan=&status=&page=1&limit=10
 export async function GET(request: NextRequest) {
-  const authError = verifyAdminSecret(request)
-  if (authError) return authError
 
   try {
     const { searchParams } = request.nextUrl

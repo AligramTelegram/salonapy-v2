@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { verifyAdminSecret } from '@/lib/admin-auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
@@ -11,8 +10,6 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const authError = verifyAdminSecret(request)
-  if (authError) return authError
 
   try {
     const [tenant, appointmentCount, customerCount, staffCount, revenueAgg] = await Promise.all([
@@ -65,8 +62,6 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const authError = verifyAdminSecret(request)
-  if (authError) return authError
 
   try {
     let body: unknown
@@ -162,8 +157,6 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const authError = verifyAdminSecret(request)
-  if (authError) return authError
 
   const hard = request.nextUrl.searchParams.get('hard') === 'true'
 
