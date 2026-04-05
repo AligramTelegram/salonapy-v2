@@ -5,36 +5,36 @@ const FOOTER_LINKS = [
   {
     title: 'Ürün',
     links: [
-      { href: '/ozellikler', label: 'Özellikler' },
-      { href: '/fiyatlar', label: 'Fiyatlar' },
-      { href: '/#nasil-calisir', label: 'Nasıl Çalışır?' },
-      { href: '/entegrasyonlar', label: 'Entegrasyonlar' },
+      { href: '/ozellikler', label: 'Özellikler', title: 'Özellikler' },
+      { href: '/fiyatlar', label: 'Fiyatlar', title: 'Fiyatlandırma' },
+      { href: '/#nasil-calisir', label: 'Nasıl Çalışır?', title: 'Nasıl Çalışır?' },
+      { href: '/entegrasyonlar', label: 'Entegrasyonlar', title: 'Entegrasyonlar' },
     ],
   },
   {
     title: 'Şirket',
     links: [
-      { href: '/hakkimizda', label: 'Hakkımızda' },
-      { href: '/iletisim', label: 'İletişim' },
-      { href: '/kariyer', label: 'Kariyer' },
+      { href: '/hakkimizda', label: 'Hakkımızda', title: 'Hakkımızda' },
+      { href: '/iletisim', label: 'İletişim', title: 'İletişim' },
+      { href: '/kariyer', label: 'Kariyer', title: 'Kariyer Fırsatları' },
     ],
   },
   {
     title: 'Destek',
     links: [
-      { href: '/yardim', label: 'Yardım Merkezi' },
-      { href: '/durum', label: 'Sistem Durumu' },
-      { href: '/api', label: 'API Dokümantasyon' },
-      { href: '/iletisim', label: 'Destek Talebi' },
+      { href: '/yardim', label: 'Yardım Merkezi', title: 'Yardım Merkezi' },
+      { href: '/durum', label: 'Sistem Durumu', title: 'Sistem Durumu' },
+      { href: '/api', label: 'API Dokümantasyon', title: 'API Dokümantasyonu' },
+      { href: '/iletisim', label: 'Destek Talebi', title: 'Destek Talebi' },
     ],
   },
   {
     title: 'Hukuki',
     links: [
-      { href: '/gizlilik', label: 'Gizlilik Politikası' },
-      { href: '/kullanim-sartlari', label: 'Kullanım Şartları' },
-      { href: '/kvkk', label: 'KVKK' },
-      { href: '/cerez-politikasi', label: 'Çerez Politikası' },
+      { href: '/gizlilik', label: 'Gizlilik Politikası', title: 'Gizlilik Politikası' },
+      { href: '/kullanim-sartlari', label: 'Kullanım Şartları', title: 'Kullanım Şartları' },
+      { href: '/kvkk', label: 'KVKK', title: 'KVKK Aydınlatma Metni' },
+      { href: '/cerez-politikasi', label: 'Çerez Politikası', title: 'Çerez Politikası' },
     ],
   },
 ]
@@ -46,7 +46,7 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand column */}
           <div className="lg:col-span-1">
-  <Link href="/" className="group mb-5 flex items-center gap-2.5 select-none w-fit">
+  <Link href="/" title="Salonapy Ana Sayfa" className="group mb-5 flex items-center gap-2.5 select-none w-fit">
     {/* Kare Mor İkon içinde Beyaz S */}
     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600 shadow-lg shadow-purple-200 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-700">
       <span className="font-display text-xl font-bold text-white leading-none">S</span>
@@ -87,6 +87,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
+                      title={link.title}
                       className="text-sm text-gray-500 transition-colors hover:text-purple-600"
                     >
                       {link.label}
@@ -127,6 +128,7 @@ function SocialLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
+      title={label}
       className="flex h-8 w-8 items-center justify-center rounded-lg border border-purple-100 text-gray-400 transition-colors hover:border-purple-200 hover:bg-purple-50 hover:text-purple-600"
     >
       {children}

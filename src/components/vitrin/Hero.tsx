@@ -84,7 +84,7 @@ export function Hero() {
 
             {/* CTA Butonlar */}
             <motion.div {...fadeUp(0.3)} className="mb-10 flex flex-wrap gap-3">
-              <Link href="/kayit">
+              <Link href="/kayit" title="14 Gün Ücretsiz Deneme">
                 <Button
                   size="lg"
                   className="h-12 bg-purple-600 px-6 text-base shadow-lg shadow-purple-200/60 hover:bg-purple-700"
@@ -93,7 +93,7 @@ export function Hero() {
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
-              <a href="#nasil-calisir">
+              <a href="#nasil-calisir" title="Nasıl Çalışır?">
                 <Button
                   size="lg"
                   variant="outline"

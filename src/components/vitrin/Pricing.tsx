@@ -158,7 +158,11 @@ function PricingCard({
         <p className="mb-1 text-xs text-gray-400">veya €{plan.priceEur}/ay</p>
         <p className="mb-6 text-sm leading-relaxed text-gray-500">{plan.description}</p>
 
-        <Link href={plan.trial ? '/kayit' : `/kayit?plan=${planKey}`} className="block">
+        <Link
+          href={plan.trial ? '/kayit' : `/kayit?plan=${planKey}`}
+          title={plan.trial ? `${plan.name} Paketi - 14 Gün Ücretsiz` : `${plan.name} Paketi`}
+          className="block"
+        >
           <Button
             className={`mb-6 w-full ${
               plan.popular

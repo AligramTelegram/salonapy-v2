@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
-  { href: '/ozellikler', label: 'Özellikler' },
-  { href: '/fiyatlar', label: 'Fiyatlar' },
-  { href: '/iletisim', label: 'İletişim' },
+  { href: '/ozellikler', label: 'Özellikler', title: 'Özellikler' },
+  { href: '/fiyatlar', label: 'Fiyatlar', title: 'Fiyatlandırma' },
+  { href: '/iletisim', label: 'İletişim', title: 'İletişim' },
 ]
 
 export function Navbar() {
@@ -38,7 +38,7 @@ export function Navbar() {
     >
       <div className="container-custom flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="group flex items-center gap-2 select-none">
+        <Link href="/" title="Salonapy Ana Sayfa" className="group flex items-center gap-2 select-none">
   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 shadow-md shadow-purple-200 transition-all group-hover:bg-purple-700 group-hover:scale-105">
     <span className="font-display text-sm font-bold text-white leading-none">S</span>
   </div>
@@ -53,6 +53,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
+              title={link.title}
               className={cn(
                 'rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:text-purple-600',
                 pathname === link.href
@@ -67,12 +68,12 @@ export function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-2 md:flex">
-          <Link href="/giris">
+          <Link href="/giris" title="Giriş Yap">
             <Button variant="ghost" size="sm" className="text-gray-700 hover:text-purple-600">
               Giriş Yap
             </Button>
           </Link>
-          <Link href="/kayit">
+          <Link href="/kayit" title="Ücretsiz Deneme Başlat">
             <Button
               size="sm"
               className="bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-200/60"
@@ -100,18 +101,19 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                title={link.title}
                 className="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600"
               >
                 {link.label}
               </Link>
             ))}
             <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
-              <Link href="/giris">
+              <Link href="/giris" title="Giriş Yap">
                 <Button variant="outline" className="w-full">
                   Giriş Yap
                 </Button>
               </Link>
-              <Link href="/kayit">
+              <Link href="/kayit" title="Ücretsiz Deneme Başlat">
                 <Button className="w-full bg-purple-600 hover:bg-purple-700">
                   Ücretsiz Dene
                 </Button>
