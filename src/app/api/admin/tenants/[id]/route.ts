@@ -155,7 +155,9 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/admin/tenants/[id] — soft delete
+// DELETE /api/admin/tenants/[id]
+// ?hard=true → Prisma'dan + Supabase Auth'dan kalıcı sil
+// (default) → soft delete: isActive=false
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -163,12 +165,33 @@ export async function DELETE(
   const authError = verifyAdminSecret(request)
   if (authError) return authError
 
+  const hard = request.nextUrl.searchParams.get('hard') === 'true'
+
   try {
-    await prisma.tenant.update({
-      where: { id: params.id },
-      data: { isActive: false },
+    if (!hard) {
+      await prisma.tenant.update({
+        where: { id: params.id },
+        data: { isActive: false },
+      })
+      return NextResponse.json({ success: true })
+    }
+
+    // Hard delete: Supabase Auth kullanıcısını sil, sonra Prisma'dan tenant sil (cascade)
+    const ownerUser = await prisma.user.findFirst({
+      where: { tenantId: params.id, role: 'OWNER' },
     })
-    return NextResponse.json({ success: true })
+
+    if (ownerUser) {
+      const supabase = createAdminClient()
+      const { error: supabaseError } = await supabase.auth.admin.deleteUser(ownerUser.supabaseId)
+      if (supabaseError) {
+        console.error('[DELETE hard] Supabase error:', supabaseError)
+        // Supabase'de zaten silinmiş olabilir, devam et
+      }
+    }
+
+    await prisma.tenant.delete({ where: { id: params.id } })
+    return NextResponse.json({ success: true, deleted: true })
   } catch (err) {
     console.error('[DELETE /api/admin/tenants/[id]]', err)
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })

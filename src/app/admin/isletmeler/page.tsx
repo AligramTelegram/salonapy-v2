@@ -5,9 +5,20 @@ import {
   Search, Building2, ChevronLeft, ChevronRight, ExternalLink,
   ToggleLeft, ToggleRight, Loader2, X, Users, Calendar, TrendingUp,
   MessageCircle, CreditCard, CheckCircle2, XCircle, Mail, Phone,
-  MapPin, Lock, Eye, EyeOff,
+  MapPin, Lock, Eye, EyeOff, RefreshCw, Trash2,
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -96,6 +107,9 @@ export default function IsletmelerPage() {
   // Action loading
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [changingPlanId, setChangingPlanId] = useState<string | null>(null)
+
+  // Hard delete
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   // Credentials form
   const [newName, setNewName] = useState('')
@@ -258,6 +272,23 @@ export default function IsletmelerPage() {
     }
   }
 
+  // ── Hard delete ──
+  async function handleHardDelete(id: string) {
+    setDeletingId(id)
+    try {
+      const res = await fetch(`/api/admin/tenants/${id}?hard=true`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      toast.success('İşletme kalıcı olarak silindi')
+      setDetailOpen(false)
+      setDetail(null)
+      fetchTenants(page)
+    } catch {
+      toast.error('Silme başarısız')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   return (
     <div className="p-4 lg:p-6 space-y-5 max-w-6xl mx-auto">
       {/* Header */}
@@ -266,6 +297,16 @@ export default function IsletmelerPage() {
           <h1 className="text-xl font-bold text-gray-900">İşletmeler</h1>
           <p className="text-sm text-gray-500 mt-0.5">{total} işletme kayıtlı</p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => fetchTenants(page)}
+          disabled={loading}
+          className="gap-2 h-9"
+        >
+          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          Yenile
+        </Button>
       </div>
 
       {/* Filters */}
@@ -645,18 +686,54 @@ export default function IsletmelerPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <button
-                  onClick={() => handleToggleActive(detail.tenant)}
-                  disabled={togglingId === detail.tenant.id}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all disabled:opacity-50 ${
-                    detail.tenant.isActive
-                      ? 'border-red-200 text-red-600 hover:bg-red-50'
-                      : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  {togglingId === detail.tenant.id ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : null}
-                  {detail.tenant.isActive ? 'Pasif Yap' : 'Aktif Et'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleToggleActive(detail.tenant)}
+                    disabled={togglingId === detail.tenant.id}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all disabled:opacity-50 ${
+                      detail.tenant.isActive
+                        ? 'border-red-200 text-red-600 hover:bg-red-50'
+                        : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
+                    }`}
+                  >
+                    {togglingId === detail.tenant.id ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : null}
+                    {detail.tenant.isActive ? 'Pasif Yap' : 'Aktif Et'}
+                  </button>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        disabled={deletingId === detail.tenant.id}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 transition-all disabled:opacity-50 flex items-center gap-1"
+                      >
+                        {deletingId === detail.tenant.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                        Kalıcı Sil
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>İşletmeyi Kalıcı Sil?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          <strong>{detail.tenant.name}</strong> işletmesi ve tüm veriler (randevular, müşteriler, personel, finans) kalıcı olarak silinecek. Supabase Auth kullanıcısı da silinecek. Bu işlem geri alınamaz.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>İptal</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleHardDelete(detail.tenant.id)}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Evet, Kalıcı Sil
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+
                 <a
                   href={`/b/${detail.tenant.slug}`}
                   target="_blank"
