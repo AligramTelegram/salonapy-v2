@@ -2,7 +2,7 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { IletisimForm } from './IletisimForm'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 async function getContactSettings() {
   const keys = [
