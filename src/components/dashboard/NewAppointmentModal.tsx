@@ -204,7 +204,7 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-lg font-bold">
             Yeni Randevu
@@ -326,18 +326,17 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Saat</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Saat seçin" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-56">
+                      <FormControl>
+                        <select
+                          value={field.value}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        >
                           {TIME_SLOTS.map((t) => (
-                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                            <option key={t} value={t}>{t}</option>
                           ))}
-                        </SelectContent>
-                      </Select>
+                        </select>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -452,7 +451,7 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
               />
 
               {/* Butonlar */}
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 pb-4 sm:pb-0">
                 <Button type="button" variant="ghost" onClick={onClose} disabled={isPending}>
                   İptal
                 </Button>
