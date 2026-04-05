@@ -4,6 +4,8 @@ import { Analytics } from '@/components/Analytics'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
 import { Providers } from '@/components/Providers'
 import { Toaster } from 'sonner'
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 const inter = Inter({
@@ -104,6 +106,8 @@ export default function RootLayout({
         <Analytics />
         <ServiceWorkerRegister />
         <Toaster position="bottom-right" richColors />
+        <VercelAnalytics />
+        <SpeedInsights />
       </body>
     </html>
   )
