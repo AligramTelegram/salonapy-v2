@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import { getPlanPricesTRY } from '@/lib/plans'
 import { subMonths, startOfMonth, format } from 'date-fns'

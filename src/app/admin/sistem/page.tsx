@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import {
   Database, Server, Wifi, Clock, WifiOff, CheckCircle2, XCircle, Activity,
