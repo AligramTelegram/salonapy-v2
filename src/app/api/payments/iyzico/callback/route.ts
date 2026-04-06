@@ -69,6 +69,35 @@ async function handleCallback(request: NextRequest): Promise<NextResponse> {
   }
 
   const { tenantId, plan } = parsed
+
+  // ── SMS paketi mi? ──────────────────────────────────────────────────────────
+  if (plan.startsWith('SMS_')) {
+    const smsAmount = parseInt(plan.replace('SMS_', ''), 10)
+    if (isNaN(smsAmount) || smsAmount <= 0) {
+      return NextResponse.redirect(`${APP_URL}/odeme-basarisiz?reason=invalid-sms-amount`)
+    }
+
+    const smsTenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { id: true, slug: true },
+    })
+    if (!smsTenant) {
+      return NextResponse.redirect(`${APP_URL}/odeme-basarisiz?reason=tenant-not-found`)
+    }
+
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: { smsCredits: { increment: smsAmount } },
+    })
+
+    console.log(`[Callback] ✓ SMS kredisi eklendi: tenant=${tenantId} amount=${smsAmount}`)
+
+    return NextResponse.redirect(
+      `${APP_URL}/b/${smsTenant.slug}/ayarlar?tab=sms&sms_success=${smsAmount}`
+    )
+  }
+
+  // ── Abonelik planı ──────────────────────────────────────────────────────────
   const planKey = plan as 'BASLANGIC' | 'PROFESYONEL' | 'ISLETME'
 
   // Find tenant

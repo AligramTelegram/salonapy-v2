@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import {
   Building2, Phone, Mail, MapPin, Globe, Camera, Copy, Check,
   MessageSquare, Bell, CreditCard, AlertTriangle, Loader2,
@@ -104,6 +104,7 @@ const SMS_PACKS = [
 export default function AyarlarPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const slug = params.slug as string
 
   // ── State ──
@@ -210,6 +211,16 @@ export default function AyarlarPage() {
     fetchData()
   }, [fetchData])
 
+  // SMS satın alma başarı bildirimi
+  useEffect(() => {
+    const smsSuccess = searchParams.get('sms_success')
+    if (smsSuccess) {
+      toast.success(`${smsSuccess} SMS kredinize eklendi!`)
+      // URL'den parametreyi temizle
+      router.replace(`/b/${slug}/ayarlar?tab=sms`)
+    }
+  }, [searchParams, slug, router])
+
   // ── Handlers ──
 
   async function handleSaveProfile(e: React.FormEvent) {
@@ -312,12 +323,10 @@ export default function AyarlarPage() {
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error ?? 'Hata')
-      toast.success(`${pack.amount} SMS kredinize eklendi!`)
-      // Tenant state'ini güncelle
-      setTenant((prev) => prev ? { ...prev, smsCredits: (prev.smsCredits ?? 0) + pack.amount } : prev)
+      // İyzico ödeme sayfasına yönlendir
+      window.location.href = json.paymentPageUrl
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'İşlem başarısız')
-    } finally {
       setBuyingSmsAmount(null)
     }
   }
