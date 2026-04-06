@@ -53,6 +53,7 @@ model Tenant {
   planEndsAt    DateTime?
   isActive      Boolean  @default(true)
   smsUsed        Int      @default(0)
+  smsCredits     Int      @default(0)
   smsResetAt     DateTime @default(now())
   waUsed         Int      @default(0)
   sms24hReminder Boolean  @default(true)

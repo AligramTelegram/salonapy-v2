@@ -47,6 +47,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
           name: true,
           plan: true,
           smsUsed: true,
+          smsCredits: true,
           sms24hReminder: true,
           sms1hReminder: true,
         },
@@ -77,9 +78,11 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
 
   const smsLimits = await getSmsLimits()
   const limit = smsLimits[tenant.plan] ?? 200
-  if (tenant.smsUsed >= limit) {
-    console.log(`[Worker] SMS limiti aşıldı: ${tenant.smsUsed}/${limit}`)
+  const hasMonthlyQuota = tenant.smsUsed < limit
+  const hasCredits = (tenant.smsCredits ?? 0) > 0
 
+  if (!hasMonthlyQuota && !hasCredits) {
+    console.log(`[Worker] SMS limiti ve kredi tükendi: ${tenant.smsUsed}/${limit}, credits: ${tenant.smsCredits}`)
     await prisma.notification.create({
       data: {
         tenantId,
@@ -88,7 +91,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
         to: appointment.customer.phone,
         message: `${type} hatırlatma: limit aşıldı`,
         status: 'BASARISIZ',
-        errorMessage: `SMS limiti aşıldı (${tenant.smsUsed}/${limit})`,
+        errorMessage: `SMS limiti aşıldı (${tenant.smsUsed}/${limit}), ek kredi yok`,
       },
     })
     return
@@ -108,10 +111,19 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
   })
 
   if (result.success) {
-    await prisma.tenant.update({
-      where: { id: tenantId },
-      data: { smsUsed: { increment: 1 } },
-    })
+    if (hasMonthlyQuota) {
+      // Önce aylık limitten düş
+      await prisma.tenant.update({
+        where: { id: tenantId },
+        data: { smsUsed: { increment: 1 } },
+      })
+    } else {
+      // Aylık limit doldu, ek krediden düş
+      await prisma.tenant.update({
+        where: { id: tenantId },
+        data: { smsCredits: { decrement: 1 } },
+      })
+    }
   }
 
   await prisma.notification.create({

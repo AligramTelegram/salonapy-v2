@@ -33,6 +33,7 @@ interface TenantProfile {
   planStartedAt: string
   planEndsAt: string | null
   smsUsed: number
+  smsCredits: number
   smsResetAt: string
   sms24hReminder: boolean
   sms1hReminder: boolean
@@ -90,6 +91,14 @@ const MOCK_INVOICES = [
 // SMS reminder template preview
 const SMS_TEMPLATE = `Merhaba {müşteri_adı}, {işletme_adı} randevunuz yaklasıyor. Tarih: {tarih} Saat: {saat} Hizmet: {hizmet} Personel: {personel}`
 
+// Ek SMS paketleri
+const SMS_PACKS = [
+  { amount: 100, price: 120 },
+  { amount: 250, price: 300 },
+  { amount: 500, price: 600 },
+  { amount: 1000, price: 1200 },
+]
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AyarlarPage() {
@@ -119,6 +128,7 @@ export default function AyarlarPage() {
   const [sms24h, setSms24h] = useState(true)
   const [sms1h, setSms1h] = useState(true)
   const [isSavingSms, setIsSavingSms] = useState(false)
+  const [buyingSmsAmount, setBuyingSmsAmount] = useState<number | null>(null)
 
   // Subscription
   const [autoRenew, setAutoRenew] = useState(true)
@@ -289,6 +299,26 @@ export default function AyarlarPage() {
       toast.error('Güncelleme başarısız')
     } finally {
       setIsSavingSms(false)
+    }
+  }
+
+  async function handleBuySms(pack: { amount: number; price: number }) {
+    setBuyingSmsAmount(pack.amount)
+    try {
+      const res = await fetch('/api/payments/sms-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: pack.amount, tenantSlug: slug }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Hata')
+      toast.success(`${pack.amount} SMS kredinize eklendi!`)
+      // Tenant state'ini güncelle
+      setTenant((prev) => prev ? { ...prev, smsCredits: (prev.smsCredits ?? 0) + pack.amount } : prev)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'İşlem başarısız')
+    } finally {
+      setBuyingSmsAmount(null)
     }
   }
 
@@ -733,6 +763,51 @@ export default function AyarlarPage() {
               <p className="text-[11px] text-gray-400 flex items-center gap-1.5">
                 <ShieldAlert className="h-3.5 w-3.5 text-amber-400 shrink-0" />
                 Gönderici adı: SALONAPY · Türkçe karakter desteklenir.
+              </p>
+            </div>
+
+            {/* Ek SMS Satın Al */}
+            <div className="glass-card p-5 space-y-4">
+              <div>
+                <h2 className="font-display text-sm font-bold text-gray-900">Ek SMS Satın Al</h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Aylık limitiniz bitti mi? Tek seferlik ek SMS paketi satın alabilirsiniz.
+                  {tenant.smsCredits > 0 && (
+                    <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-green-50 border border-green-200 px-2 py-0.5 text-[11px] font-semibold text-green-700">
+                      Mevcut kredi: {tenant.smsCredits} SMS
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {SMS_PACKS.map((pack) => (
+                  <div
+                    key={pack.amount}
+                    className="border-2 border-purple-100 rounded-xl p-4 hover:border-purple-400 transition-all text-center"
+                  >
+                    <p className="text-2xl font-extrabold text-purple-600">{pack.amount.toLocaleString('tr-TR')}</p>
+                    <p className="text-xs text-gray-500 mb-2">SMS</p>
+                    <p className="text-lg font-bold text-gray-900 mb-3">₺{pack.price.toLocaleString('tr-TR')}</p>
+                    <p className="text-[10px] text-gray-400 mb-3">₺{(pack.price / pack.amount).toFixed(2)}/SMS</p>
+                    <Button
+                      size="sm"
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
+                      disabled={buyingSmsAmount !== null}
+                      onClick={() => handleBuySms(pack)}
+                    >
+                      {buyingSmsAmount === pack.amount ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        'Satın Al'
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-[11px] text-gray-400">
+                * Satın aldığınız SMS&apos;ler mevcut bakiyenize eklenir ve süresiz kullanabilirsiniz. Aylık limitiniz dolduğunda ek kredilerden otomatik düşülür.
               </p>
             </div>
 
