@@ -16,7 +16,7 @@ const SMS_PACKS = [
 // Şimdilik mock — ileride İyzico entegrasyonu
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
