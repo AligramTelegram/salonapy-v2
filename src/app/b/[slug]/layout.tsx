@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { DashboardHeader } from '@/components/layout/DashboardHeader'
 import { TrialBanner } from '@/components/layout/TrialBanner'
+import { AnnouncementPopup } from '@/components/dashboard/AnnouncementPopup'
 
 export default async function IsletmePaneliLayout({
   children,
@@ -87,6 +88,9 @@ export default async function IsletmePaneliLayout({
 
       {/* Bottom nav - sadece mobil */}
       <BottomNav slug={params.slug} plan={dbUser.tenant.plan} />
+
+      {/* Duyuru popup'ları */}
+      <AnnouncementPopup />
     </div>
   )
 }

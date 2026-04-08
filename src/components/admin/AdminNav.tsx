@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { BarChart3, Building2, CreditCard, MessageSquare, Activity, FileText, Settings, Inbox } from 'lucide-react'
+import { BarChart3, Building2, CreditCard, MessageSquare, Activity, FileText, Settings, Inbox, Bell } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/admin/sms', label: 'SMS İzleme', icon: MessageSquare },
   { href: '/admin/sistem', label: 'Sistem', icon: Activity },
   { href: '/admin/mesajlar', label: 'İletişim Mesajları', icon: Inbox, badge: true },
+  { href: '/admin/duyurular', label: 'Duyurular', icon: Bell },
   { href: '/admin/blog', label: 'Blog Yönetimi', icon: FileText },
   { href: '/admin/ayarlar', label: 'Site Ayarları', icon: Settings },
 ]

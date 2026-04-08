@@ -76,6 +76,7 @@ model Tenant {
   subscription     Subscription?
   packages         Package[]
   customerPackages CustomerPackage[]
+  announcementDismissals AnnouncementDismissal[]
 
   @@map("tenants")
 }
@@ -344,4 +345,33 @@ model ContactMessage {
   createdAt DateTime @default(now())
 
   @@map("contact_messages")
+}
+
+model Announcement {
+  id         String    @id @default(cuid())
+  title      String
+  content    String    @db.Text
+  type       String    @default("INFO") // INFO | WARNING | SUCCESS
+  isActive   Boolean   @default(true)
+  targetPlan String?   // null = tüm planlar, veya plan key (BASLANGIC, vs.)
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  dismissals AnnouncementDismissal[]
+
+  @@map("announcements")
+}
+
+model AnnouncementDismissal {
+  id             String   @id @default(cuid())
+  announcementId String
+  tenantId       String
+  dismissedAt    DateTime @default(now())
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, tenantId])
+  @@map("announcement_dismissals")
 }
