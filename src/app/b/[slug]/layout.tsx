@@ -86,7 +86,7 @@ export default async function IsletmePaneliLayout({
       </div>
 
       {/* Bottom nav - sadece mobil */}
-      <BottomNav slug={params.slug} />
+      <BottomNav slug={params.slug} plan={dbUser.tenant.plan} />
     </div>
   )
 }

@@ -15,19 +15,21 @@ import {
   LogOut,
   Sparkles,
   Package,
+  Lock,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { hasFeature, type FeatureKey } from '@/lib/plan-features'
 
-const NAV_ITEMS = [
+const NAV_ITEMS: { href: string; label: string; icon: React.ElementType; feature?: FeatureKey }[] = [
   { href: '', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/randevular', label: 'Randevular', icon: Calendar },
   { href: '/calisanlar', label: 'Çalışanlar', icon: Users },
   { href: '/hizmetler', label: 'Hizmetler', icon: Briefcase },
   { href: '/musteriler', label: 'Müşteriler', icon: UserCircle },
-  { href: '/paketler', label: 'Paketler', icon: Package },
+  { href: '/paketler', label: 'Paketler', icon: Package, feature: 'packages' },
   { href: '/finans', label: 'Finans', icon: DollarSign },
-  { href: '/raporlar', label: 'Raporlar', icon: BarChart2 },
+  { href: '/raporlar', label: 'Raporlar', icon: BarChart2, feature: 'reports' },
   { href: '/ayarlar', label: 'Ayarlar', icon: Settings },
 ]
 
@@ -93,31 +95,39 @@ export function Sidebar({ slug, tenantName, plan, smsUsed }: SidebarProps) {
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ href, label, icon: Icon, feature }) => {
             const fullHref = `${base}${href}`
             const isActive =
               href === ''
                 ? pathname === base
                 : pathname.startsWith(fullHref)
+            const isLocked = !!feature && !hasFeature(plan, feature)
 
             return (
               <Link
                 key={href}
-                href={fullHref}
+                href={isLocked ? `${base}/upgrade` : fullHref}
                 className={cn(
                   'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                  isActive
-                    ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
-                    : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                  isLocked
+                    ? 'text-gray-400 hover:bg-gray-50'
+                    : isActive
+                      ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
+                      : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
                 )}
               >
                 <Icon
                   className={cn(
-                    'h-[18px] w-[18px] shrink-0 transition-transform duration-200 group-hover:scale-110',
-                    isActive ? 'text-white' : 'text-gray-400 group-hover:text-purple-600'
+                    'h-[18px] w-[18px] shrink-0 transition-transform duration-200',
+                    isLocked
+                      ? 'text-gray-300'
+                      : isActive
+                        ? 'text-white'
+                        : 'text-gray-400 group-hover:text-purple-600 group-hover:scale-110'
                   )}
                 />
-                {label}
+                <span className="flex-1">{label}</span>
+                {isLocked && <Lock className="h-3.5 w-3.5 text-gray-300 shrink-0" />}
               </Link>
             )
           })}
