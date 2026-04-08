@@ -13,7 +13,7 @@ const PIE_COLORS = [
 
 interface Props {
   stats: TransactionStats
-  activeTab: 'GELIR' | 'GIDER'
+  activeTab: 'GELIR' | 'GIDER' | 'all'
 }
 
 export default function FinansChartsSection({ stats, activeTab }: Props) {
