@@ -143,6 +143,34 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Geçerli bir fiyat girin' }, { status: 400 })
   }
 
+  // ── Randevu çakışma kontrolü ───────────────────────────────────────────────
+  // Aynı personelin aynı günde çakışan aktif randevusu var mı?
+  // Çakışma: mevcut.startTime < yeni.endTime VE mevcut.endTime > yeni.startTime
+  const conflict = await prisma.appointment.findFirst({
+    where: {
+      tenantId,
+      staffId,
+      date: normalizedDate,
+      status: { notIn: ['IPTAL'] },
+      AND: [
+        { startTime: { lt: endTime } },
+        { endTime: { gt: startTime } },
+      ],
+    },
+    select: { startTime: true, endTime: true, customer: { select: { name: true } } },
+  })
+
+  if (conflict) {
+    return NextResponse.json(
+      {
+        error: `${staff.name} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer.name}).`,
+        code: 'APPOINTMENT_CONFLICT',
+      },
+      { status: 409 }
+    )
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   // Create appointment (package session will be deducted only on status change)
   const appointment = await prisma.appointment.create({
     data: {

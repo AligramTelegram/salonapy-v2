@@ -208,8 +208,15 @@ export function NewAppointmentModal({ open, onClose, slug, defaultDate, initialC
       setSelectedPackageId('')
       onClose()
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 403 && err.response.data?.code === 'APPOINTMENT_LIMIT_REACHED') {
-        setLimitError(err.response.data as LimitError)
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data
+        if (err.response?.status === 403 && data?.code === 'APPOINTMENT_LIMIT_REACHED') {
+          setLimitError(data as LimitError)
+        } else if (err.response?.status === 409 && data?.code === 'APPOINTMENT_CONFLICT') {
+          toast.error(data.error, { duration: 5000 })
+        } else {
+          toast.error(data?.error ?? 'Randevu oluşturulamadı')
+        }
       } else {
         toast.error('Randevu oluşturulamadı')
       }

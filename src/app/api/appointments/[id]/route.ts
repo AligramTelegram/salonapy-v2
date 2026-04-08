@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { parse } from 'date-fns'
 import { getTenantId } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
@@ -48,6 +49,51 @@ export async function PUT(
     ...rest,
     ...(date ? { date: new Date(date) } : {}),
   }
+
+  // ── Çakışma kontrolü (tarih/saat/personel değişiyorsa) ────────────────────
+  const isRescheduling = date || parsed.data.startTime || parsed.data.endTime || parsed.data.staffId
+  if (isRescheduling && parsed.data.status !== 'IPTAL') {
+    // Güncelleme sonrası geçerli olacak değerleri hesapla
+    const finalStaffId  = parsed.data.staffId  ?? existing.staffId
+    const finalStartTime = parsed.data.startTime ?? existing.startTime
+    const finalEndTime   = parsed.data.endTime   ?? existing.endTime
+    const finalDateRaw   = date ?? null
+
+    let finalDate: Date
+    if (finalDateRaw) {
+      finalDate = parse(finalDateRaw, 'yyyy-MM-dd', new Date())
+      finalDate.setHours(12, 0, 0, 0)
+    } else {
+      finalDate = existing.date
+    }
+
+    const conflict = await prisma.appointment.findFirst({
+      where: {
+        tenantId,
+        staffId: finalStaffId,
+        date: finalDate,
+        status: { notIn: ['IPTAL'] },
+        id: { not: params.id }, // kendisiyle çakışmasın
+        AND: [
+          { startTime: { lt: finalEndTime } },
+          { endTime: { gt: finalStartTime } },
+        ],
+      },
+      select: { startTime: true, endTime: true, customer: { select: { name: true } } },
+    })
+
+    if (conflict) {
+      const staffRecord = await prisma.staff.findUnique({ where: { id: finalStaffId }, select: { name: true } })
+      return NextResponse.json(
+        {
+          error: `${staffRecord?.name ?? 'Personel'} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer.name}).`,
+          code: 'APPOINTMENT_CONFLICT',
+        },
+        { status: 409 }
+      )
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────────
 
   // Paket müşterisi ve onay durumu için seans düşme kontrolü
   if (
