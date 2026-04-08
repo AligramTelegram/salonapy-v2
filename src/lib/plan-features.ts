@@ -5,7 +5,7 @@ export const PLAN_FEATURES = {
     maxCustomers: 100,
     features: {
       reports: false,
-      packages: false,
+      packages: true,
     },
   },
   PROFESYONEL: {
