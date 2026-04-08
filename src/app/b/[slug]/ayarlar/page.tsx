@@ -499,6 +499,13 @@ export default function AyarlarPage() {
             <CreditCard className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Abonelik</span>
           </TabsTrigger>
+          <TabsTrigger
+            value="plan-degistir"
+            className="flex items-center gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm py-2"
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Plan Değiştir</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* ── TAB 1: Profil ── */}
@@ -929,155 +936,6 @@ export default function AyarlarPage() {
               </div>
             )}
 
-            {/* Plan değiştir */}
-            <div className="glass-card p-5 space-y-3">
-              <h2 className="font-display text-sm font-bold text-gray-900">Plan Değiştir</h2>
-              <p className="text-xs text-gray-500">Planınızı yükseltmek veya düşürmek için aşağıdaki seçenekleri kullanın.</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {(['BASLANGIC', 'PROFESYONEL', 'ISLETME'] as PlanKey[])
-                  .filter((pk) => pk !== tenant.plan)
-                  .map((pk) => {
-                    const cfg = planConfigs[pk]
-                    const style = PLAN_STYLE[pk]
-                    const isUSD = ['US', 'USA', 'CA', 'AU', 'NZ'].includes((tenant.country ?? '').toUpperCase())
-                    const isTRY = !tenant.country || tenant.country.toUpperCase() === 'TR'
-                    const priceStr = isTRY
-                      ? `₺${cfg.price.toLocaleString('tr-TR')}/ay`
-                      : isUSD
-                        ? `$${cfg.priceUsd}/ay`
-                        : `€${cfg.priceEur}/ay`
-                    const isUpgrade = ['BASLANGIC', 'PROFESYONEL', 'ISLETME'].indexOf(pk) > ['BASLANGIC', 'PROFESYONEL', 'ISLETME'].indexOf(tenant.plan)
-                    return (
-                      <button
-                        key={pk}
-                        type="button"
-                        disabled={checkoutLoadingPlan === pk}
-                        className={`flex items-center justify-between p-3 rounded-xl border ${style.border} ${style.bg} hover:opacity-90 transition-colors text-left disabled:opacity-60`}
-                        onClick={() => setUpgradePlanKey(pk)}
-                      >
-                        <div>
-                          <p className={`text-sm font-bold ${style.color}`}>
-                            {isUpgrade ? `${cfg.label}'e Yükselt` : cfg.label}
-                          </p>
-                          <p className={`text-xs ${style.color} opacity-75`}>
-                            {priceStr} · {cfg.smsLimit.toLocaleString('tr-TR')} SMS
-                          </p>
-                        </div>
-                        {checkoutLoadingPlan === pk
-                          ? <Loader2 className={`h-4 w-4 animate-spin ${style.color}`} />
-                          : <ChevronRight className={`h-4 w-4 ${style.color}`} />}
-                      </button>
-                    )
-                  })
-                }
-              </div>
-            </div>
-
-            {/* Plan Yükseltme Karşılaştırma Modalı */}
-            {upgradePlanKey && tenant && (() => {
-              const newPlan   = planConfigs[upgradePlanKey]
-              const curPlan   = planConfigs[tenant.plan as PlanKey]
-              const newStyle  = PLAN_STYLE[upgradePlanKey]
-              const isUpgrade = ['BASLANGIC','PROFESYONEL','ISLETME'].indexOf(upgradePlanKey) > ['BASLANGIC','PROFESYONEL','ISLETME'].indexOf(tenant.plan as PlanKey)
-              const isTRY = !tenant.country || tenant.country.toUpperCase() === 'TR'
-              const isUSD = ['US','USA','CA','AU','NZ'].includes((tenant.country ?? '').toUpperCase())
-              const newPrice  = isTRY ? `₺${newPlan.price.toLocaleString('tr-TR')}` : isUSD ? `$${newPlan.priceUsd}` : `€${newPlan.priceEur}`
-              const curPrice  = isTRY ? `₺${curPlan.price.toLocaleString('tr-TR')}` : isUSD ? `$${curPlan.priceUsd}` : `€${curPlan.priceEur}`
-
-              // Yeni planda olup eskisinde olmayan özellikler
-              const newFeatures = newPlan.features.filter((f) => !curPlan.features.includes(f))
-
-              return (
-                <Dialog open onOpenChange={(v) => !v && setUpgradePlanKey(null)}>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="font-display text-xl font-bold">
-                        {isUpgrade ? 'Paketi Yükselt' : 'Plan Değiştir'}
-                      </DialogTitle>
-                      <DialogDescription className="text-sm text-gray-500">
-                        {isUpgrade
-                          ? `${curPlan.label} → ${newPlan.label} paketine geçiyorsunuz.`
-                          : `${curPlan.label} → ${newPlan.label} paketine geçiyorsunuz.`}
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    {/* Karşılaştırma kartları */}
-                    <div className="grid grid-cols-2 gap-3 mt-2">
-                      {/* Mevcut plan */}
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">Mevcut</p>
-                        <p className="text-sm font-bold text-gray-700">{curPlan.label}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{curPrice}/ay</p>
-                        <ul className="mt-2 space-y-1">
-                          {curPlan.features.map((f) => (
-                            <li key={f} className="flex items-center gap-1.5 text-xs text-gray-500">
-                              <span className="h-1.5 w-1.5 rounded-full bg-gray-300 shrink-0" />
-                              {f}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Yeni plan */}
-                      <div className={`rounded-xl border ${newStyle.border} ${newStyle.bg} p-3`}>
-                        <p className={`text-[11px] font-semibold uppercase tracking-wide mb-1 ${newStyle.color} opacity-60`}>
-                          {isUpgrade ? 'Yeni' : 'Seçilen'}
-                        </p>
-                        <p className={`text-sm font-bold ${newStyle.color}`}>{newPlan.label}</p>
-                        <p className={`text-xs mt-0.5 ${newStyle.color} opacity-75`}>{newPrice}/ay</p>
-                        <ul className="mt-2 space-y-1">
-                          {newPlan.features.map((f) => {
-                            const isNew = newFeatures.includes(f)
-                            return (
-                              <li key={f} className={`flex items-center gap-1.5 text-xs ${isNew ? `font-semibold ${newStyle.color}` : 'text-gray-500'}`}>
-                                <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isNew ? (upgradePlanKey === 'PROFESYONEL' ? 'bg-purple-500' : 'bg-amber-400') : 'bg-gray-300'}`} />
-                                {f}
-                                {isNew && <span className="text-[10px] font-bold opacity-60">✦</span>}
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Yeni özellikler özeti */}
-                    {newFeatures.length > 0 && isUpgrade && (
-                      <div className={`rounded-xl ${newStyle.bg} border ${newStyle.border} px-3 py-2.5`}>
-                        <p className={`text-xs font-semibold ${newStyle.color} mb-1`}>✦ Bu paketle kazanacaklarınız:</p>
-                        <p className={`text-xs ${newStyle.color} opacity-80`}>{newFeatures.join(' · ')}</p>
-                      </div>
-                    )}
-
-                    {/* Fiyat + buton */}
-                    <div className="flex flex-col gap-2 pt-1">
-                      <button
-                        onClick={() => {
-                          setUpgradePlanKey(null)
-                          handleCheckout(upgradePlanKey)
-                        }}
-                        disabled={!!checkoutLoadingPlan}
-                        className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-60 ${
-                          upgradePlanKey === 'ISLETME' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-purple-600 hover:bg-purple-700'
-                        }`}
-                      >
-                        {checkoutLoadingPlan ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <>{newPrice}/ay · Ödemeye Geç</>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => setUpgradePlanKey(null)}
-                        className="w-full py-2 rounded-xl border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
-                      >
-                        Vazgeç
-                      </button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )
-            })()}
-
             {/* Fatura geçmişi */}
             <div className="glass-card p-5 space-y-3">
               <h2 className="font-display text-sm font-bold text-gray-900">Fatura Geçmişi</h2>
@@ -1132,7 +990,147 @@ export default function AyarlarPage() {
           </div>
         </TabsContent>
 
+        {/* ── TAB 4: Plan Değiştir ── */}
+        <TabsContent value="plan-degistir">
+          <div className="space-y-4">
+            {tenant && (
+              <div className="glass-card p-5 space-y-3">
+                <div>
+                  <h2 className="font-display text-sm font-bold text-gray-900">Plan Değiştir</h2>
+                  <p className="text-xs text-gray-500 mt-0.5">Planınızı yükseltmek veya düşürmek için aşağıdaki seçenekleri kullanın.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {(['BASLANGIC', 'PROFESYONEL', 'ISLETME'] as PlanKey[])
+                    .filter((pk) => pk !== tenant.plan)
+                    .map((pk) => {
+                      const cfg = planConfigs[pk]
+                      const style = PLAN_STYLE[pk]
+                      const isUSD = ['US', 'USA', 'CA', 'AU', 'NZ'].includes((tenant.country ?? '').toUpperCase())
+                      const isTRY = !tenant.country || tenant.country.toUpperCase() === 'TR'
+                      const priceStr = isTRY
+                        ? `₺${cfg.price.toLocaleString('tr-TR')}/ay`
+                        : isUSD
+                          ? `$${cfg.priceUsd}/ay`
+                          : `€${cfg.priceEur}/ay`
+                      const isUpgrade = ['BASLANGIC', 'PROFESYONEL', 'ISLETME'].indexOf(pk) > ['BASLANGIC', 'PROFESYONEL', 'ISLETME'].indexOf(tenant.plan)
+                      return (
+                        <button
+                          key={pk}
+                          type="button"
+                          disabled={checkoutLoadingPlan === pk}
+                          className={`flex items-center justify-between p-3 rounded-xl border ${style.border} ${style.bg} hover:opacity-90 transition-colors text-left disabled:opacity-60`}
+                          onClick={() => setUpgradePlanKey(pk)}
+                        >
+                          <div>
+                            <p className={`text-sm font-bold ${style.color}`}>
+                              {isUpgrade ? `${cfg.label}'e Yükselt` : cfg.label}
+                            </p>
+                            <p className={`text-xs ${style.color} opacity-75`}>
+                              {priceStr} · {cfg.smsLimit.toLocaleString('tr-TR')} SMS
+                            </p>
+                          </div>
+                          {checkoutLoadingPlan === pk
+                            ? <Loader2 className={`h-4 w-4 animate-spin ${style.color}`} />
+                            : <ChevronRight className={`h-4 w-4 ${style.color}`} />}
+                        </button>
+                      )
+                    })}
+                </div>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
       </Tabs>
+
+      {/* Plan Yükseltme Karşılaştırma Modalı */}
+      {upgradePlanKey && tenant && (() => {
+        const newPlan   = planConfigs[upgradePlanKey]
+        const curPlan   = planConfigs[tenant.plan as PlanKey]
+        const newStyle  = PLAN_STYLE[upgradePlanKey]
+        const isUpgrade = ['BASLANGIC','PROFESYONEL','ISLETME'].indexOf(upgradePlanKey) > ['BASLANGIC','PROFESYONEL','ISLETME'].indexOf(tenant.plan as PlanKey)
+        const isTRY = !tenant.country || tenant.country.toUpperCase() === 'TR'
+        const isUSD = ['US','USA','CA','AU','NZ'].includes((tenant.country ?? '').toUpperCase())
+        const newPrice  = isTRY ? `₺${newPlan.price.toLocaleString('tr-TR')}` : isUSD ? `$${newPlan.priceUsd}` : `€${newPlan.priceEur}`
+        const curPrice  = isTRY ? `₺${curPlan.price.toLocaleString('tr-TR')}` : isUSD ? `$${curPlan.priceUsd}` : `€${curPlan.priceEur}`
+        const newFeatures = newPlan.features.filter((f) => !curPlan.features.includes(f))
+
+        return (
+          <Dialog open onOpenChange={(v) => !v && setUpgradePlanKey(null)}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="font-display text-xl font-bold">
+                  {isUpgrade ? 'Paketi Yükselt' : 'Plan Değiştir'}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-500">
+                  {curPlan.label} → {newPlan.label} paketine geçiyorsunuz.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">Mevcut</p>
+                  <p className="text-sm font-bold text-gray-700">{curPlan.label}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{curPrice}/ay</p>
+                  <ul className="mt-2 space-y-1">
+                    {curPlan.features.map((f) => (
+                      <li key={f} className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <span className="h-1.5 w-1.5 rounded-full bg-gray-300 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className={`rounded-xl border ${newStyle.border} ${newStyle.bg} p-3`}>
+                  <p className={`text-[11px] font-semibold uppercase tracking-wide mb-1 ${newStyle.color} opacity-60`}>
+                    {isUpgrade ? 'Yeni' : 'Seçilen'}
+                  </p>
+                  <p className={`text-sm font-bold ${newStyle.color}`}>{newPlan.label}</p>
+                  <p className={`text-xs mt-0.5 ${newStyle.color} opacity-75`}>{newPrice}/ay</p>
+                  <ul className="mt-2 space-y-1">
+                    {newPlan.features.map((f) => {
+                      const isNew = newFeatures.includes(f)
+                      return (
+                        <li key={f} className={`flex items-center gap-1.5 text-xs ${isNew ? `font-semibold ${newStyle.color}` : 'text-gray-500'}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isNew ? (upgradePlanKey === 'PROFESYONEL' ? 'bg-purple-500' : 'bg-amber-400') : 'bg-gray-300'}`} />
+                          {f}
+                          {isNew && <span className="text-[10px] font-bold opacity-60">✦</span>}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              </div>
+
+              {newFeatures.length > 0 && isUpgrade && (
+                <div className={`rounded-xl ${newStyle.bg} border ${newStyle.border} px-3 py-2.5`}>
+                  <p className={`text-xs font-semibold ${newStyle.color} mb-1`}>✦ Bu paketle kazanacaklarınız:</p>
+                  <p className={`text-xs ${newStyle.color} opacity-80`}>{newFeatures.join(' · ')}</p>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2 pt-1">
+                <button
+                  onClick={() => { setUpgradePlanKey(null); handleCheckout(upgradePlanKey) }}
+                  disabled={!!checkoutLoadingPlan}
+                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-60 ${
+                    upgradePlanKey === 'ISLETME' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-purple-600 hover:bg-purple-700'
+                  }`}
+                >
+                  {checkoutLoadingPlan ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{newPrice}/ay · Ödemeye Geç</>}
+                </button>
+                <button
+                  onClick={() => setUpgradePlanKey(null)}
+                  className="w-full py-2 rounded-xl border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+                >
+                  Vazgeç
+                </button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )
+      })()}
 
       {/* Cancel subscription dialog */}
       <Dialog open={cancelSubOpen} onOpenChange={setCancelSubOpen}>
