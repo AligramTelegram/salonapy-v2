@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/utils/generateSlug'
 import { z } from 'zod'
 import { sendStaffWelcomeEmail } from '@/lib/resend'
+import { getLimit } from '@/lib/plan-features'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,13 +29,13 @@ const CreateStaffSchema = z.object({
     .optional(),
 })
 
-async function getOwnerTenant(): Promise<{ id: string; name: string; slug: string } | null> {
+async function getOwnerTenant(): Promise<{ id: string; name: string; slug: string; plan: string } | null> {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const dbUser = await prisma.user.findUnique({
     where: { supabaseId: user.id },
-    select: { tenant: { select: { id: true, name: true, slug: true } } },
+    select: { tenant: { select: { id: true, name: true, slug: true, plan: true } } },
   })
   return dbUser?.tenant ?? null
 }
@@ -57,6 +58,16 @@ export async function POST(request: NextRequest) {
   }
 
   const { name, email, password, phone, title, color, serviceIds, workHours } = parsed.data
+
+  // Plan limiti kontrolü
+  const maxStaff = getLimit(tenant.plan, 'maxStaff')
+  const currentStaffCount = await prisma.staff.count({ where: { tenantId, isActive: true } })
+  if (currentStaffCount >= maxStaff) {
+    return NextResponse.json(
+      { error: `${tenant.plan === 'BASLANGIC' ? 'Başlangıç' : tenant.plan === 'PROFESYONEL' ? 'Profesyonel' : 'İşletme'} paketinde en fazla ${maxStaff} çalışan ekleyebilirsiniz. Daha fazlası için paketinizi yükseltin.` },
+      { status: 403 }
+    )
+  }
 
   // Email çakışma kontrolü
   const existing = await prisma.staff.findUnique({ where: { email } })
