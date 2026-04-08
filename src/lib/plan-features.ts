@@ -3,6 +3,7 @@ export const PLAN_FEATURES = {
     maxStaff: 1,
     maxServices: 10,
     maxCustomers: 100,
+    maxAppointmentsPerMonth: 200,
     features: {
       reports: false,
       packages: true,
@@ -12,6 +13,7 @@ export const PLAN_FEATURES = {
     maxStaff: 3,
     maxServices: 50,
     maxCustomers: 500,
+    maxAppointmentsPerMonth: 1000,
     features: {
       reports: true,
       packages: true,
@@ -21,6 +23,7 @@ export const PLAN_FEATURES = {
     maxStaff: 10,
     maxServices: Infinity,
     maxCustomers: Infinity,
+    maxAppointmentsPerMonth: Infinity,
     features: {
       reports: true,
       packages: true,
@@ -30,7 +33,7 @@ export const PLAN_FEATURES = {
 
 export type PlanKey = keyof typeof PLAN_FEATURES
 export type FeatureKey = keyof typeof PLAN_FEATURES.BASLANGIC.features
-export type LimitKey = 'maxStaff' | 'maxServices' | 'maxCustomers'
+export type LimitKey = 'maxStaff' | 'maxServices' | 'maxCustomers' | 'maxAppointmentsPerMonth'
 
 export function hasFeature(plan: string, feature: FeatureKey): boolean {
   const planData = PLAN_FEATURES[plan as PlanKey]

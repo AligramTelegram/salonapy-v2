@@ -7,8 +7,9 @@ import { z } from 'zod'
 import axios from 'axios'
 import { format, addMinutes, parse } from 'date-fns'
 import { tr } from 'date-fns/locale'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2, Plus, AlertTriangle, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 import {
   Dialog,
@@ -94,20 +95,29 @@ function calcEndTime(startTime: string, durationMin: number): string {
   }
 }
 
+interface LimitError {
+  limit: number
+  used: number
+  resetAt: string
+  plan: string
+}
+
 interface Props {
   open: boolean
   onClose: () => void
+  slug: string
   defaultDate?: string // "2025-03-26"
   initialCustomerId?: string
 }
 
-export function NewAppointmentModal({ open, onClose, defaultDate, initialCustomerId }: Props) {
+export function NewAppointmentModal({ open, onClose, slug, defaultDate, initialCustomerId }: Props) {
   const [services, setServices] = useState<ServiceOption[]>([])
   const [staffList, setStaffList] = useState<StaffOption[]>([])
   const [customers, setCustomers] = useState<CustomerOption[]>([])
   const [loadingOptions, setLoadingOptions] = useState(false)
   const [paymentType, setPaymentType] = useState<'normal' | 'package'>('normal')
   const [selectedPackageId, setSelectedPackageId] = useState('')
+  const [limitError, setLimitError] = useState<LimitError | null>(null)
 
   const { mutateAsync: createAppointment, isPending } = useCreateAppointment()
 
@@ -197,13 +207,21 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
       setPaymentType('normal')
       setSelectedPackageId('')
       onClose()
-    } catch {
-      toast.error('Randevu oluşturulamadı')
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 403 && err.response.data?.code === 'APPOINTMENT_LIMIT_REACHED') {
+        setLimitError(err.response.data as LimitError)
+      } else {
+        toast.error('Randevu oluşturulamadı')
+      }
     }
   }
 
+  const resetDate = limitError
+    ? new Date(limitError.resetAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+    : ''
+
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) { onClose(); setLimitError(null) } }}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-lg font-bold">
@@ -211,11 +229,47 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
           </DialogTitle>
         </DialogHeader>
 
-        {loadingOptions ? (
+        {/* Limit doldu ekranı */}
+        {limitError && (
+          <div className="flex flex-col items-center text-center py-4 gap-4">
+            <div className="h-16 w-16 rounded-2xl bg-amber-50 flex items-center justify-center">
+              <AlertTriangle className="h-8 w-8 text-amber-500" />
+            </div>
+            <div>
+              <h3 className="font-display text-lg font-bold text-gray-900 mb-1">
+                Aylık Randevu Limitine Ulaştınız
+              </h3>
+              <p className="text-sm text-gray-500">
+                Bu ay <span className="font-semibold text-gray-700">{limitError.used}</span> / <span className="font-semibold text-gray-700">{limitError.limit}</span> randevu oluşturdunuz.
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                Limit <span className="font-semibold text-amber-600">{resetDate}</span> tarihinde sıfırlanacak.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 w-full pt-2">
+              <Link
+                href={`/b/${slug}/upgrade`}
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition-colors"
+              >
+                <Sparkles className="h-4 w-4" />
+                Paketini Yükselt
+              </Link>
+              <button
+                onClick={() => { setLimitError(null); onClose() }}
+                className="w-full py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!limitError && loadingOptions ? (
           <div className="flex items-center justify-center py-10">
             <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
           </div>
-        ) : (
+        ) : !limitError ? (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* Müşteri */}
@@ -469,7 +523,7 @@ export function NewAppointmentModal({ open, onClose, defaultDate, initialCustome
               </div>
             </form>
           </Form>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   )

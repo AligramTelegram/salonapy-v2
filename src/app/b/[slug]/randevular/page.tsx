@@ -243,6 +243,7 @@ export default function RandevularPage() {
       <NewAppointmentModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
+        slug={params.slug as string}
         defaultDate={dateStr}
       />
 

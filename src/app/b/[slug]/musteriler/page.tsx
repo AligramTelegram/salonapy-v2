@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef } from 'react'
+import { useParams } from 'next/navigation'
 import {
   Plus,
   Search,
@@ -71,6 +72,8 @@ function useDebounce(value: string, delay: number) {
 }
 
 export default function MusterilerPage() {
+  const params = useParams()
+  const slug = params.slug as string
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
   const [sortKey, setSortKey] = useState<SortKey>('name')
@@ -370,6 +373,7 @@ export default function MusterilerPage() {
           setAppointmentModalOpen(false)
           setAppointmentCustomerId(undefined)
         }}
+        slug={slug}
         initialCustomerId={appointmentCustomerId}
       />
     </div>

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { startOfDay, endOfDay, parseISO, parse } from 'date-fns'
+import { startOfDay, endOfDay, parseISO, parse, startOfMonth, addMonths } from 'date-fns'
 import { addReminderJob } from '@/lib/queue'
 import { sendAppointmentConfirmation } from '@/lib/resend'
 import { getTenantId } from '@/lib/getTenantId'
+import { getLimit } from '@/lib/plan-features'
 
 export const dynamic = 'force-dynamic'
 
@@ -76,6 +77,46 @@ export async function POST(request: NextRequest) {
 
   const { customerId, serviceId, staffId, date, startTime, endTime, price, notes, customerPackageId } = parsed.data
 
+  // ── Aylık randevu limiti kontrolü ──────────────────────────────────────────
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { plan: true, appointmentsUsed: true, appointmentsResetAt: true },
+  })
+
+  if (tenant) {
+    const now = new Date()
+    const maxAppointments = getLimit(tenant.plan, 'maxAppointmentsPerMonth')
+
+    // Ay geçtiyse sıfırla (lazy reset)
+    let appointmentsUsed = tenant.appointmentsUsed
+    if (now >= tenant.appointmentsResetAt) {
+      const nextReset = startOfMonth(addMonths(now, 1))
+      await prisma.tenant.update({
+        where: { id: tenantId },
+        data: { appointmentsUsed: 0, appointmentsResetAt: nextReset },
+      })
+      appointmentsUsed = 0
+    }
+
+    if (maxAppointments !== Number.MAX_SAFE_INTEGER && appointmentsUsed >= maxAppointments) {
+      const resetAt = now >= tenant.appointmentsResetAt
+        ? startOfMonth(addMonths(now, 1))
+        : tenant.appointmentsResetAt
+      return NextResponse.json(
+        {
+          error: 'Aylık randevu limitinize ulaştınız.',
+          code: 'APPOINTMENT_LIMIT_REACHED',
+          limit: maxAppointments,
+          used: appointmentsUsed,
+          resetAt: resetAt.toISOString(),
+          plan: tenant.plan,
+        },
+        { status: 403 }
+      )
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   // Date-only değeri timezone kaymasından korumak için local 12:00 noon kullan
   const normalizedDate = parse(date, 'yyyy-MM-dd', new Date())
   normalizedDate.setHours(12, 0, 0, 0)
@@ -126,9 +167,15 @@ export async function POST(request: NextRequest) {
     },
   })
 
+  // Aylık randevu sayacını artır
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data: { appointmentsUsed: { increment: 1 } },
+  })
+
   // Send appointment confirmation email to customer (if email exists)
   if (customer.email) {
-    const tenant = await prisma.tenant.findUnique({
+    const tenantForEmail = await prisma.tenant.findUnique({
       where: { id: tenantId },
       select: { name: true, phone: true, email: true },
     })
@@ -140,9 +187,9 @@ export async function POST(request: NextRequest) {
       date: normalizedDate,
       startTime,
       endTime,
-      tenantName: tenant?.name ?? '',
-      tenantPhone: tenant?.phone ?? undefined,
-      tenantEmail: tenant?.email ?? undefined,
+      tenantName: tenantForEmail?.name ?? '',
+      tenantPhone: tenantForEmail?.phone ?? undefined,
+      tenantEmail: tenantForEmail?.email ?? undefined,
     }).catch((err) => console.error('[appointments] Confirmation email failed:', err))
   }
 
