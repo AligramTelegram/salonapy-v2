@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -206,8 +207,7 @@ export function BlogForm({ initialData, mode }: BlogFormProps) {
               <div className="space-y-2">
                 {field.value ? (
                   <div className="relative rounded-xl overflow-hidden bg-gray-700 aspect-video">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={field.value} alt="Cover" className="w-full h-full object-cover" />
+                    <Image src={field.value} alt="Cover" fill className="object-cover" unoptimized />
                     <button
                       type="button"
                       onClick={() => field.onChange('')}

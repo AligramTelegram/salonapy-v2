@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 interface StaffHeaderProps {
   staffName: string
   tenantName: string
@@ -27,8 +29,7 @@ export function StaffHeader({ staffName, tenantName, avatarUrl }: StaffHeaderPro
 
         <div className="h-9 w-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 text-sm font-bold shrink-0 overflow-hidden">
           {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt={staffName} className="h-full w-full object-cover" />
+            <Image src={avatarUrl} alt={staffName} width={36} height={36} className="h-full w-full object-cover" unoptimized />
           ) : (
             initials
           )}

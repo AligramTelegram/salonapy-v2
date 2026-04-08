@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPlans } from '@/lib/plans'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60 // plan fiyatları sık değişmez, 60 saniye cache
 
 export interface PlanConfig {
   name: string
