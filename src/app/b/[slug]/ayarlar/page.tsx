@@ -142,11 +142,6 @@ export default function AyarlarPage() {
   // Stripe portal
   const [isLoadingPortal, setIsLoadingPortal] = useState(false)
 
-  // Delete modal
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const [deleteConfirmName, setDeleteConfirmName] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
-
   // Slug copy
   const [copiedSlug, setCopiedSlug] = useState(false)
 
@@ -440,31 +435,6 @@ export default function AyarlarPage() {
     }
   }
 
-  async function handleDelete() {
-    if (!tenant || deleteConfirmName.trim() !== tenant.name) {
-      toast.error('İşletme adı eşleşmiyor')
-      return
-    }
-    setIsDeleting(true)
-    try {
-      const res = await fetch(`/api/tenants/${slug}/delete`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ confirmName: deleteConfirmName.trim() }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error ?? 'Silme başarısız')
-      }
-      toast.success('İşletme silindi')
-      router.push('/giris')
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Silme başarısız')
-    } finally {
-      setIsDeleting(false)
-    }
-  }
-
   function handleCopySlug() {
     if (!tenant) return
     const url = `${window.location.origin}/b/${tenant.slug}`
@@ -528,13 +498,6 @@ export default function AyarlarPage() {
           >
             <CreditCard className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Abonelik</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="tehlikeli"
-            className="flex items-center gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-red-600 data-[state=active]:shadow-sm py-2"
-          >
-            <AlertTriangle className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Tehlikeli</span>
           </TabsTrigger>
         </TabsList>
 
@@ -1169,98 +1132,7 @@ export default function AyarlarPage() {
           </div>
         </TabsContent>
 
-        {/* ── TAB 4: Tehlikeli ── */}
-        <TabsContent value="tehlikeli">
-          <div className="glass-card p-5 border-2 border-red-100 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-                <ShieldAlert className="h-5 w-5 text-red-600" />
-              </div>
-              <div>
-                <h2 className="font-display text-base font-bold text-red-700">Tehlikeli Bölge</h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  Bu işlemler geri alınamaz. Lütfen dikkatli olun.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
-              <h3 className="text-sm font-bold text-red-700">İşletmeyi Sil</h3>
-              <p className="text-sm text-red-600">
-                Bu işlemi gerçekleştirirseniz:
-              </p>
-              <ul className="text-sm text-red-600 space-y-1 list-none">
-                {[
-                  'TÜM randevular silinecek',
-                  'TÜM müşteri verileri silinecek',
-                  'TÜM personel hesapları kapatılacak',
-                  'TÜM finansal kayıtlar silinecek',
-                  'Bu işlem GERİ ALINAMAZ',
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <Button
-              variant="ghost"
-              className="border-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 w-full"
-              onClick={() => setDeleteOpen(true)}
-            >
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              İşletmeyi Kalıcı Olarak Sil
-            </Button>
-          </div>
-        </TabsContent>
       </Tabs>
-
-      {/* ── Delete Modal ── */}
-      <Dialog open={deleteOpen} onOpenChange={(open) => { if (!open) { setDeleteOpen(false); setDeleteConfirmName('') } }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-display text-lg font-bold text-red-700 flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5" />
-              İşletmeyi Sil
-            </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600">
-              Bu işlem geri alınamaz. Onaylamak için aşağıya işletme adını yazın:
-              <span className="block mt-2 font-bold text-gray-900">{tenant.name}</span>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="confirmName" className="text-sm font-semibold text-gray-700">
-                İşletme Adını Girin
-              </Label>
-              <Input
-                id="confirmName"
-                value={deleteConfirmName}
-                onChange={(e) => setDeleteConfirmName(e.target.value)}
-                placeholder={tenant.name}
-                className="border-red-200 focus:ring-red-400"
-              />
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button variant="ghost" size="sm" onClick={() => { setDeleteOpen(false); setDeleteConfirmName('') }}>
-                İptal
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="border-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                disabled={deleteConfirmName.trim() !== tenant.name || isDeleting}
-                onClick={handleDelete}
-              >
-                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <AlertTriangle className="h-4 w-4 mr-1.5" />}
-                Kalıcı Olarak Sil
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Cancel subscription dialog */}
       <Dialog open={cancelSubOpen} onOpenChange={setCancelSubOpen}>
