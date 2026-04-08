@@ -5,7 +5,7 @@ import {
   Search, Building2, ChevronLeft, ChevronRight, ExternalLink,
   ToggleLeft, ToggleRight, Loader2, X, Users, Calendar, TrendingUp,
   MessageCircle, CreditCard, CheckCircle2, XCircle, Mail, Phone,
-  MapPin, Lock, Eye, EyeOff, RefreshCw, Trash2,
+  MapPin, Lock, Eye, EyeOff, RefreshCw,
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -107,9 +107,6 @@ export default function IsletmelerPage() {
   // Action loading
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [changingPlanId, setChangingPlanId] = useState<string | null>(null)
-
-  // Hard delete
-  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   // Credentials form
   const [newName, setNewName] = useState('')
@@ -269,23 +266,6 @@ export default function IsletmelerPage() {
       toast.error('Plan güncellenemedi')
     } finally {
       setChangingPlanId(null)
-    }
-  }
-
-  // ── Hard delete ──
-  async function handleHardDelete(id: string) {
-    setDeletingId(id)
-    try {
-      const res = await fetch(`/api/admin/tenants/${id}?hard=true`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
-      toast.success('İşletme kalıcı olarak silindi')
-      setDetailOpen(false)
-      setDetail(null)
-      fetchTenants(page)
-    } catch {
-      toast.error('Silme başarısız')
-    } finally {
-      setDeletingId(null)
     }
   }
 
@@ -700,38 +680,6 @@ export default function IsletmelerPage() {
                     {detail.tenant.isActive ? 'Pasif Yap' : 'Aktif Et'}
                   </button>
 
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button
-                        disabled={deletingId === detail.tenant.id}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 transition-all disabled:opacity-50 flex items-center gap-1"
-                      >
-                        {deletingId === detail.tenant.id ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-3.5 w-3.5" />
-                        )}
-                        Kalıcı Sil
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>İşletmeyi Kalıcı Sil?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          <strong>{detail.tenant.name}</strong> işletmesi ve tüm veriler (randevular, müşteriler, personel, finans) kalıcı olarak silinecek. Supabase Auth kullanıcısı da silinecek. Bu işlem geri alınamaz.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>İptal</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleHardDelete(detail.tenant.id)}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
-                          Evet, Kalıcı Sil
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
                 </div>
 
                 <a
