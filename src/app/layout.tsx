@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Sora } from 'next/font/google'
-import { TrackingScripts } from '@/components/TrackingScripts'
+import { TrackingHeadScripts, TrackingBodyScripts } from '@/components/TrackingScripts'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
 import { Providers } from '@/components/Providers'
 import { Toaster } from 'sonner'
@@ -94,16 +94,19 @@ export const metadata: Metadata = {
   category: 'business',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
     <html lang="tr" className={`${inter.variable} ${sora.variable}`}>
+      <head>
+        <TrackingHeadScripts />
+      </head>
       <body className="font-sans antialiased bg-[#faf8ff]">
+        <TrackingBodyScripts />
         <Providers>{children}</Providers>
-        <TrackingScripts />
         <ServiceWorkerRegister />
         <Toaster position="bottom-right" richColors />
         <VercelAnalytics />
