@@ -16,6 +16,7 @@ import {
   Sparkles,
   Package,
   Lock,
+  LifeBuoy,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -31,6 +32,7 @@ const NAV_ITEMS: { href: string; label: string; icon: React.ElementType; feature
   { href: '/finans', label: 'Finans', icon: DollarSign },
   { href: '/raporlar', label: 'Raporlar', icon: BarChart2, feature: 'reports' },
   { href: '/ayarlar', label: 'Ayarlar', icon: Settings },
+  { href: '/destek', label: 'Destek', icon: LifeBuoy },
 ]
 
 const PLAN_LABELS: Record<string, string> = {

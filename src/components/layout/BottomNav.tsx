@@ -13,6 +13,7 @@ import {
   Settings,
   Package,
   Lock,
+  LifeBuoy,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { hasFeature, type FeatureKey } from '@/lib/plan-features'
@@ -27,6 +28,7 @@ const BOTTOM_ITEMS: { href: string; label: string; icon: React.ElementType; feat
   { href: '/finans', label: 'Finans', icon: DollarSign },
   { href: '/raporlar', label: 'Raporlar', icon: BarChart2, feature: 'reports' },
   { href: '/ayarlar', label: 'Ayarlar', icon: Settings },
+  { href: '/destek', label: 'Destek', icon: LifeBuoy },
 ]
 
 interface BottomNavProps {
