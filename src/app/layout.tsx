@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Sora } from 'next/font/google'
-import { Analytics } from '@/components/Analytics'
+import { TrackingScripts } from '@/components/TrackingScripts'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
 import { Providers } from '@/components/Providers'
 import { Toaster } from 'sonner'
@@ -103,7 +103,7 @@ export default function RootLayout({
     <html lang="tr" className={`${inter.variable} ${sora.variable}`}>
       <body className="font-sans antialiased bg-[#faf8ff]">
         <Providers>{children}</Providers>
-        <Analytics />
+        <TrackingScripts />
         <ServiceWorkerRegister />
         <Toaster position="bottom-right" richColors />
         <VercelAnalytics />
