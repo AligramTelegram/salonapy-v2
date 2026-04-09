@@ -143,7 +143,7 @@ export default function GirisPage() {
                 </div>
 
                 <div className="mt-12 flex items-center justify-center gap-2 text-white/70 text-sm">
-                  <span>14 gün ücretsiz denemeye başlayın</span>
+                  <span>3 gün ücretsiz denemeye başlayın</span>
                   <ArrowRight className="h-4 w-4" />
                 </div>
 

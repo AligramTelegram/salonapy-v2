@@ -64,9 +64,9 @@ const PLAN_STYLE = {
 
 // Fallback — DB'den gelene kadar kullanılır
 const PLAN_CONFIG_DEFAULTS = {
-  BASLANGIC:   { label: 'Başlangıç',   price: 450,  priceEur: 35,  priceUsd: 19,  smsLimit: 200,  features: ['200 SMS/ay', '1 personel hesabı', 'Sınırsız randevu', 'Müşteri yönetimi', 'Temel raporlar'] },
-  PROFESYONEL: { label: 'Profesyonel', price: 950,  priceEur: 69,  priceUsd: 49,  smsLimit: 600,  features: ['600 SMS/ay', '3 personel hesabı', 'Sınırsız randevu', 'Müşteri yönetimi', 'Gelişmiş raporlar', 'Paket yönetimi'] },
-  ISLETME:     { label: 'İşletme',     price: 1450, priceEur: 119, priceUsd: 99,  smsLimit: 1500, features: ['1.500 SMS/ay', '10 personel hesabı', 'Sınırsız randevu', 'Müşteri yönetimi', 'Gelişmiş raporlar', 'Paket yönetimi', 'Öncelikli destek'] },
+  BASLANGIC:   { label: 'Başlangıç',   price: 540,  priceEur: 35,  priceUsd: 19,  smsLimit: 200,  features: ['200 SMS/ay', '1 personel hesabı', 'Sınırsız randevu', 'Müşteri yönetimi', 'Temel raporlar'] },
+  PROFESYONEL: { label: 'Profesyonel', price: 1140, priceEur: 69,  priceUsd: 49,  smsLimit: 600,  features: ['600 SMS/ay', '3 personel hesabı', 'Sınırsız randevu', 'Müşteri yönetimi', 'Gelişmiş raporlar', 'Paket yönetimi'] },
+  ISLETME:     { label: 'İşletme',     price: 1740, priceEur: 119, priceUsd: 99,  smsLimit: 1500, features: ['1.500 SMS/ay', '10 personel hesabı', 'Sınırsız randevu', 'Müşteri yönetimi', 'Gelişmiş raporlar', 'Paket yönetimi', 'Öncelikli destek'] },
 }
 
 type PlanKey = 'BASLANGIC' | 'PROFESYONEL' | 'ISLETME'

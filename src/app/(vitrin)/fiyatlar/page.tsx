@@ -7,17 +7,17 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Fiyatlar - Salonapy',
   description:
-    'Salonapy fiyat planları: Başlangıç ₺450, Profesyonel ₺950, İşletme ₺1.450/ay. 14 gün ücretsiz deneme.',
+    'Salonapy fiyat planları: Başlangıç ₺540, Profesyonel ₺1.140, İşletme ₺1.740/ay. 3 gün ücretsiz deneme.',
   openGraph: {
     title: 'Fiyatlar - Salonapy',
-    description: '14 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal.',
+    description: '3 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal.',
   },
 }
 
 const FAQ = [
   {
     q: 'Deneme süresi bittikten sonra ne olur?',
-    a: '14 günlük deneme süresinin sonunda bir plan seçmeniz istenir. Seçmezseniz hesabınız pasife alınır, verileriniz 30 gün daha saklanır.',
+    a: '3 günlük deneme süresinin sonunda bir plan seçmeniz istenir. Seçmezseniz hesabınız pasife alınır, verileriniz 30 gün daha saklanır.',
   },
   {
     q: 'İstediğim zaman plan değiştirebilir miyim?',
@@ -52,7 +52,7 @@ export default function FiyatlarPage() {
             <span className="text-purple-600">planı seçin</span>
           </h1>
           <p className="mx-auto max-w-xl text-lg leading-relaxed text-gray-500">
-            Tüm planlar 14 gün ücretsiz başlar. İstediğiniz zaman iptal edebilirsiniz.
+            Tüm planlar 3 gün ücretsiz başlar. İstediğiniz zaman iptal edebilirsiniz.
           </p>
         </div>
       </section>

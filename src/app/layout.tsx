@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: '%s | Salonapy',
   },
   description:
-    'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. WhatsApp bildirimleri, otomatik hatırlatmalar, 14 gün ücretsiz.',
+    'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. WhatsApp bildirimleri, otomatik hatırlatmalar, 3 gün ücretsiz.',
   keywords: [
     'randevu sistemi',
     'randevu yönetimi',
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     siteName: 'Salonapy',
     title: 'Salonapy - Randevu Yönetim Platformu',
     description:
-      'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. WhatsApp bildirimleri, otomatik hatırlatmalar, 14 gün ücretsiz.',
+      'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. WhatsApp bildirimleri, otomatik hatırlatmalar, 3 gün ücretsiz.',
     images: [
       {
         url: '/og-image.png',

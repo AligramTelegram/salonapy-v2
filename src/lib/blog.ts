@@ -154,7 +154,7 @@ const POSTS: BlogPost[] = [
       <h2>Rakiplerinizden Önce Geçin</h2>
       <p>Sektördeki dijitalleşme hızlanıyor. Online randevu sistemi kurmak artık lüks değil, <strong>rekabetçi kalmak için zorunlu</strong>.</p>
 
-      <p>Salonapy ile 5 dakikada online randevu sisteminizi kurun. 14 gün ücretsiz deneyin, memnun kalırsanız devam edin.</p>
+      <p>Salonapy ile 5 dakikada online randevu sisteminizi kurun. 3 gün ücretsiz deneyin, memnun kalırsanız devam edin.</p>
     `,
   },
   {

@@ -1,9 +1,9 @@
 export type Currency = 'TRY' | 'EUR' | 'USD'
 
 export const PLAN_PRICES: Record<string, Record<Currency, number>> = {
-  BASLANGIC:   { TRY: 450,  EUR: 35,  USD: 19 },
-  PROFESYONEL: { TRY: 950,  EUR: 69,  USD: 49 },
-  ISLETME:     { TRY: 1450, EUR: 119, USD: 99 },
+  BASLANGIC:   { TRY: 540,  EUR: 35,  USD: 19 },
+  PROFESYONEL: { TRY: 1140, EUR: 69,  USD: 49 },
+  ISLETME:     { TRY: 1740, EUR: 119, USD: 99 },
 }
 
 export const PLAN_LABELS: Record<string, string> = {

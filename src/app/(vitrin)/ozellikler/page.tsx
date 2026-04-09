@@ -35,7 +35,7 @@ export default function OzelliklerPage() {
             href="/kayit"
             className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition-colors hover:bg-purple-700"
           >
-            14 Gün Ücretsiz Dene
+            3 Gün Ücretsiz Dene
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -52,7 +52,7 @@ export default function OzelliklerPage() {
               Hemen başlayın
             </h2>
             <p className="mb-8 text-purple-100">
-              14 gün ücretsiz deneyin. Kredi kartı gerekmez.
+              3 gün ücretsiz deneyin. Kredi kartı gerekmez.
             </p>
             <Link
               href="/kayit"

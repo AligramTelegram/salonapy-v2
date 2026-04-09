@@ -16,7 +16,7 @@ const PLAN_CONFIG: Record<string, {
 }> = {
   PROFESYONEL: {
     label: 'Profesyonel',
-    price: '₺950',
+    price: '₺1.140',
     priceEur: '€69',
     features: [
       '600 WhatsApp mesajı/ay',
@@ -31,7 +31,7 @@ const PLAN_CONFIG: Record<string, {
   },
   ISLETME: {
     label: 'İşletme',
-    price: '₺1.450',
+    price: '₺1.740',
     priceEur: '€119',
     features: [
       '1.500 WhatsApp mesajı/ay',

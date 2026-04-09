@@ -27,7 +27,7 @@ export type PlansMap = Record<'BASLANGIC' | 'PROFESYONEL' | 'ISLETME', PlanData>
 const DEFAULTS: PlansMap = {
   BASLANGIC: {
     name: 'Başlangıç',
-    priceTRY: 450, priceEUR: 35, priceUSD: 19,
+    priceTRY: 540, priceEUR: 35, priceUSD: 19,
     smsLimit: 200,
     description: 'Küçük işletmeler ve tek kişilik salonlar için ideal başlangıç.',
     popular: false, trial: true,
@@ -35,7 +35,7 @@ const DEFAULTS: PlansMap = {
   },
   PROFESYONEL: {
     name: 'Profesyonel',
-    priceTRY: 950, priceEUR: 69, priceUSD: 49,
+    priceTRY: 1140, priceEUR: 69, priceUSD: 49,
     smsLimit: 600,
     description: 'Büyüyen salonlar için gelişmiş özellikler ve daha fazla kapasite.',
     popular: true, trial: false,
@@ -43,7 +43,7 @@ const DEFAULTS: PlansMap = {
   },
   ISLETME: {
     name: 'İşletme',
-    priceTRY: 1450, priceEUR: 119, priceUSD: 99,
+    priceTRY: 1740, priceEUR: 119, priceUSD: 99,
     smsLimit: 1500,
     description: 'Çok şubeli ve büyük ekipli işletmeler için tam kapasite.',
     popular: false, trial: false,

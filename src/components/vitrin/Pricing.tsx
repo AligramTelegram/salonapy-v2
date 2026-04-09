@@ -37,17 +37,17 @@ const PLAN_STYLE: Record<string, {
 
 const DEFAULT_PLANS: PlansConfig = {
   BASLANGIC: {
-    name: 'Başlangıç', price: '450', priceEur: '35', priceUsd: '19', smsLimit: 200, popular: false, trial: true,
+    name: 'Başlangıç', price: '540', priceEur: '35', priceUsd: '19', smsLimit: 200, popular: false, trial: true,
     description: 'Küçük işletmeler ve tek kişilik salonlar için ideal başlangıç.',
-    features: ['200 SMS/ay', '1 personel', 'Online randevu', 'SMS hatırlatmaları', 'Temel raporlar', 'Müşteri kaydı', '14 gün ücretsiz deneme'],
+    features: ['200 SMS/ay', '1 personel', 'Online randevu', 'SMS hatırlatmaları', 'Temel raporlar', 'Müşteri kaydı', '3 gün ücretsiz deneme'],
   },
   PROFESYONEL: {
-    name: 'Profesyonel', price: '950', priceEur: '69', priceUsd: '49', smsLimit: 600, popular: true, trial: false,
+    name: 'Profesyonel', price: '1.140', priceEur: '69', priceUsd: '49', smsLimit: 600, popular: true, trial: false,
     description: 'Büyüyen salonlar için gelişmiş özellikler ve daha fazla kapasite.',
     features: ['600 SMS/ay', '3 personel', 'Online randevu', 'SMS hatırlatmaları', 'Gelişmiş raporlar', 'Müşteri CRM', 'Finansal takip'],
   },
   ISLETME: {
-    name: 'İşletme', price: '1.450', priceEur: '119', priceUsd: '99', smsLimit: 1500, popular: false, trial: false,
+    name: 'İşletme', price: '1.740', priceEur: '119', priceUsd: '99', smsLimit: 1500, popular: false, trial: false,
     description: 'Çok şubeli ve büyük ekipli işletmeler için tam kapasite.',
     features: ['1.500 SMS/ay', '10 personel', 'Online randevu', 'SMS hatırlatmaları', 'Tam analiz & raporlar', 'Müşteri CRM', 'Finansal takip', 'Öncelikli destek'],
   },
@@ -83,7 +83,7 @@ export function Pricing() {
             <span className="text-purple-600">planı seçin</span>
           </h2>
           <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-500">
-            Başlangıç paketinde 14 gün ücretsiz deneme. Profesyonel ve İşletme
+            Başlangıç paketinde 3 gün ücretsiz deneme. Profesyonel ve İşletme
             paketleri direkt ödeme ile başlar. İstediğiniz zaman iptal edebilirsiniz.
           </p>
         </motion.div>
@@ -156,11 +156,12 @@ function PricingCard({
           <span className="mb-1 text-sm text-gray-500">/ay</span>
         </div>
         <p className="mb-1 text-xs text-gray-400">veya €{plan.priceEur}/ay</p>
+        <p className="mb-3 text-xs text-gray-500">*KDV dahildir</p>
         <p className="mb-6 text-sm leading-relaxed text-gray-500">{plan.description}</p>
 
         <Link
           href={plan.trial ? '/kayit' : `/kayit?plan=${planKey}`}
-          title={plan.trial ? `${plan.name} Paketi - 14 Gün Ücretsiz` : `${plan.name} Paketi`}
+          title={plan.trial ? `${plan.name} Paketi - 3 Gün Ücretsiz` : `${plan.name} Paketi`}
           className="block"
         >
           <Button
@@ -170,7 +171,7 @@ function PricingCard({
                 : 'bg-gray-900 hover:bg-gray-800'
             }`}
           >
-            {plan.trial ? '14 Gün Ücretsiz Dene' : 'Hemen Başla'}
+            {plan.trial ? '3 Gün Ücretsiz Dene' : 'Hemen Başla'}
           </Button>
         </Link>
         <p className="mb-3 -mt-3 text-center text-xs text-gray-400">

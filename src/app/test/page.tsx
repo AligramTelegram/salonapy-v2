@@ -203,7 +203,7 @@ export default function TestPage() {
 
             <div className="relative z-10">
               <span className="inline-block px-4 py-1.5 bg-purple-100 text-purple-700 text-sm font-semibold rounded-full mb-6">
-                🚀 14 Gün Ücretsiz Deneyin
+                🚀 3 Gün Ücretsiz Deneyin
               </span>
               <h1 className="font-display font-extrabold text-5xl md:text-6xl text-gray-900 mb-4 leading-tight">
                 Randevunuzu{' '}

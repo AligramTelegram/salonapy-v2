@@ -46,7 +46,7 @@ export function Hero() {
               className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700"
             >
               <span className="flex h-2 w-2 rounded-full bg-purple-500" />
-              14 gün ücretsiz deneme · Kredi kartı gerekmez
+              3 gün ücretsiz deneme · Kredi kartı gerekmez
             </motion.div>
 
             {/* Başlık */}
@@ -84,7 +84,7 @@ export function Hero() {
 
             {/* CTA Butonlar */}
             <motion.div {...fadeUp(0.3)} className="mb-10 flex flex-wrap gap-3">
-              <Link href="/kayit" title="14 Gün Ücretsiz Deneme">
+              <Link href="/kayit" title="3 Gün Ücretsiz Deneme">
                 <Button
                   size="lg"
                   className="h-12 bg-purple-600 px-6 text-base shadow-lg shadow-purple-200/60 hover:bg-purple-700"

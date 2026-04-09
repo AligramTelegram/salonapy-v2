@@ -184,7 +184,7 @@ function KayitContent() {
                 <p className="text-lg text-white/90 mb-12">
                   {selectedPlan
                     ? `${PLAN_LABELS[selectedPlan]} plan ile başlayın`
-                    : '14 gün ücretsiz, kredi kartı gerekmez'}
+                    : '3 gün ücretsiz, kredi kartı gerekmez'}
                 </p>
 
                 {/* Features */}
@@ -248,7 +248,7 @@ function KayitContent() {
                   <p className="text-sm text-gray-600">
                     {selectedPlan
                       ? `${PLAN_LABELS[selectedPlan]} planı ile kayıt ol`
-                      : '14 gün ücretsiz denemeye başla'}
+                      : '3 gün ücretsiz denemeye başla'}
                   </p>
                   <Link href="/" className="mt-3 inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 transition-colors md:hidden">
                     <Home className="h-3 w-3" />

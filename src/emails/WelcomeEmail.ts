@@ -38,7 +38,7 @@ export function renderWelcomeEmail({ tenantName, ownerName, slug, isTrial = true
               <p style="margin:0 0 24px;color:#6b7280;font-size:15px;line-height:1.6;">
                 <strong>${tenantName}</strong> işletmeniz başarıyla oluşturuldu.
                 ${isTrial
-                  ? ' 14 günlük ücretsiz deneme süreniz başladı.'
+                  ? ' 3 günlük ücretsiz deneme süreniz başladı.'
                   : ' Aboneliğiniz ödeme tamamlandıktan sonra aktifleşecektir.'}
               </p>
 

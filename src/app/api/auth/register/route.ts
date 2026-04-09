@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     })
 
     if (!isPaidPlan) {
-      // BAŞLANGIÇ: 14 günlük ücretsiz deneme aboneliği oluştur
+      // BAŞLANGIÇ: 3 günlük ücretsiz deneme aboneliği oluştur
       const now = new Date()
       await prisma.subscription.create({
         data: {
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
           paymentProvider: 'trial',
           status: 'TRIAL',
           startDate: now,
-          endDate: addDays(now, 14),
+          endDate: addDays(now, 3),
           autoRenew: false,
         },
       })

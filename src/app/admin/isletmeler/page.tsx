@@ -82,7 +82,7 @@ const PLAN_COLORS: Record<string, string> = {
   ISLETME: 'bg-amber-100 text-amber-700',
 }
 const PLAN_PRICES: Record<string, number> = {
-  BASLANGIC: 450, PROFESYONEL: 950, ISLETME: 1450, // fallback — gerçek değer /api/plans'tan gelir
+  BASLANGIC: 540, PROFESYONEL: 1140, ISLETME: 1740, // fallback — gerçek değer /api/plans'tan gelir
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

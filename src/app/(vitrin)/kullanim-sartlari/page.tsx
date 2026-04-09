@@ -106,7 +106,7 @@ const SECTIONS = [
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
-            '14 günlük ücretsiz deneme süresi sonunda bir plan seçmeniz gerekir',
+            '3 günlük ücretsiz deneme süresi sonunda bir plan seçmeniz gerekir',
             'Aylık abonelik ücretleri dönem başında tahsil edilir',
             'Ödemeler Türkiye\'de İyzico, uluslararası işlemlerde Stripe üzerinden gerçekleştirilir',
             'Plan yükseltme işlemi anında geçerli olur; fark tutarı bir sonraki faturada hesaplanır',
@@ -130,7 +130,7 @@ const SECTIONS = [
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
-            '14 günlük ücretsiz deneme süresi içinde ücret alınmaz; iade söz konusu değildir',
+            '3 günlük ücretsiz deneme süresi içinde ücret alınmaz; iade söz konusu değildir',
             'Aylık abonelik ücretleri iade edilmez',
             'Platform\'da yaşanan teknik aksaklıklar nedeniyle hizmet kullanılamaması durumunda, etkilenen süre oranında kredi tanımlanabilir',
             'İade taleplerinizi destek@salonapy.com adresine iletebilirsiniz; her talep bireysel olarak değerlendirilir',
