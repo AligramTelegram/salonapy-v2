@@ -98,6 +98,10 @@ export async function middleware(request: NextRequest) {
     response.headers.set('x-user-id', user.id)
   }
 
+  // ── 6. Mevcut pathname'i header'a ekle ────────────────────────────────────
+  // Layout server component'ları bu header'ı okuyarak trial kontrolü yapar.
+  response.headers.set('x-pathname', pathname)
+
   return response
 }
 

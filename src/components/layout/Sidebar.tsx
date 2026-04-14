@@ -17,7 +17,9 @@ import {
   Package,
   Lock,
   LifeBuoy,
+  AlertTriangle,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { hasFeature, type FeatureKey } from '@/lib/plan-features'
@@ -52,9 +54,10 @@ interface SidebarProps {
   tenantName: string
   plan: string
   smsUsed: number
+  trialExpired?: boolean
 }
 
-export function Sidebar({ slug, tenantName, plan, smsUsed }: SidebarProps) {
+export function Sidebar({ slug, tenantName, plan, smsUsed, trialExpired = false }: SidebarProps) {
   const pathname = usePathname()
   const base = `/b/${slug}`
 
@@ -94,6 +97,23 @@ export function Sidebar({ slug, tenantName, plan, smsUsed }: SidebarProps) {
             <p className="text-xs text-purple-500 font-medium">İşletme Paneli</p>
           </div>
         </div>
+
+        {/* Trial süresi doldu uyarısı */}
+        {trialExpired && (
+          <div className="mx-3 mt-3 rounded-xl border border-red-200 bg-red-50 p-3">
+            <div className="flex items-start gap-2 mb-2">
+              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-xs font-semibold text-red-800">Deneme süreniz sona erdi</p>
+            </div>
+            <Button
+              asChild
+              size="sm"
+              className="w-full h-7 text-xs bg-red-600 hover:bg-red-700 text-white"
+            >
+              <Link href={`/b/${slug}/upgrade`}>Paket Yükselt</Link>
+            </Button>
+          </div>
+        )}
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">

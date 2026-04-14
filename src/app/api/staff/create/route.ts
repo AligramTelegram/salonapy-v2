@@ -6,6 +6,7 @@ import { generateSlug } from '@/lib/utils/generateSlug'
 import { z } from 'zod'
 import { sendStaffWelcomeEmail } from '@/lib/resend'
 import { getLimit } from '@/lib/plan-features'
+import { checkSubscription } from '@/lib/checkSubscription'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,6 +45,15 @@ export async function POST(request: NextRequest) {
   const tenant = await getOwnerTenant()
   if (!tenant) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
   const tenantId = tenant.id
+
+  try {
+    await checkSubscription(tenantId)
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message === 'SUBSCRIPTION_REQUIRED') {
+      return NextResponse.json({ error: 'Paket yükseltmesi gerekli' }, { status: 402 })
+    }
+    throw e
+  }
 
   let body: unknown
   try {

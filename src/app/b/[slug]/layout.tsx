@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { Sidebar } from '@/components/layout/Sidebar'
@@ -48,13 +49,32 @@ export default async function IsletmePaneliLayout({
 
   // Trial banner: sadece BAŞLANGIÇ + TRIAL durumunda
   const sub = dbUser.tenant.subscription
+  const now = Date.now()
   const isTrialActive =
     sub?.status === 'TRIAL' &&
     dbUser.tenant.plan === 'BASLANGIC' &&
-    sub.endDate != null
+    sub.endDate != null &&
+    new Date(sub.endDate).getTime() > now
+
+  const hasActiveSubscription = sub?.status === 'ACTIVE'
+
+  // Trial süresi dolmuş VE aktif abonelik yok → upgrade sayfasına yönlendir
+  // (upgrade ve ayarlar sayfalarına erişim serbest bırakılır)
+  const isTrialExpired =
+    sub?.status === 'TRIAL' &&
+    sub.endDate != null &&
+    new Date(sub.endDate).getTime() <= now
+  const isBlocked = isTrialExpired && !hasActiveSubscription
+
+  if (isBlocked) {
+    const pathname = headers().get('x-pathname') ?? ''
+    if (!pathname.includes('/upgrade') && !pathname.includes('/ayarlar')) {
+      redirect(`/b/${params.slug}/upgrade?trial_expired=true`)
+    }
+  }
 
   const trialDaysLeft = isTrialActive
-    ? Math.max(0, Math.ceil((new Date(sub!.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    ? Math.max(0, Math.ceil((new Date(sub!.endDate).getTime() - now) / (1000 * 60 * 60 * 24)))
     : null
 
   return (
@@ -65,6 +85,7 @@ export default async function IsletmePaneliLayout({
         tenantName={dbUser.tenant.name}
         plan={dbUser.tenant.plan}
         smsUsed={dbUser.tenant.smsUsed}
+        trialExpired={isBlocked}
       />
 
       {/* Sağ taraf: header + content */}

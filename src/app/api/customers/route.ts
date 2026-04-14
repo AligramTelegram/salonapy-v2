@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { getTenantId } from '@/lib/getTenantId'
+import { checkSubscription } from '@/lib/checkSubscription'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,6 +56,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const tenantId = await getTenantId()
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+
+  try {
+    await checkSubscription(tenantId)
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message === 'SUBSCRIPTION_REQUIRED') {
+      return NextResponse.json({ error: 'Paket yükseltmesi gerekli' }, { status: 402 })
+    }
+    throw e
+  }
 
   let body: unknown
   try {
