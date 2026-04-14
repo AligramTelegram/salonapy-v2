@@ -1,82 +1,56 @@
-'use client'
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
-import { XCircle, RefreshCw, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-
-function OdemeBasarisizContent() {
-  const searchParams = useSearchParams()
-  const reason = searchParams.get('reason')
-
-  const errorMessages: Record<string, string> = {
-    'no-token': 'Ödeme oturumu bulunamadı.',
-    'payment-failed': 'Ödeme işlemi başarısız oldu.',
-    'invalid-conversation': 'Ödeme oturumu geçersiz.',
-    'tenant-not-found': 'İşletme hesabı bulunamadı.',
-  }
-  const errorMessage = (reason && errorMessages[reason]) ?? 'Ödeme işlemi tamamlanamadı.'
-
+export default function OdemeBasarisizPage({ 
+  searchParams 
+}: { 
+  searchParams: { reason?: string } 
+}) {
+  const reason = searchParams?.reason || 'Bilinmeyen hata';
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Failure card */}
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 text-center">
-          {/* Icon */}
-          <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
-            <XCircle className="h-10 w-10 text-red-600" />
-          </div>
-
-          {/* Title */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Ödeme Başarısız
-          </h1>
-          <p className="text-gray-500 text-sm mb-6">
-            {errorMessage}
-          </p>
-
-          {/* Error detail */}
-          {reason && (
-            <div className="bg-red-50 rounded-xl p-3 mb-6 border border-red-100">
-              <p className="text-xs font-mono text-red-400">{reason}</p>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="space-y-3">
-            <button
-              onClick={() => window.history.back()}
-              className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors text-sm"
+    <div className="min-h-screen flex items-center justify-center bg-[#faf8ff] p-4">
+      <div className="glass-card p-8 max-w-md w-full text-center">
+        <div className="mb-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+            <svg 
+              className="w-8 h-8 text-red-600" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
             >
-              <RefreshCw className="h-4 w-4" />
-              Tekrar Dene
-            </button>
-            <Link
-              href="/"
-              className="w-full inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-3 px-6 rounded-xl transition-colors text-sm"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Ana Sayfaya Dön
-            </Link>
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M6 18L18 6M6 6l12 12" 
+              />
+            </svg>
           </div>
         </div>
-
-        {/* Support note */}
-        <p className="text-center text-xs text-gray-400 mt-4">
-          Yardım için:{' '}
-          <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-            destek@salonapy.com
-          </a>
+        
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          Ödeme Başarısız
+        </h1>
+        
+        <p className="text-gray-600 mb-6">
+          {decodeURIComponent(reason)}
+        </p>
+        
+        <div className="space-y-3">
+          <Button asChild className="w-full">
+            <Link href="/">Ana Sayfaya Dön</Link>
+          </Button>
+          
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/iletisim">Destek Al</Link>
+          </Button>
+        </div>
+        
+        <p className="text-xs text-gray-500 mt-6">
+          Sorun devam ederse lütfen destek ekibimizle iletişime geçin.
         </p>
       </div>
     </div>
-  )
-}
-
-export default function OdemeBasarisizPage() {
-  return (
-    <Suspense>
-      <OdemeBasarisizContent />
-    </Suspense>
-  )
+  );
 }
