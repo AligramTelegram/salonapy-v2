@@ -117,13 +117,15 @@ async function handleCallback(request: NextRequest): Promise<NextResponse> {
 
   // Update tenant + subscription in a transaction
   await prisma.$transaction([
-    // Update tenant plan
+    // Update tenant plan + SMS sıfırla
     prisma.tenant.update({
       where: { id: tenantId },
       data: {
         plan: planKey,
         planStartedAt: now,
         planEndsAt: endDate,
+        smsUsed: 0,
+        smsResetAt: now,
       },
     }),
     // Upsert subscription

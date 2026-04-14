@@ -19,12 +19,13 @@ interface PlanInfo {
 interface UpgradeCardsProps {
   slug: string
   currentPlan: string
+  hasActiveSubscription: boolean
   plans: Record<PlanKey, PlanInfo>
 }
 
 const PLAN_ORDER: PlanKey[] = ['BASLANGIC', 'PROFESYONEL', 'ISLETME']
 
-export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
+export function UpgradeCards({ slug, currentPlan, hasActiveSubscription, plans }: UpgradeCardsProps) {
   const [loading, setLoading] = useState<PlanKey | null>(null)
 
   const currentIndex = PLAN_ORDER.indexOf(currentPlan as PlanKey)
@@ -34,7 +35,10 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
   }
 
   async function handleUpgrade(planKey: PlanKey) {
-    if (planKey === currentPlan || isDowngrade(planKey)) return
+    // Aktif aboneliği olan kullanıcı aynı plana tıklayamaz
+    if (hasActiveSubscription && planKey === currentPlan) return
+    // Düşürme her zaman engellenir
+    if (isDowngrade(planKey)) return
     setLoading(planKey)
     try {
       const res = await fetch('/api/payments/iyzico/checkout', {
@@ -62,6 +66,8 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
         const isCurrent = key === currentPlan
         const downgrade = isDowngrade(key)
         const isLoading = loading === key
+        // Aktif abonelik yokken mevcut plana devam mümkün
+        const canRenewCurrentPlan = isCurrent && !hasActiveSubscription
 
         return (
           <div
@@ -86,11 +92,17 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
                 </span>
               </div>
             )}
+            {/* Mevcut plan badge'leri */}
             {isCurrent && (
-              <div className="absolute top-3 left-3">
+              <div className="absolute top-3 left-3 flex gap-1.5">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
                   Mevcut Plan
                 </span>
+                {!hasActiveSubscription && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                    Ödeme Gerekli
+                  </span>
+                )}
               </div>
             )}
 
@@ -116,20 +128,24 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
             <div className="px-6 pb-6">
               <button
                 onClick={() => handleUpgrade(key)}
-                disabled={isCurrent || downgrade || !!loading}
+                disabled={(isCurrent && hasActiveSubscription) || downgrade || !!loading}
                 className={cn(
                   'w-full py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2',
-                  isCurrent || downgrade
+                  (isCurrent && hasActiveSubscription) || downgrade
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : plan.popular
-                      ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md shadow-purple-200'
-                      : 'bg-gray-900 text-white hover:bg-gray-800'
+                    : canRenewCurrentPlan
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : plan.popular
+                        ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md shadow-purple-200'
+                        : 'bg-gray-900 text-white hover:bg-gray-800'
                 )}
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isCurrent ? (
+                ) : isCurrent && hasActiveSubscription ? (
                   'Aktif Plan'
+                ) : canRenewCurrentPlan ? (
+                  'Bu Plana Devam Et'
                 ) : downgrade ? (
                   'Düşürme Yapılamaz'
                 ) : (

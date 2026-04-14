@@ -14,12 +14,20 @@ export default async function UpgradePage({
   const [tenant, plans] = await Promise.all([
     prisma.tenant.findUnique({
       where: { slug: params.slug },
-      select: { plan: true },
+      select: {
+        plan: true,
+        subscription: { select: { status: true, endDate: true } },
+      },
     }),
     getPlans(),
   ])
 
   const currentPlan = tenant?.plan ?? 'BASLANGIC'
+  const sub = tenant?.subscription
+  const now = new Date()
+  const hasActiveSubscription =
+    sub?.status === 'ACTIVE' ||
+    (sub?.status === 'TRIAL' && sub.endDate != null && new Date(sub.endDate) > now)
 
   const planData = {
     BASLANGIC: {
@@ -72,6 +80,7 @@ export default async function UpgradePage({
       <UpgradeCards
         slug={params.slug}
         currentPlan={currentPlan}
+        hasActiveSubscription={hasActiveSubscription}
         plans={planData}
       />
     </div>
