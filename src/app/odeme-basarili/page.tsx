@@ -68,7 +68,7 @@ function OdemeBasariliContent() {
           {/* CTA */}
           {slug ? (
             <Link
-              href={`/b/${slug}`}
+              href={`/b/${slug}?upgrade_success=true`}
               className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors text-sm"
             >
               Panele Git

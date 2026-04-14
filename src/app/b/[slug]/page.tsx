@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Calendar, TrendingUp, TrendingDown, DollarSign, Plus, ChevronRight } from 'lucide-react'
@@ -10,6 +11,7 @@ import { StatsCard } from '@/components/dashboard/StatsCard'
 import { AppointmentList } from '@/components/dashboard/AppointmentList'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { Button } from '@/components/ui/button'
+import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
 import type { ActivityItem } from '@/components/dashboard/ActivityFeed'
 import type { AppointmentFull } from '@/hooks/useAppointments'
 
@@ -169,6 +171,11 @@ export default async function IsletmeDashboardPage({
 
   return (
     <div className="p-4 lg:p-6 space-y-6 max-w-7xl mx-auto">
+      {/* Paket yükseltme başarı toastı */}
+      <Suspense>
+        <UpgradeSuccessToast />
+      </Suspense>
+
       {/* Başlık */}
       <div className="flex items-start justify-between gap-4">
         <div>

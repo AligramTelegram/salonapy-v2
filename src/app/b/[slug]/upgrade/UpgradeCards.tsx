@@ -27,8 +27,14 @@ const PLAN_ORDER: PlanKey[] = ['BASLANGIC', 'PROFESYONEL', 'ISLETME']
 export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
   const [loading, setLoading] = useState<PlanKey | null>(null)
 
+  const currentIndex = PLAN_ORDER.indexOf(currentPlan as PlanKey)
+
+  function isDowngrade(planKey: PlanKey): boolean {
+    return PLAN_ORDER.indexOf(planKey) < currentIndex
+  }
+
   async function handleUpgrade(planKey: PlanKey) {
-    if (planKey === currentPlan) return
+    if (planKey === currentPlan || isDowngrade(planKey)) return
     setLoading(planKey)
     try {
       const res = await fetch('/api/payments/iyzico/checkout', {
@@ -54,6 +60,7 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
       {PLAN_ORDER.map((key) => {
         const plan = plans[key]
         const isCurrent = key === currentPlan
+        const downgrade = isDowngrade(key)
         const isLoading = loading === key
 
         return (
@@ -64,7 +71,8 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
               plan.popular
                 ? 'border-purple-400 shadow-xl shadow-purple-100'
                 : 'border-gray-200 shadow-md',
-              isCurrent && 'ring-2 ring-purple-600'
+              isCurrent && 'ring-2 ring-purple-600',
+              downgrade && 'opacity-60'
             )}
           >
             {plan.popular && (
@@ -108,11 +116,11 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
             <div className="px-6 pb-6">
               <button
                 onClick={() => handleUpgrade(key)}
-                disabled={isCurrent || !!loading}
+                disabled={isCurrent || downgrade || !!loading}
                 className={cn(
                   'w-full py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2',
-                  isCurrent
-                    ? 'bg-gray-100 text-gray-400 cursor-default'
+                  isCurrent || downgrade
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : plan.popular
                       ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md shadow-purple-200'
                       : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -122,6 +130,8 @@ export function UpgradeCards({ slug, currentPlan, plans }: UpgradeCardsProps) {
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : isCurrent ? (
                   'Aktif Plan'
+                ) : downgrade ? (
+                  'Düşürme Yapılamaz'
                 ) : (
                   'Bu Plana Geç'
                 )}
