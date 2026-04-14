@@ -37,15 +37,18 @@ export async function POST(req: NextRequest) {
     });
     
     if (result.status === 'success' && result.paymentStatus === 'SUCCESS') {
-      // Transaction bul
-      const transaction = await prisma.transaction.findFirst({
+      // Transaction bul - DÜZELTİLMİŞ YÖNTEM
+      const allTransactions = await prisma.transaction.findMany({
         where: {
-          metadata: {
-            path: ['iyzicoToken'],
-            equals: token
-          }
+          status: 'PENDING'
         },
         include: { tenant: true }
+      });
+
+      const transaction = allTransactions.find(t => {
+        if (!t.metadata || typeof t.metadata !== 'object') return false;
+        const meta = t.metadata as Record<string, any>;
+        return meta.iyzicoToken === token;
       });
       
       if (!transaction) {
@@ -58,19 +61,21 @@ export async function POST(req: NextRequest) {
       console.log('Transaction found:', transaction.id);
       
       // Transaction güncelle
+      const currentMeta = transaction.metadata as Record<string, any> || {};
+      
       await prisma.transaction.update({
         where: { id: transaction.id },
         data: {
           status: 'COMPLETED',
           metadata: {
-            ...transaction.metadata,
+            ...currentMeta,
             iyzicoPaymentId: result.paymentId
           }
         }
       });
       
       // Tenant güncelle
-      const newPlan = transaction.metadata.plan as string;
+      const newPlan = currentMeta.plan as string;
       
       await prisma.tenant.update({
         where: { id: transaction.tenantId },
