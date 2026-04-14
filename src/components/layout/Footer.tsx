@@ -35,6 +35,8 @@ const FOOTER_LINKS = [
       { href: '/kullanim-sartlari', label: 'Kullanım Şartları', title: 'Kullanım Şartları' },
       { href: '/kvkk', label: 'KVKK', title: 'KVKK Aydınlatma Metni' },
       { href: '/cerez-politikasi', label: 'Çerez Politikası', title: 'Çerez Politikası' },
+      { href: '/iptal-iade', label: 'İptal ve İade', title: 'İptal ve İade Politikası' },
+      { href: '/mesafeli-satis-sozlesmesi', label: 'Mesafeli Satış', title: 'Mesafeli Satış Sözleşmesi' },
     ],
   },
 ]
@@ -99,8 +101,22 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Payment logos */}
+        <div className="border-t border-purple-100/60 pt-8 mt-14">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-500">Güvenli Ödeme:</span>
+              <div className="flex gap-3 items-center">
+                <img src="/images/payment/visa.svg" alt="Visa" className="h-8 rounded" />
+                <img src="/images/payment/mastercard.svg" alt="Mastercard" className="h-8 rounded" />
+                <img src="/images/payment/iyzico.svg" alt="iyzico" className="h-8 rounded" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom bar */}
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-purple-100/60 pt-8 sm:flex-row">
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-purple-100/60 pt-8 sm:flex-row">
           <p className="text-xs text-gray-400">
             © {new Date().getFullYear()} Salonapy x Cihanbey. Tüm hakları saklıdır.
           </p>
