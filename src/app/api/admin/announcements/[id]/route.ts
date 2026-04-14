@@ -18,29 +18,34 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const existing = await prisma.announcement.findUnique({ where: { id: params.id } })
-  if (!existing) return NextResponse.json({ error: 'Duyuru bulunamadı' }, { status: 404 })
+  try {
+    const existing = await prisma.announcement.findUnique({ where: { id: params.id } })
+    if (!existing) return NextResponse.json({ error: 'Duyuru bulunamadı' }, { status: 404 })
 
-  let body: unknown
-  try { body = await request.json() } catch {
-    return NextResponse.json({ error: 'Geçersiz JSON' }, { status: 400 })
+    let body: unknown
+    try { body = await request.json() } catch {
+      return NextResponse.json({ error: 'Geçersiz JSON' }, { status: 400 })
+    }
+
+    const parsed = UpdateSchema.safeParse(body)
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+
+    const { expiresAt, targetPlan, ...rest } = parsed.data
+
+    const updated = await prisma.announcement.update({
+      where: { id: params.id },
+      data: {
+        ...rest,
+        ...(targetPlan !== undefined ? { targetPlan: targetPlan ?? null } : {}),
+        ...(expiresAt !== undefined ? { expiresAt: expiresAt ? new Date(expiresAt) : null } : {}),
+      },
+    })
+
+    return NextResponse.json(updated)
+  } catch (err) {
+    console.error('[PATCH /api/admin/announcements/[id]]', err)
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
   }
-
-  const parsed = UpdateSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
-
-  const { expiresAt, targetPlan, ...rest } = parsed.data
-
-  const updated = await prisma.announcement.update({
-    where: { id: params.id },
-    data: {
-      ...rest,
-      ...(targetPlan !== undefined ? { targetPlan: targetPlan ?? null } : {}),
-      ...(expiresAt !== undefined ? { expiresAt: expiresAt ? new Date(expiresAt) : null } : {}),
-    },
-  })
-
-  return NextResponse.json(updated)
 }
 
 // DELETE /api/admin/announcements/[id]
@@ -48,9 +53,14 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const existing = await prisma.announcement.findUnique({ where: { id: params.id } })
-  if (!existing) return NextResponse.json({ error: 'Duyuru bulunamadı' }, { status: 404 })
+  try {
+    const existing = await prisma.announcement.findUnique({ where: { id: params.id } })
+    if (!existing) return NextResponse.json({ error: 'Duyuru bulunamadı' }, { status: 404 })
 
-  await prisma.announcement.delete({ where: { id: params.id } })
-  return NextResponse.json({ ok: true })
+    await prisma.announcement.delete({ where: { id: params.id } })
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error('[DELETE /api/admin/announcements/[id]]', err)
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+  }
 }

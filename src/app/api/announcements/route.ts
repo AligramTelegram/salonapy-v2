@@ -9,29 +9,34 @@ export async function GET(request: NextRequest) {
   const tenantId = await getTenantId()
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { plan: true },
-  })
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true },
+    })
 
-  const now = new Date()
+    const now = new Date()
 
-  const announcements = await prisma.announcement.findMany({
-    where: {
-      isActive: true,
-      AND: [
-        { OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] },
-        { OR: [{ targetPlan: null }, { targetPlan: tenant?.plan ?? undefined }] },
-      ],
-      dismissals: {
-        none: { tenantId },
+    const announcements = await prisma.announcement.findMany({
+      where: {
+        isActive: true,
+        AND: [
+          { OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] },
+          { OR: [{ targetPlan: null }, { targetPlan: tenant?.plan ?? undefined }] },
+        ],
+        dismissals: {
+          none: { tenantId },
+        },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-    select: { id: true, title: true, content: true, type: true, createdAt: true },
-  })
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, content: true, type: true, createdAt: true },
+    })
 
-  return NextResponse.json(announcements)
+    return NextResponse.json(announcements)
+  } catch (err) {
+    console.error('[GET /api/announcements]', err)
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+  }
 }
 
 // POST /api/announcements — dismiss (kapat)
@@ -47,11 +52,16 @@ export async function POST(request: NextRequest) {
   const { announcementId } = body as { announcementId?: string }
   if (!announcementId) return NextResponse.json({ error: 'announcementId gerekli' }, { status: 400 })
 
-  await prisma.announcementDismissal.upsert({
-    where: { announcementId_tenantId: { announcementId, tenantId } },
-    create: { announcementId, tenantId },
-    update: {},
-  })
+  try {
+    await prisma.announcementDismissal.upsert({
+      where: { announcementId_tenantId: { announcementId, tenantId } },
+      create: { announcementId, tenantId },
+      update: {},
+    })
 
-  return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error('[POST /api/announcements]', err)
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+  }
 }

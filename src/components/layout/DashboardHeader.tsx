@@ -412,7 +412,7 @@ export function DashboardHeader({
                   {/* Hizmetler */}
                   {searchResults && searchResults.services.length > 0 && (
                     <div>
-                      <p className="px-4 py-2 text-[11px] font-semibond text-gray-400 uppercase tracking-wide bg-gray-50">
+                      <p className="px-4 py-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">
                         Hizmetler
                       </p>
                       {searchResults.services.map((s) => (
