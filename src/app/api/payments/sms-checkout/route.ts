@@ -31,7 +31,15 @@ export async function POST(req: NextRequest) {
 
   const dbUser = await prisma.user.findUnique({
     where: { supabaseId: user.id },
-    include: { tenant: { select: { id: true, slug: true, name: true, email: true, phone: true } } },
+    include: {
+      tenant: {
+        select: {
+          id: true, slug: true, name: true, email: true, phone: true,
+          ownerName: true, ownerPhone: true, ownerEmail: true,
+          ownerIdNumber: true, ownerAddress: true, ownerCity: true,
+        },
+      },
+    },
   })
   if (!dbUser || dbUser.tenant.slug !== tenantSlug) {
     return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
@@ -40,15 +48,20 @@ export async function POST(req: NextRequest) {
   const { tenant } = dbUser
 
   // conversationId: "tenantId|SMS_100|timestamp" formatı
-  // callback bu formatı parse ederek SMS mi abonelik mi ayırt edecek
   const result = await createCheckoutForm({
     tenantId: tenant.id,
     tenantName: tenant.name,
     email: tenant.email ?? '',
     phone: tenant.phone ?? '',
-    plan: `SMS_${pack.amount}`,  // örn: "SMS_100"
+    plan: `SMS_${pack.amount}`,
     amount: pack.price,
     currency: 'TRY',
+    ownerName: tenant.ownerName,
+    ownerPhone: tenant.ownerPhone,
+    ownerEmail: tenant.ownerEmail,
+    ownerIdNumber: tenant.ownerIdNumber,
+    ownerAddress: tenant.ownerAddress,
+    ownerCity: tenant.ownerCity,
   })
 
   if (result.status !== 'success' || !result.paymentPageUrl) {

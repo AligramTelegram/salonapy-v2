@@ -40,6 +40,15 @@ interface TenantProfile {
   timezone: string
   isActive: boolean
   country: string
+  // İşletme sahibi / Fatura bilgileri
+  ownerName: string | null
+  ownerPhone: string | null
+  ownerEmail: string | null
+  ownerIdNumber: string | null
+  ownerAddress: string | null
+  ownerCity: string | null
+  taxNumber: string | null
+  taxOffice: string | null
 }
 
 interface SubscriptionInfo {
@@ -112,13 +121,24 @@ export default function AyarlarPage() {
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Profil form
+  // İşletme profil formu
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [address, setAddress] = useState('')
   const [timezone, setTimezone] = useState('Europe/Istanbul')
   const [isSavingProfile, setIsSavingProfile] = useState(false)
+
+  // İşletme sahibi / Fatura bilgileri formu
+  const [ownerName, setOwnerName] = useState('')
+  const [ownerPhone, setOwnerPhone] = useState('')
+  const [ownerEmail, setOwnerEmail] = useState('')
+  const [ownerIdNumber, setOwnerIdNumber] = useState('')
+  const [ownerAddress, setOwnerAddress] = useState('')
+  const [ownerCity, setOwnerCity] = useState('')
+  const [taxNumber, setTaxNumber] = useState('')
+  const [taxOffice, setTaxOffice] = useState('')
+  const [isSavingOwner, setIsSavingOwner] = useState(false)
 
   // Logo
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -168,6 +188,15 @@ export default function AyarlarPage() {
         setLogoPreview(data.logo)
         setSms24h(data.sms24hReminder)
         setSms1h(data.sms1hReminder)
+        // İşletme sahibi / fatura bilgileri
+        setOwnerName(data.ownerName ?? '')
+        setOwnerPhone(data.ownerPhone ?? '')
+        setOwnerEmail(data.ownerEmail ?? '')
+        setOwnerIdNumber(data.ownerIdNumber ?? '')
+        setOwnerAddress(data.ownerAddress ?? '')
+        setOwnerCity(data.ownerCity ?? '')
+        setTaxNumber(data.taxNumber ?? '')
+        setTaxOffice(data.taxOffice ?? '')
       }
 
       if (subRes.ok) {
@@ -249,6 +278,38 @@ export default function AyarlarPage() {
       toast.error(err instanceof Error ? err.message : 'Güncelleme başarısız')
     } finally {
       setIsSavingProfile(false)
+    }
+  }
+
+  async function handleSaveOwner(e: React.FormEvent) {
+    e.preventDefault()
+    setIsSavingOwner(true)
+    try {
+      const res = await fetch(`/api/tenants/${slug}/update`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ownerName: ownerName.trim() || null,
+          ownerPhone: ownerPhone.trim() || null,
+          ownerEmail: ownerEmail.trim() || null,
+          ownerIdNumber: ownerIdNumber.trim() || null,
+          ownerAddress: ownerAddress.trim() || null,
+          ownerCity: ownerCity.trim() || null,
+          taxNumber: taxNumber.trim() || null,
+          taxOffice: taxOffice.trim() || null,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error ?? 'Güncelleme başarısız')
+      }
+      const updated: TenantProfile = await res.json()
+      setTenant(updated)
+      toast.success('Sahip bilgileri güncellendi')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Güncelleme başarısız')
+    } finally {
+      setIsSavingOwner(false)
     }
   }
 
@@ -677,6 +738,154 @@ export default function AyarlarPage() {
                 className="bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-200/60"
               >
                 {isSavingProfile ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Kaydet
+              </Button>
+            </div>
+          </form>
+
+          {/* ── İşletme Sahibi / Fatura Bilgileri ── */}
+          <form onSubmit={handleSaveOwner} className="glass-card p-6 space-y-6 mt-4">
+            <div>
+              <h2 className="font-display text-base font-bold text-gray-900 flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-purple-500" />
+                İşletme Sahibi & Fatura Bilgileri
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">
+                Bu bilgiler İyzico ödeme alıcı bilgileri ve fatura için kullanılır. Doğru doldurulması zorunludur.
+              </p>
+            </div>
+
+            <div className="h-px bg-purple-100" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2 space-y-1.5">
+                <Label htmlFor="ownerName" className="text-sm font-semibold text-gray-700">
+                  Ad Soyad <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="ownerName"
+                    value={ownerName}
+                    onChange={(e) => setOwnerName(e.target.value)}
+                    className="pl-9"
+                    placeholder="Örn: Ayşe Yılmaz"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ownerPhone" className="text-sm font-semibold text-gray-700">Telefon</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="ownerPhone"
+                    type="tel"
+                    value={ownerPhone}
+                    onChange={(e) => setOwnerPhone(e.target.value)}
+                    className="pl-9"
+                    placeholder="+90 555 000 0000"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ownerEmail" className="text-sm font-semibold text-gray-700">E-posta</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="ownerEmail"
+                    type="email"
+                    value={ownerEmail}
+                    onChange={(e) => setOwnerEmail(e.target.value)}
+                    className="pl-9"
+                    placeholder="sahip@email.com"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ownerIdNumber" className="text-sm font-semibold text-gray-700">
+                  TC Kimlik No
+                  <span className="ml-1 text-[11px] font-normal text-gray-400">(İyzico için zorunlu)</span>
+                </Label>
+                <div className="relative">
+                  <ShieldAlert className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="ownerIdNumber"
+                    value={ownerIdNumber}
+                    onChange={(e) => setOwnerIdNumber(e.target.value)}
+                    className="pl-9"
+                    placeholder="12345678901"
+                    maxLength={11}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ownerCity" className="text-sm font-semibold text-gray-700">Şehir</Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="ownerCity"
+                    value={ownerCity}
+                    onChange={(e) => setOwnerCity(e.target.value)}
+                    className="pl-9"
+                    placeholder="İstanbul"
+                  />
+                </div>
+              </div>
+
+              <div className="sm:col-span-2 space-y-1.5">
+                <Label htmlFor="ownerAddress" className="text-sm font-semibold text-gray-700">Fatura Adresi</Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="ownerAddress"
+                    value={ownerAddress}
+                    onChange={(e) => setOwnerAddress(e.target.value)}
+                    className="pl-9"
+                    placeholder="Mahalle, Cadde No, İlçe/Şehir"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="taxNumber" className="text-sm font-semibold text-gray-700">Vergi Numarası</Label>
+                <div className="relative">
+                  <BarChart3 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="taxNumber"
+                    value={taxNumber}
+                    onChange={(e) => setTaxNumber(e.target.value)}
+                    className="pl-9"
+                    placeholder="Opsiyonel"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="taxOffice" className="text-sm font-semibold text-gray-700">Vergi Dairesi</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="taxOffice"
+                    value={taxOffice}
+                    onChange={(e) => setTaxOffice(e.target.value)}
+                    className="pl-9"
+                    placeholder="Opsiyonel"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button
+                type="submit"
+                disabled={isSavingOwner}
+                className="bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-200/60"
+              >
+                {isSavingOwner ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Kaydet
               </Button>
             </div>

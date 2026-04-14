@@ -41,7 +41,11 @@ export async function POST(request: NextRequest) {
 
   const tenant = await prisma.tenant.findFirst({
     where: { slug: tenantSlug, id: dbUser.tenantId },
-    select: { id: true, name: true, email: true, phone: true, country: true },
+    select: {
+      id: true, name: true, email: true, phone: true, country: true,
+      ownerName: true, ownerPhone: true, ownerEmail: true,
+      ownerIdNumber: true, ownerAddress: true, ownerCity: true,
+    },
   })
   if (!tenant) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 404 })
 
@@ -55,6 +59,12 @@ export async function POST(request: NextRequest) {
     plan,
     amount,
     currency,
+    ownerName: tenant.ownerName,
+    ownerPhone: tenant.ownerPhone,
+    ownerEmail: tenant.ownerEmail,
+    ownerIdNumber: tenant.ownerIdNumber,
+    ownerAddress: tenant.ownerAddress,
+    ownerCity: tenant.ownerCity,
   })
 
   if (result.status !== 'success' || !result.paymentPageUrl) {

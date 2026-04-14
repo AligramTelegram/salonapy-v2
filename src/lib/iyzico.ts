@@ -58,6 +58,13 @@ export async function createCheckoutForm(params: {
   plan: string
   amount: number
   currency: string
+  // İşletme sahibi bilgileri (fatura / alıcı)
+  ownerName?: string | null
+  ownerPhone?: string | null
+  ownerEmail?: string | null
+  ownerIdNumber?: string | null
+  ownerAddress?: string | null
+  ownerCity?: string | null
 }): Promise<IyzicoCheckoutResult> {
   const conversationId = buildConversationId(params.tenantId, params.plan)
   const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/iyzico/callback`
@@ -71,12 +78,21 @@ export async function createCheckoutForm(params: {
   }
 
   const amountStr = params.amount.toFixed(2)
-  const rawPhone = params.phone.replace(/\D/g, '')
-  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : '+' + rawPhone
 
-  const nameParts = params.tenantName.trim().split(/\s+/)
+  // Alıcı: owner bilgileri varsa öncelikli kullan, yoksa işletme bilgileriyle fallback
+  const buyerFullName = params.ownerName?.trim() || params.tenantName.trim()
+  const nameParts = buyerFullName.split(/\s+/)
   const buyerName = nameParts[0] || 'İşletme'
   const buyerSurname = nameParts.slice(1).join(' ') || 'Sahibi'
+
+  const buyerEmail = params.ownerEmail?.trim() || params.email || `tenant-${params.tenantId}@salonapy.com`
+  const rawPhone = (params.ownerPhone || params.phone || '').replace(/\D/g, '')
+  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : '+905551234567'
+
+  const identityNumber = params.ownerIdNumber?.trim() || '74300864791'
+  const billingAddress = params.ownerAddress?.trim() || 'Türkiye'
+  const billingCity = params.ownerCity?.trim() || 'Istanbul'
+  const contactName = buyerFullName || params.tenantName
 
   const request = {
     locale: 'tr',
@@ -91,26 +107,26 @@ export async function createCheckoutForm(params: {
       id: params.tenantId,
       name: buyerName,
       surname: buyerSurname,
-      email: params.email || `tenant-${params.tenantId}@salonapy.com`,
-      identityNumber: '74300864791',  // sandbox placeholder
-      registrationAddress: 'Türkiye',
-      ip: '85.34.78.112',             // will be overridden in real env
-      city: 'Istanbul',
+      email: buyerEmail,
+      identityNumber,
+      registrationAddress: billingAddress,
+      ip: '85.34.78.112',
+      city: billingCity,
       country: 'Turkey',
-      gsmNumber: formattedPhone || '+905551234567',
+      gsmNumber: formattedPhone,
     },
     shippingAddress: {
-      contactName: params.tenantName,
-      city: 'Istanbul',
+      contactName,
+      city: billingCity,
       country: 'Turkey',
-      address: 'Türkiye',
+      address: billingAddress,
       zipCode: '34000',
     },
     billingAddress: {
-      contactName: params.tenantName,
-      city: 'Istanbul',
+      contactName,
+      city: billingCity,
       country: 'Turkey',
-      address: 'Türkiye',
+      address: billingAddress,
       zipCode: '34000',
     },
     basketItems: [

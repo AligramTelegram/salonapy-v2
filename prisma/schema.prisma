@@ -63,6 +63,17 @@ model Tenant {
   country       String   @default("TR")
   currency      String   @default("TRY")
   timezone      String   @default("Europe/Istanbul")
+
+  // İşletme sahibi / Fatura bilgileri (İyzico alıcı bilgileri için kullanılır)
+  ownerName     String?
+  ownerPhone    String?
+  ownerEmail    String?
+  ownerIdNumber String?  // TC Kimlik No veya Pasaport No
+  ownerAddress  String?
+  ownerCity     String?
+  taxNumber     String?  // Vergi numarası
+  taxOffice     String?  // Vergi dairesi
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

@@ -21,11 +21,21 @@ async function getOwnerTenantId(slug: string): Promise<string | null> {
 }
 
 const UpdateSchema = z.object({
+  // İşletme bilgileri
   name: z.string().min(1).optional(),
   phone: z.string().optional().nullable(),
   email: z.string().email().optional().nullable(),
   address: z.string().optional().nullable(),
   timezone: z.string().optional(),
+  // İşletme sahibi / Fatura bilgileri
+  ownerName: z.string().optional().nullable(),
+  ownerPhone: z.string().optional().nullable(),
+  ownerEmail: z.string().email().optional().nullable(),
+  ownerIdNumber: z.string().optional().nullable(),
+  ownerAddress: z.string().optional().nullable(),
+  ownerCity: z.string().optional().nullable(),
+  taxNumber: z.string().optional().nullable(),
+  taxOffice: z.string().optional().nullable(),
 })
 
 // PATCH /api/tenants/[slug]/update
