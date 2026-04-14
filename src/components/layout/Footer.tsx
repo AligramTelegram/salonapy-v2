@@ -7,8 +7,7 @@ const FOOTER_LINKS = [
     links: [
       { href: '/ozellikler', label: 'Özellikler', title: 'Özellikler' },
       { href: '/fiyatlar', label: 'Fiyatlar', title: 'Fiyatlandırma' },
-      { href: '/#nasil-calisir', label: 'Nasıl Çalışır?', title: 'Nasıl Çalışır?' },
-      { href: '/entegrasyonlar', label: 'Entegrasyonlar', title: 'Entegrasyonlar' },
+{ href: '/entegrasyonlar', label: 'Entegrasyonlar', title: 'Entegrasyonlar' },
     ],
   },
   {

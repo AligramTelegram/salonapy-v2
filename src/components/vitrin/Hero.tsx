@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, Calendar, TrendingUp, Users, CheckCircle } from 'lucide-react'
+import { ArrowRight, Calendar, TrendingUp, Users, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const STATS = [
@@ -93,18 +93,6 @@ export function Hero() {
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
-              <a href="#nasil-calisir" title="Nasıl Çalışır?">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 gap-2 border-purple-200 px-6 text-base text-purple-700 hover:bg-purple-50"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-purple-100">
-                    <Play className="ml-0.5 h-3 w-3 fill-purple-600 text-purple-600" />
-                  </span>
-                  Nasıl Çalışır?
-                </Button>
-              </a>
             </motion.div>
 
             {/* Stats */}
