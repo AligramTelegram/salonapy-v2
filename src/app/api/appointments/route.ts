@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { startOfDay, endOfDay, parseISO, parse, startOfMonth, addMonths } from 'date-fns'
+import { startOfDay, endOfDay, parseISO, parse, startOfMonth, addMonths, format } from 'date-fns'
+import { tr } from 'date-fns/locale'
 import { addReminderJob } from '@/lib/queue'
 import { sendAppointmentConfirmation } from '@/lib/resend'
 import { getTenantId } from '@/lib/getTenantId'
 import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
+import { sendSms } from '@/lib/netgsm'
+import { checkSmsLimit, incrementSms } from '@/lib/sms-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -229,6 +232,46 @@ export async function POST(request: NextRequest) {
       tenantPhone: tenantForEmail?.phone ?? undefined,
       tenantEmail: tenantForEmail?.email ?? undefined,
     }).catch((err) => console.error('[appointments] Confirmation email failed:', err))
+  }
+
+  // Randevu onay SMS'i gönder (fire-and-forget)
+  if (customer.phone) {
+    ;(async () => {
+      try {
+        const hasCredit = await checkSmsLimit(tenantId)
+        if (!hasCredit) return
+
+        const tenantInfo = await prisma.tenant.findUnique({
+          where: { id: tenantId },
+          select: { name: true },
+        })
+
+        const dateStr = format(normalizedDate, 'd MMMM yyyy', { locale: tr })
+        const msg =
+          `Merhaba ${customer.name}, ${tenantInfo?.name ?? ''} randevunuz olusturuldu. ` +
+          `Tarih: ${dateStr} Saat: ${startTime} Hizmet: ${service.name}`
+
+        const result = await sendSms({ phone: customer.phone, message: msg })
+        if (result.success) {
+          await incrementSms(tenantId)
+        }
+
+        await prisma.notification.create({
+          data: {
+            tenantId,
+            appointmentId: appointment.id,
+            channel: 'SMS',
+            to: customer.phone,
+            message: 'Randevu onay SMS',
+            status: result.success ? 'GONDERILDI' : 'BASARISIZ',
+            sentAt: result.success ? new Date() : undefined,
+            errorMessage: result.error,
+          },
+        })
+      } catch (err) {
+        console.error('[appointments] SMS gönderme hatası:', err)
+      }
+    })()
   }
 
   // Randevu zamanını hesapla ve hatırlatma job'larını kuyruğa ekle
