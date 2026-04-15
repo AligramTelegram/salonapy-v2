@@ -24,12 +24,20 @@ async function handleCallback(
     return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Sistem+hatas%C4%B1`);
   }
 
-  console.log('[Callback] Status:', result.status, '| PaymentStatus:', result.paymentStatus);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = result as any;
+  console.log('[Callback] Full result:', JSON.stringify(raw));
 
   if (result.status !== 'success' || result.paymentStatus !== 'SUCCESS') {
-    console.error('[Callback] Ödeme başarısız:', result.errorMessage ?? result.errorCode);
+    const errorMsg =
+      raw.errorMessage ??
+      raw.errorCode ??
+      raw.mdErrorMessage ??
+      raw.lastFourDigits ??    // sometimes İyzico puts details here in failures
+      `Ödeme başarısız (${result.paymentStatus ?? result.status})`
+    console.error('[Callback] Ödeme başarısız:', errorMsg)
     return NextResponse.redirect(
-      `${baseUrl}/odeme-basarisiz?reason=${encodeURIComponent(result.errorMessage ?? 'Ödeme alınamadı')}`
+      `${baseUrl}/odeme-basarisiz?reason=${encodeURIComponent(errorMsg)}`
     );
   }
 
