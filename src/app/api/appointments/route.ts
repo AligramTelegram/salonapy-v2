@@ -234,13 +234,11 @@ export async function POST(request: NextRequest) {
     }).catch((err) => console.error('[appointments] Confirmation email failed:', err))
   }
 
-  // Randevu onay SMS'i gönder (fire-and-forget)
+  // Randevu onay SMS'i gönder (awaited — Vercel'de fire-and-forget çalışmaz)
   if (customer.phone) {
-    ;(async () => {
-      try {
-        const hasCredit = await checkSmsLimit(tenantId)
-        if (!hasCredit) return
-
+    try {
+      const hasCredit = await checkSmsLimit(tenantId)
+      if (hasCredit) {
         const tenantInfo = await prisma.tenant.findUnique({
           where: { id: tenantId },
           select: { name: true },
@@ -268,10 +266,13 @@ export async function POST(request: NextRequest) {
             errorMessage: result.error,
           },
         })
-      } catch (err) {
-        console.error('[appointments] SMS gönderme hatası:', err)
+
+        console.log(`[appointments] SMS ${result.success ? '✓' : '✗'} → ${customer.phone}`)
       }
-    })()
+    } catch (err) {
+      // SMS hatası randevu oluşturmayı engellemesin
+      console.error('[appointments] SMS gönderme hatası:', err)
+    }
   }
 
   // Randevu zamanını hesapla ve hatırlatma job'larını kuyruğa ekle
