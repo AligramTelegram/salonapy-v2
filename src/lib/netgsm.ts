@@ -19,7 +19,7 @@ interface SendSmsResult {
 
 const ERROR_CODES: Record<string, string> = {
   '20': 'Mesaj gövdesi hatalı',
-  '30': 'Geçersiz kullanıcı adı veya şifre',
+  '30': 'Yetersiz bakiye — NetGSM hesabına kredi yükleyin',
   '40': 'Mesaj başlığı (header) onaylı değil',
   '50': 'Geçersiz telefon numarası',
   '51': 'Hatalı mesaj içeriği',
