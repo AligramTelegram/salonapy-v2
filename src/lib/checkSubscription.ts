@@ -24,7 +24,8 @@ export async function checkSubscription(tenantId: string): Promise<void> {
   const now = new Date()
   const isTrialActive =
     sub?.status === 'TRIAL' && sub.endDate != null && new Date(sub.endDate) > now
-  const hasActiveSubscription = sub?.status === 'ACTIVE'
+  const hasActiveSubscription =
+    sub?.status === 'ACTIVE' && (sub.endDate == null || new Date(sub.endDate) > now)
 
   if (!isTrialActive && !hasActiveSubscription) {
     throw new Error('SUBSCRIPTION_REQUIRED')

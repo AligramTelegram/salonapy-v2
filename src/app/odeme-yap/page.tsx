@@ -14,6 +14,20 @@ const PLAN_CONFIG: Record<string, {
   color: string
   bg: string
 }> = {
+  BASLANGIC: {
+    label: 'Başlangıç',
+    price: '₺540',
+    priceEur: '€35',
+    features: [
+      '100 SMS/ay',
+      '2 personel hesabı',
+      'Randevu yönetimi',
+      'Temel raporlar',
+      'Müşteri CRM',
+    ],
+    color: 'text-blue-600',
+    bg: 'bg-blue-50',
+  },
   PROFESYONEL: {
     label: 'Profesyonel',
     price: '₺1.140',

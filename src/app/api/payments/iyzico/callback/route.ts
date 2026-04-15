@@ -102,7 +102,6 @@ async function handleCallback(
           startDate: now,
           endDate,
           autoRenew: true,
-          updatedAt: now,
         },
       }),
     ]);
