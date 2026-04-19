@@ -9,7 +9,7 @@ export interface PaymentSuccessEmailProps {
   slug: string
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://salonapy.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://hemensalon.com'
 
 export function renderPaymentSuccessEmail({
   ownerName,
@@ -85,7 +85,7 @@ export function renderPaymentSuccessEmail({
           <!-- Footer -->
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;text-align:center;border-top:1px solid #f3f4f6;">
-              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Salonapy</p>
+              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Hemensalon</p>
             </td>
           </tr>
         </table>

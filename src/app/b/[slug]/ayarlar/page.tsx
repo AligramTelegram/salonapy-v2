@@ -951,7 +951,7 @@ export default function AyarlarPage() {
 
               <p className="text-[11px] text-gray-400 flex items-center gap-1.5">
                 <ShieldAlert className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                Gönderici adı: SALONAPY · Türkçe karakter desteklenir.
+                Gönderici adı: HEMENSALON · Türkçe karakter desteklenir.
               </p>
             </div>
 

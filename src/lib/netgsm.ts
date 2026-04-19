@@ -42,7 +42,7 @@ function normalizePhone(raw: string): string {
 export async function sendSms({ phone, message }: SendSmsParams): Promise<SendSmsResult> {
   const usercode = process.env.NETGSM_USER_CODE
   const password = process.env.NETGSM_PASSWORD
-  const msgheader = process.env.NETGSM_HEADER || 'SALONAPY'
+  const msgheader = process.env.NETGSM_HEADER || 'HEMENSALON'
 
   // Env yoksa mock
   if (!usercode || !password) {

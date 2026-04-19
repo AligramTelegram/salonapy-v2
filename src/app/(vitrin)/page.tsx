@@ -9,11 +9,11 @@ import { BlogPreview } from '@/components/vitrin/BlogPreview'
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: 'Salonapy - Randevu Yönetim Platformu',
+  title: 'Hemensalon - Randevu Yönetim Platformu',
   description:
     'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. SMS hatırlatmaları, otomatik hatırlatmalar, 3 gün ücretsiz.',
   openGraph: {
-    title: 'Salonapy - Randevu Yönetim Platformu',
+    title: 'Hemensalon - Randevu Yönetim Platformu',
     description:
       'SMS hatırlatmaları, otomatik hatırlatmalar ve detaylı raporlar ile işletmenizi büyütün.',
     type: 'website',

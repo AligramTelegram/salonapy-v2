@@ -19,7 +19,7 @@ export function StaffHeader({ staffName, tenantName, avatarUrl }: StaffHeaderPro
       <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-600 shadow-sm shadow-purple-200">
-            <span className="font-display text-sm font-bold text-white leading-none">S</span>
+            <span className="font-display text-sm font-bold text-white leading-none">H</span>
           </div>
           <div>
             <p className="text-sm font-bold text-gray-900 leading-tight">{staffName}</p>

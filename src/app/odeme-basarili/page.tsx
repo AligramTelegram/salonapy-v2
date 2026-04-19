@@ -88,8 +88,8 @@ function OdemeBasariliContent() {
         {/* Support note */}
         <p className="text-center text-xs text-gray-400 mt-4">
           Sorun mu yaşıyorsunuz?{' '}
-          <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-            destek@salonapy.com
+          <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">
+            destek@hemensalon.com
           </a>
         </p>
       </div>

@@ -1,4 +1,4 @@
-// Salonapy Type Definitions
+// Hemensalon Type Definitions
 
 export type Plan = 'BASLANGIC' | 'PROFESYONEL' | 'ISLETME'
 

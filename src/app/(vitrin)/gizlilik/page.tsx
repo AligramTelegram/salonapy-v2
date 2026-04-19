@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { LegalLayout } from '@/components/vitrin/LegalLayout'
 
 export const metadata: Metadata = {
-  title: 'Gizlilik Politikası - Salonapy',
-  description: 'Salonapy gizlilik politikası: kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında bilgi alın.',
+  title: 'Gizlilik Politikası - Hemensalon',
+  description: 'Hemensalon gizlilik politikası: kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında bilgi alın.',
   robots: { index: false, follow: false },
 }
 
@@ -13,15 +13,15 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Bu gizlilik politikası, <strong className="text-gray-800">Salonapy</strong> tarafından işletilen
-          salonapy.com web sitesi ve ilgili hizmetlere ilişkin kişisel veri işleme faaliyetlerini açıklamaktadır.
+          Bu gizlilik politikası, <strong className="text-gray-800">Hemensalon</strong> tarafından işletilen
+          hemensalon.com web sitesi ve ilgili hizmetlere ilişkin kişisel veri işleme faaliyetlerini açıklamaktadır.
         </p>
         <p>
-          Veri sorumlusu olarak Salonapy, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve ilgili
+          Veri sorumlusu olarak Hemensalon, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve ilgili
           mevzuat kapsamındaki yükümlülüklerimizi yerine getirmektedir.
         </p>
         <p>
-          İletişim: <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">destek@salonapy.com</a>
+          İletişim: <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">destek@hemensalon.com</a>
         </p>
       </>
     ),
@@ -86,7 +86,7 @@ const SECTIONS = [
         <ul className="ml-4 list-none space-y-2">
           {[
             'Hizmet sağlayıcılar: Supabase (veritabanı), Vercel (hosting), Resend (e-posta), NetGSM (SMS API) — yalnızca hizmetin işletilmesi için gerekli ölçüde',
-            'Ödeme işlemcileri: İyzico ve Stripe — ödeme güvenliği amacıyla, kart bilgileriniz Salonapy\'ye iletilmez',
+            'Ödeme işlemcileri: İyzico ve Stripe — ödeme güvenliği amacıyla, kart bilgileriniz Hemensalon\'ye iletilmez',
             'Yasal zorunluluklar: Mahkeme kararı, yasal düzenleme veya yetkili idari/adli makam talebi',
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
@@ -173,8 +173,8 @@ const SECTIONS = [
         </ul>
         <p>
           Haklarınızı kullanmak için{' '}
-          <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-            destek@salonapy.com
+          <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">
+            destek@hemensalon.com
           </a>{' '}
           adresine yazabilir veya{' '}
           <a href="/iletisim" className="text-purple-600 hover:underline">

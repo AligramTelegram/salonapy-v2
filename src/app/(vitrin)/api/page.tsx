@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { ArrowRight, Terminal, Lock, Zap, BookOpen } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'API Dokümantasyonu - Salonapy',
-  description: 'Salonapy REST API referansı. Randevu, müşteri ve hizmet verilerine programatik erişim sağlayın.',
+  title: 'API Dokümantasyonu - Hemensalon',
+  description: 'Hemensalon REST API referansı. Randevu, müşteri ve hizmet verilerine programatik erişim sağlayın.',
   openGraph: {
-    title: 'API Dokümantasyonu - Salonapy',
-    description: 'Salonapy API dokümantasyonu.',
+    title: 'API Dokümantasyonu - Hemensalon',
+    description: 'Hemensalon API dokümantasyonu.',
   },
 }
 
@@ -79,7 +79,7 @@ export default function ApiPage() {
             API Dokümantasyonu
           </span>
           <h1 className="mb-5 font-display text-4xl font-bold text-gray-900 md:text-5xl">
-            Salonapy'yi kendi{' '}
+            Hemensalon'yi kendi{' '}
             <span className="text-purple-600">uygulamanıza entegre edin</span>
           </h1>
           <p className="mx-auto max-w-xl text-lg leading-relaxed text-gray-500">
@@ -103,7 +103,7 @@ export default function ApiPage() {
         <div className="container-custom max-w-4xl">
           <div className="rounded-2xl bg-gray-900 p-5">
             <p className="mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">Base URL</p>
-            <code className="text-sm text-green-400 font-mono">https://salonapy.com/api/v1</code>
+            <code className="text-sm text-green-400 font-mono">https://hemensalon.com/api/v1</code>
           </div>
         </div>
       </section>

@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         excerpt,
         content,
         coverImage: coverImage || null,
-        author: author || 'Salonapy',
+        author: author || 'Hemensalon',
         published: published ?? false,
         // Set publishedAt only when first publishing
         publishedAt: published && !current.publishedAt ? new Date() : current.publishedAt,

@@ -4,12 +4,12 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Özellikler - Salonapy',
+  title: 'Özellikler - Hemensalon',
   description:
-    'Akıllı randevu, SMS hatırlatmaları, müşteri CRM, finansal raporlar ve daha fazlası. Salonapy\'nin tüm özellikleri.',
+    'Akıllı randevu, SMS hatırlatmaları, müşteri CRM, finansal raporlar ve daha fazlası. Hemensalon\'nin tüm özellikleri.',
   openGraph: {
-    title: 'Özellikler - Salonapy',
-    description: 'Salonapy\'nin işletmenizi büyütecek tüm özellikleri tek platformda.',
+    title: 'Özellikler - Hemensalon',
+    description: 'Hemensalon\'nin işletmenizi büyütecek tüm özellikleri tek platformda.',
   },
 }
 

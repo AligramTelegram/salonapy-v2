@@ -13,7 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Shield className="h-5 w-5 text-white" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-white truncate">Salonapy</p>
+              <p className="text-sm font-bold text-white truncate">Hemensalon</p>
               <p className="text-[10px] text-red-400 font-bold uppercase tracking-wider">Süper Admin</p>
             </div>
           </div>
@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="h-7 w-7 rounded-lg bg-red-600 flex items-center justify-center shrink-0">
           <Shield className="h-4 w-4 text-white" />
         </div>
-        <span className="text-sm font-bold text-white">Salonapy</span>
+        <span className="text-sm font-bold text-white">Hemensalon</span>
         <span className="text-[10px] text-red-400 font-bold uppercase tracking-wider">Admin</span>
       </div>
 

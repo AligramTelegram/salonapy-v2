@@ -47,8 +47,15 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── 2. Supabase session yönetimi (token refresh) ──────────────────────────
-  // response önce oluşturulur, cookie setAll'da güncellenir
-  let response = NextResponse.next({ request })
+  // x-pathname'i request header'a ekle — server component'lar headers() ile okur.
+  // NextResponse.next({ request: { headers } }) formatı zorunlu; response.headers.set()
+  // yalnızca response header'ı ayarlar ve server component'lara ulaşmaz.
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', pathname)
+
+  let response = NextResponse.next({
+    request: { headers: requestHeaders },
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -61,8 +68,8 @@ export async function middleware(request: NextRequest) {
         setAll(cookiesToSet) {
           // Request cookie'lerini güncelle
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          // Yeni response oluştur ve cookie'leri ekle
-          response = NextResponse.next({ request })
+          // Yeni response oluştururken requestHeaders'ı koru
+          response = NextResponse.next({ request: { headers: requestHeaders } })
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           )
@@ -92,15 +99,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── 5. Slug izolasyonu için user id'yi header'a ekle ──────────────────────
-  // /b/[slug] ve /p/[slug] layout'ları bu header'ı okuyup Prisma ile doğrulama yapar.
-  // Middleware Edge Runtime'da çalıştığından Prisma burada kullanılamaz.
   if (user) {
     response.headers.set('x-user-id', user.id)
   }
-
-  // ── 6. Mevcut pathname'i header'a ekle ────────────────────────────────────
-  // Layout server component'ları bu header'ı okuyarak trial kontrolü yapar.
-  response.headers.set('x-pathname', pathname)
 
   return response
 }

@@ -10,23 +10,23 @@ import { toast } from 'sonner'
 
 const SETTING_DEFS = {
   general: [
-    { key: 'site_name', label: 'Site Adı', type: 'input', placeholder: 'Salonapy' },
+    { key: 'site_name', label: 'Site Adı', type: 'input', placeholder: 'Hemensalon' },
     { key: 'site_slogan', label: 'Site Sloganı', type: 'input', placeholder: 'Randevunuzu otomatikleştirin' },
   ],
   seo: [
-    { key: 'seo_title', label: 'Varsayılan Meta Title', type: 'input', placeholder: 'Salonapy — Salon Randevu Yönetimi' },
-    { key: 'seo_description', label: 'Varsayılan Meta Description', type: 'textarea', placeholder: 'Salonapy ile salonunuzu dijitalleştirin...' },
+    { key: 'seo_title', label: 'Varsayılan Meta Title', type: 'input', placeholder: 'Hemensalon — Salon Randevu Yönetimi' },
+    { key: 'seo_description', label: 'Varsayılan Meta Description', type: 'textarea', placeholder: 'Hemensalon ile salonunuzu dijitalleştirin...' },
     { key: 'seo_og_image', label: 'Varsayılan OG Görseli URL', type: 'input', placeholder: 'https://...' },
     { key: 'google_site_verification', label: 'Google Site Verification Kodu', type: 'input', placeholder: 'xxxxx' },
   ],
   contact: [
-    { key: 'contact_email', label: 'Destek Email', type: 'input', placeholder: 'destek@salonapy.com' },
+    { key: 'contact_email', label: 'Destek Email', type: 'input', placeholder: 'destek@hemensalon.com' },
     { key: 'contact_phone', label: 'Telefon', type: 'input', placeholder: '+90 555 000 0000' },
     { key: 'contact_address', label: 'Adres', type: 'textarea', placeholder: 'İstanbul, Türkiye' },
-    { key: 'social_facebook', label: 'Facebook URL', type: 'input', placeholder: 'https://facebook.com/salonapy' },
-    { key: 'social_twitter', label: 'Twitter/X URL', type: 'input', placeholder: 'https://twitter.com/salonapy' },
-    { key: 'social_instagram', label: 'Instagram URL', type: 'input', placeholder: 'https://instagram.com/salonapy' },
-    { key: 'social_linkedin', label: 'LinkedIn URL', type: 'input', placeholder: 'https://linkedin.com/company/salonapy' },
+    { key: 'social_facebook', label: 'Facebook URL', type: 'input', placeholder: 'https://facebook.com/hemensalon' },
+    { key: 'social_twitter', label: 'Twitter/X URL', type: 'input', placeholder: 'https://twitter.com/hemensalon' },
+    { key: 'social_instagram', label: 'Instagram URL', type: 'input', placeholder: 'https://instagram.com/hemensalon' },
+    { key: 'social_linkedin', label: 'LinkedIn URL', type: 'input', placeholder: 'https://linkedin.com/company/hemensalon' },
   ],
   analytics: [
     { key: 'ga_id', label: 'Google Analytics ID', type: 'input', placeholder: 'G-XXXXXXXXXX' },

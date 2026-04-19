@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { X, Cookie } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-const COOKIE_KEY = 'salonapy_cookie_consent'
+const COOKIE_KEY = 'hemensalon_cookie_consent'
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false)

@@ -11,7 +11,7 @@ const TESTIMONIALS = [
     avatarBg: 'bg-purple-100',
     avatarColor: 'text-purple-700',
     rating: 5,
-    text: 'Salonapy ile randevu yönetimimiz tamamen değişti. SMS hatırlatmaları sayesinde müşterilerim artık randevularını unutmuyor. Aylık 30% daha az iptal yaşıyoruz.',
+    text: 'Hemensalon ile randevu yönetimimiz tamamen değişti. SMS hatırlatmaları sayesinde müşterilerim artık randevularını unutmuyor. Aylık 30% daha az iptal yaşıyoruz.',
   },
   {
     name: 'Mehmet Karaoğlu',
@@ -54,7 +54,7 @@ export function Testimonials() {
             <span className="text-purple-600">bizi tercih ediyor</span>
           </h2>
           <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-500">
-            Türkiye'nin dört bir yanından işletme sahipleri Salonapy ile işlerini büyütüyor.
+            Türkiye'nin dört bir yanından işletme sahipleri Hemensalon ile işlerini büyütüyor.
           </p>
         </motion.div>
 

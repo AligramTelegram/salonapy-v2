@@ -12,7 +12,7 @@ export interface AppointmentConfirmationProps {
   tenantEmail?: string
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://salonapy.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://hemensalon.com'
 
 export function renderAppointmentConfirmation(props: AppointmentConfirmationProps): string {
   const {
@@ -100,7 +100,7 @@ export function renderAppointmentConfirmation(props: AppointmentConfirmationProp
           <!-- Footer -->
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;text-align:center;border-top:1px solid #f3f4f6;">
-              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Salonapy · <a href="${APP_URL}" style="color:#9ca3af;">salonapy.com</a></p>
+              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Hemensalon · <a href="${APP_URL}" style="color:#9ca3af;">hemensalon.com</a></p>
             </td>
           </tr>
         </table>

@@ -7,7 +7,7 @@ export interface WelcomeEmailProps {
   isTrial?: boolean
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://salonapy.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://hemensalon.com'
 
 export function renderWelcomeEmail({ tenantName, ownerName, slug, isTrial = true }: WelcomeEmailProps): string {
   const panelUrl = `${APP_URL}/b/${slug}`
@@ -17,7 +17,7 @@ export function renderWelcomeEmail({ tenantName, ownerName, slug, isTrial = true
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hoş Geldiniz — Salonapy</title>
+  <title>Hoş Geldiniz — Hemensalon</title>
 </head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:40px 0;">
@@ -27,7 +27,7 @@ export function renderWelcomeEmail({ tenantName, ownerName, slug, isTrial = true
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:36px 40px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.5px;">Salonapy</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.5px;">Hemensalon</h1>
               <p style="margin:8px 0 0;color:#e9d5ff;font-size:14px;">Randevu & Salon Yönetim Platformu</p>
             </td>
           </tr>
@@ -99,7 +99,7 @@ export function renderWelcomeEmail({ tenantName, ownerName, slug, isTrial = true
               </div>
 
               <p style="margin:0;color:#9ca3af;font-size:13px;text-align:center;">
-                Sorularınız için <a href="mailto:destek@salonapy.com" style="color:#7c3aed;text-decoration:none;">destek@salonapy.com</a>
+                Sorularınız için <a href="mailto:destek@hemensalon.com" style="color:#7c3aed;text-decoration:none;">destek@hemensalon.com</a>
               </p>
             </td>
           </tr>
@@ -107,7 +107,7 @@ export function renderWelcomeEmail({ tenantName, ownerName, slug, isTrial = true
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;text-align:center;border-top:1px solid #f3f4f6;">
               <p style="margin:0;color:#9ca3af;font-size:12px;">
-                © 2025 Salonapy · <a href="${APP_URL}/gizlilik" style="color:#9ca3af;">Gizlilik</a> · <a href="${APP_URL}/kullanim" style="color:#9ca3af;">Kullanım Koşulları</a>
+                © 2025 Hemensalon · <a href="${APP_URL}/gizlilik" style="color:#9ca3af;">Gizlilik</a> · <a href="${APP_URL}/kullanim" style="color:#9ca3af;">Kullanım Koşulları</a>
               </p>
             </td>
           </tr>

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: {
     default: 'Giriş Yap',
-    template: '%s | Salonapy',
+    template: '%s | Hemensalon',
   },
 }
 

@@ -7,7 +7,7 @@ export interface TrialEndingEmailProps {
   slug: string
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://salonapy.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://hemensalon.com'
 
 export function renderTrialEndingEmail({
   tenantName,
@@ -68,14 +68,14 @@ export function renderTrialEndingEmail({
               </div>
 
               <p style="margin:0;color:#9ca3af;font-size:13px;text-align:center;">
-                Sorularınız için <a href="mailto:destek@salonapy.com" style="color:#7c3aed;text-decoration:none;">destek@salonapy.com</a>
+                Sorularınız için <a href="mailto:destek@hemensalon.com" style="color:#7c3aed;text-decoration:none;">destek@hemensalon.com</a>
               </p>
             </td>
           </tr>
           <!-- Footer -->
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;text-align:center;border-top:1px solid #f3f4f6;">
-              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Salonapy</p>
+              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Hemensalon</p>
             </td>
           </tr>
         </table>

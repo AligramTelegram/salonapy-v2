@@ -154,7 +154,7 @@ export function Hero() {
                   <div className="h-3 w-3 rounded-full bg-yellow-400 shadow-sm" />
                   <div className="h-3 w-3 rounded-full bg-green-400 shadow-sm" />
                 </div>
-                <span className="text-xs font-semibold text-gray-600">Salonapy Panel</span>
+                <span className="text-xs font-semibold text-gray-600">Hemensalon Panel</span>
                 <div className="h-5 w-5" />
               </div>
 

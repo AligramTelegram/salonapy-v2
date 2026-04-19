@@ -25,7 +25,7 @@ const POSTS: BlogPost[] = [
       'Randevu iptalleri her salonu etkiliyor. WhatsApp otomasyonu ile iptal oranını %30\'a kadar düşüren stratejiler.',
     date: '2026-03-20',
     author: {
-      name: 'Salonapy Ekibi',
+      name: 'Hemensalon Ekibi',
       initials: 'SE',
       avatarBg: 'bg-purple-100',
       avatarColor: 'text-purple-700',
@@ -59,10 +59,10 @@ const POSTS: BlogPost[] = [
       <p>Kısa ve öz bir "sizi bekliyoruz" mesajı. Uzun metin yazmayın, müşteri zaten hazırlanıyor olabilir.</p>
 
       <h2>Sonuçlar</h2>
-      <p>Salonapy kullanan işletmelerin verileri incelendiğinde, düzenli WhatsApp hatırlatması uygulayan salonlarda iptal oranının <strong>%32 düştüğü</strong> görülmüştür. Aylık 50 randevu alan bir salon için bu, ortalama 16 ek dolu randevu demek.</p>
+      <p>Hemensalon kullanan işletmelerin verileri incelendiğinde, düzenli WhatsApp hatırlatması uygulayan salonlarda iptal oranının <strong>%32 düştüğü</strong> görülmüştür. Aylık 50 randevu alan bir salon için bu, ortalama 16 ek dolu randevu demek.</p>
 
       <h2>Hemen Başlayın</h2>
-      <p>Salonapy'nin WhatsApp otomasyon özelliği, tüm bu mesajları otomatik olarak gönderir. Siz yalnızca randevuyu girersiniz, geri kalanını sistem halleder.</p>
+      <p>Hemensalon'nin WhatsApp otomasyon özelliği, tüm bu mesajları otomatik olarak gönderir. Siz yalnızca randevuyu girersiniz, geri kalanını sistem halleder.</p>
     `,
   },
   {
@@ -72,7 +72,7 @@ const POSTS: BlogPost[] = [
       'Küçük değişiklikler, büyük farklar yaratır. Randevu akışından personel yönetimine kadar verimliliği artıran pratik öneriler.',
     date: '2026-03-12',
     author: {
-      name: 'Salonapy Ekibi',
+      name: 'Hemensalon Ekibi',
       initials: 'SE',
       avatarBg: 'bg-purple-100',
       avatarColor: 'text-purple-700',
@@ -117,7 +117,7 @@ const POSTS: BlogPost[] = [
       'Telefonla randevu almak artık geçmişte kaldı. Müşteriler 7/24 online randevu talep ediyor — hazır mısınız?',
     date: '2026-02-28',
     author: {
-      name: 'Salonapy Ekibi',
+      name: 'Hemensalon Ekibi',
       initials: 'SE',
       avatarBg: 'bg-purple-100',
       avatarColor: 'text-purple-700',
@@ -154,7 +154,7 @@ const POSTS: BlogPost[] = [
       <h2>Rakiplerinizden Önce Geçin</h2>
       <p>Sektördeki dijitalleşme hızlanıyor. Online randevu sistemi kurmak artık lüks değil, <strong>rekabetçi kalmak için zorunlu</strong>.</p>
 
-      <p>Salonapy ile 5 dakikada online randevu sisteminizi kurun. 3 gün ücretsiz deneyin, memnun kalırsanız devam edin.</p>
+      <p>Hemensalon ile 5 dakikada online randevu sisteminizi kurun. 3 gün ücretsiz deneyin, memnun kalırsanız devam edin.</p>
     `,
   },
   {
@@ -164,7 +164,7 @@ const POSTS: BlogPost[] = [
       'Müşteri verilerini toplayan her işletme KVKK kapsamında. Salon için pratik KVKK rehberi ve dikkat edilmesi gerekenler.',
     date: '2026-02-15',
     author: {
-      name: 'Salonapy Ekibi',
+      name: 'Hemensalon Ekibi',
       initials: 'SE',
       avatarBg: 'bg-purple-100',
       avatarColor: 'text-purple-700',
@@ -200,7 +200,7 @@ const POSTS: BlogPost[] = [
       <h3>4. Üçüncü Taraflarla Paylaşım</h3>
       <p>Müşteri verilerini pazarlama şirketleriyle, WhatsApp üzerinden üçüncü kişilerle paylaşmak KVKK ihlalidir.</p>
 
-      <h2>Salonapy KVKK Uyumunu Nasıl Kolaylaştırıyor?</h2>
+      <h2>Hemensalon KVKK Uyumunu Nasıl Kolaylaştırıyor?</h2>
       <ul>
         <li>Veriler şifrelenmiş Supabase altyapısında saklanır</li>
         <li>GDPR ve KVKK uyumlu veri işleme</li>

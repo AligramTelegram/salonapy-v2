@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         excerpt,
         content,
         coverImage: coverImage || null,
-        author: author || 'Salonapy',
+        author: author || 'Hemensalon',
         published: published ?? false,
         publishedAt: published ? new Date() : null,
         tags: tags ?? [],

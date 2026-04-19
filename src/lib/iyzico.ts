@@ -85,7 +85,7 @@ export async function createCheckoutForm(params: {
   const buyerName = nameParts[0] || 'İşletme'
   const buyerSurname = nameParts.slice(1).join(' ') || 'Sahibi'
 
-  const buyerEmail = params.ownerEmail?.trim() || params.email || `tenant-${params.tenantId}@salonapy.com`
+  const buyerEmail = params.ownerEmail?.trim() || params.email || `tenant-${params.tenantId}@hemensalon.com`
   const rawPhone = (params.ownerPhone || params.phone || '').replace(/\D/g, '')
   const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : '+905551234567'
 
@@ -131,8 +131,8 @@ export async function createCheckoutForm(params: {
     },
     basketItems: [
       {
-        id: `SALONAPY_${params.plan}`,
-        name: `Salonapy ${params.plan} Plan (Aylık)`,
+        id: `HEMENSALON_${params.plan}`,
+        name: `Hemensalon ${params.plan} Plan (Aylık)`,
         category1: 'Yazılım',
         itemType: 'VIRTUAL',
         price: amountStr,

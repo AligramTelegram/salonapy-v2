@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { ArrowRight, Target, Heart, Zap, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Hakkımızda - Salonapy',
-  description: 'Salonapy\'nin hikayesi, misyonu ve ekibi. Türkiye\'nin güzellik sektörünü dijitalleştiriyoruz.',
+  title: 'Hakkımızda - Hemensalon',
+  description: 'Hemensalon\'nin hikayesi, misyonu ve ekibi. Türkiye\'nin güzellik sektörünü dijitalleştiriyoruz.',
   openGraph: {
-    title: 'Hakkımızda - Salonapy',
-    description: 'Salonapy\'nin hikayesi, misyonu ve ekibi.',
+    title: 'Hakkımızda - Hemensalon',
+    description: 'Hemensalon\'nin hikayesi, misyonu ve ekibi.',
   },
 }
 
@@ -35,7 +35,7 @@ const VALUES = [
 ]
 
 const MILESTONES = [
-  { year: '2023', event: 'Salonapy fikri doğdu, ilk prototip geliştirildi.' },
+  { year: '2023', event: 'Hemensalon fikri doğdu, ilk prototip geliştirildi.' },
   { year: '2024 Q1', event: 'Beta sürümü 50 pilot salon ile test edildi.' },
   { year: '2024 Q3', event: 'Resmi lansman, ilk 500 işletme kaydı.' },
   { year: '2025', event: '5.000+ aktif işletme, SMS + WhatsApp entegrasyonu.' },
@@ -56,7 +56,7 @@ export default function HakkimizdaPage() {
             <span className="text-purple-600">dijitalleştiriyoruz</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-500">
-            Salonapy, Türkiye'deki kuaför, berber, güzellik merkezi ve kliniklerin
+            Hemensalon, Türkiye'deki kuaför, berber, güzellik merkezi ve kliniklerin
             randevu yönetimini kolaylaştırmak için kurulmuş bir teknoloji şirketidir.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function HakkimizdaPage() {
                 kaçırılan randevular nedeniyle gelir kaybediyor.
               </p>
               <p className="text-gray-500 leading-relaxed">
-                Salonapy olarak bu işletmelere, kurumsal yazılımların karmaşıklığı olmadan,
+                Hemensalon olarak bu işletmelere, kurumsal yazılımların karmaşıklığı olmadan,
                 mobil uyumlu, hızlı kurulumlu ve uygun fiyatlı bir dijital yönetim platformu sunuyoruz.
               </p>
             </div>

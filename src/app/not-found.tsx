@@ -97,7 +97,7 @@ export default function NotFoundPage() {
               Destek Ekibi
             </Link>
             <div className="h-1 w-1 rounded-full bg-gray-700" />
-            <a href="mailto:support@salonapy.com" className="text-sm font-bold text-white hover:text-purple-400 transition-colors">
+            <a href="mailto:support@hemensalon.com" className="text-sm font-bold text-white hover:text-purple-400 transition-colors">
               E-posta Gönder
             </a>
           </div>
@@ -109,7 +109,7 @@ export default function NotFoundPage() {
         Error Code 404
       </div>
       <div className="absolute right-10 top-1/2 rotate-90 text-gray-800 font-display text-sm font-black tracking-[0.2em] opacity-20 hidden xl:block uppercase">
-        Salonapy App
+        Hemensalon App
       </div>
     </div>
   )

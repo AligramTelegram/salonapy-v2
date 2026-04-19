@@ -40,8 +40,8 @@ export async function POST(request: Request) {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY)
       await resend.emails.send({
-        from: 'Salonapy <noreply@salonapy.com>',
-        to: 'destek@salonapy.com',
+        from: 'Hemensalon <noreply@hemensalon.com>',
+        to: 'destek@hemensalon.com',
         replyTo: email,
         subject: `İletişim: ${SUBJECT_LABELS[subject] ?? subject} — ${name}`,
         html: `

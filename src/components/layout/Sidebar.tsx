@@ -90,7 +90,7 @@ export function Sidebar({ slug, tenantName, plan, smsUsed, trialExpired = false 
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-purple-100/60">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 shadow-md shadow-purple-200">
-            <span className="font-display text-base font-bold text-white leading-none">S</span>
+            <span className="font-display text-base font-bold text-white leading-none">H</span>
           </div>
           <div className="min-w-0">
             <p className="font-display text-sm font-bold text-gray-900 truncate">{tenantName}</p>

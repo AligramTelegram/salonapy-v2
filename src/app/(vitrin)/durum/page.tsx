@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { CheckCircle, AlertCircle, Clock, Activity } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Sistem Durumu - Salonapy',
-  description: 'Salonapy hizmetlerinin anlık durum bilgisi. Kesintiler, bakım pencereleri ve geçmiş olaylar.',
+  title: 'Sistem Durumu - Hemensalon',
+  description: 'Hemensalon hizmetlerinin anlık durum bilgisi. Kesintiler, bakım pencereleri ve geçmiş olaylar.',
   openGraph: {
-    title: 'Sistem Durumu - Salonapy',
-    description: 'Salonapy sistem durumu sayfası.',
+    title: 'Sistem Durumu - Hemensalon',
+    description: 'Hemensalon sistem durumu sayfası.',
   },
 }
 
@@ -152,8 +152,8 @@ export default function DurumPage() {
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-400">
               Sorun mu yaşıyorsunuz?{' '}
-              <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-                destek@salonapy.com
+              <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">
+                destek@hemensalon.com
               </a>{' '}
               adresinden bildirin.
             </p>

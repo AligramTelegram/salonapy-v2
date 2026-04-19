@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { LegalLayout } from '@/components/vitrin/LegalLayout'
 
 export const metadata: Metadata = {
-  title: 'Mesafeli Satış Sözleşmesi - Salonapy',
-  description: 'Salonapy mesafeli satış sözleşmesi. Abonelik satın alımlarına ilişkin hak ve yükümlülükleriniz hakkında bilgi alın.',
+  title: 'Mesafeli Satış Sözleşmesi - Hemensalon',
+  description: 'Hemensalon mesafeli satış sözleşmesi. Abonelik satın alımlarına ilişkin hak ve yükümlülükleriniz hakkında bilgi alın.',
   robots: { index: true, follow: true },
 }
 
@@ -13,11 +13,11 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          <strong className="text-gray-800">Satıcı:</strong> Salonapy (salonapy.com){' '}
-          · E-posta: destek@salonapy.com
+          <strong className="text-gray-800">Satıcı:</strong> Hemensalon (hemensalon.com){' '}
+          · E-posta: destek@hemensalon.com
         </p>
         <p>
-          <strong className="text-gray-800">Alıcı:</strong> Salonapy platformuna üye olan ve abonelik
+          <strong className="text-gray-800">Alıcı:</strong> Hemensalon platformuna üye olan ve abonelik
           satın alan gerçek veya tüzel kişi.
         </p>
       </>
@@ -27,7 +27,7 @@ const SECTIONS = [
     heading: 'Sözleşmenin Konusu',
     body: (
       <p>
-        Bu sözleşme, Alıcı&apos;nın Salonapy web sitesi üzerinden satın aldığı yazılım abonelik
+        Bu sözleşme, Alıcı&apos;nın Hemensalon web sitesi üzerinden satın aldığı yazılım abonelik
         hizmetinin koşullarını düzenler. Hizmet; randevu yönetimi, müşteri takibi, personel
         yönetimi ve ilgili SaaS özelliklerini kapsar.
       </p>
@@ -43,8 +43,8 @@ const SECTIONS = [
         </p>
         <p>
           Cayma hakkı bildiriminin iletilmesi için:{' '}
-          <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-            destek@salonapy.com
+          <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">
+            destek@hemensalon.com
           </a>
         </p>
       </>
@@ -94,8 +94,8 @@ const SECTIONS = [
           iletişim formu
         </a>{' '}
         veya{' '}
-        <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-          destek@salonapy.com
+        <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">
+          destek@hemensalon.com
         </a>
         .
       </p>

@@ -173,10 +173,10 @@ export function DashboardHeader({
         <div className="flex items-center gap-3">
           <div className="flex lg:hidden items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 shadow-md shadow-purple-200">
-              <span className="font-display text-sm font-bold text-white leading-none">S</span>
+              <span className="font-display text-sm font-bold text-white leading-none">H</span>
             </div>
             <span className="font-display text-base font-bold text-gray-900">
-              Salon<span className="text-purple-600">apy</span>
+              Hemen<span className="text-purple-600">salon</span>
             </span>
           </div>
           <div className="hidden lg:block">

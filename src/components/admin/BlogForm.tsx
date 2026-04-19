@@ -53,7 +53,7 @@ export function BlogForm({ initialData, mode }: BlogFormProps) {
       slug: initialData?.slug ?? '',
       excerpt: initialData?.excerpt ?? '',
       content: initialData?.content ?? '',
-      author: initialData?.author ?? 'Salonapy',
+      author: initialData?.author ?? 'Hemensalon',
       coverImage: initialData?.coverImage ?? '',
       tags: initialData?.tags ?? [],
       seoTitle: seo?.title ?? '',
@@ -101,7 +101,7 @@ export function BlogForm({ initialData, mode }: BlogFormProps) {
       excerpt: values.excerpt,
       content: values.content,
       coverImage: values.coverImage,
-      author: values.author ?? 'Salonapy',
+      author: values.author ?? 'Hemensalon',
       published,
       tags: values.tags ?? [],
       seo: {

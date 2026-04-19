@@ -64,7 +64,7 @@ export default async function UpgradePage({
           <div>
             <h2 className="text-base font-bold text-red-800">Deneme Süreniz Sona Erdi</h2>
             <p className="text-sm text-red-700 mt-0.5">
-              Salonapy&apos;yi kullanmaya devam etmek için aşağıdan bir paket seçin.
+              Hemensalon&apos;yi kullanmaya devam etmek için aşağıdan bir paket seçin.
             </p>
           </div>
         </div>

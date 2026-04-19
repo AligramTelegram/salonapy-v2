@@ -171,8 +171,8 @@ function OdemeYapContent() {
 
         <p className="text-center text-xs text-gray-500 mt-4">
           Sorun yaşarsanız{' '}
-          <a href="mailto:destek@salonapy.com" className="text-purple-400 hover:underline">
-            destek@salonapy.com
+          <a href="mailto:destek@hemensalon.com" className="text-purple-400 hover:underline">
+            destek@hemensalon.com
           </a>
         </p>
       </div>

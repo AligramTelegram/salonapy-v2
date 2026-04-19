@@ -5,11 +5,11 @@ import { ArrowRight, HelpCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Fiyatlar - Salonapy',
+  title: 'Fiyatlar - Hemensalon',
   description:
-    'Salonapy fiyat planları: Başlangıç ₺540, Profesyonel ₺1.140, İşletme ₺1.740/ay. 3 gün ücretsiz deneme.',
+    'Hemensalon fiyat planları: Başlangıç ₺540, Profesyonel ₺1.140, İşletme ₺1.740/ay. 3 gün ücretsiz deneme.',
   openGraph: {
-    title: 'Fiyatlar - Salonapy',
+    title: 'Fiyatlar - Hemensalon',
     description: '3 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal.',
   },
 }

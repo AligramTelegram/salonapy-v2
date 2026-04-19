@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { LegalLayout } from '@/components/vitrin/LegalLayout'
 
 export const metadata: Metadata = {
-  title: 'Kullanım Şartları - Salonapy',
-  description: 'Salonapy kullanım şartları ve koşulları. Platformumuzu kullanmadan önce lütfen okuyunuz.',
+  title: 'Kullanım Şartları - Hemensalon',
+  description: 'Hemensalon kullanım şartları ve koşulları. Platformumuzu kullanmadan önce lütfen okuyunuz.',
   robots: { index: false, follow: false },
 }
 
@@ -13,11 +13,11 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Salonapy platformunu (&quot;Platform&quot;) kullanarak bu kullanım şartlarını kabul etmiş
+          Hemensalon platformunu (&quot;Platform&quot;) kullanarak bu kullanım şartlarını kabul etmiş
           sayılırsınız. Şartları kabul etmiyorsanız Platformu kullanmayınız.
         </p>
         <p>
-          Bu şartlar, Salonapy ile siz (&quot;İşletme&quot; veya &quot;Kullanıcı&quot;) arasındaki hukuki
+          Bu şartlar, Hemensalon ile siz (&quot;İşletme&quot; veya &quot;Kullanıcı&quot;) arasındaki hukuki
           ilişkiyi düzenlemektedir. Platforma erişiminiz bu şartlara uymanıza bağlıdır.
         </p>
       </>
@@ -28,7 +28,7 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Salonapy; kuaför, berber, güzellik merkezi ve randevu ile çalışan işletmeler için bulut
+          Hemensalon; kuaför, berber, güzellik merkezi ve randevu ile çalışan işletmeler için bulut
           tabanlı bir yönetim platformudur. Platform şu özellikleri içerir:
         </p>
         <ul className="ml-4 list-none space-y-2">
@@ -102,7 +102,7 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Salonapy abonelik tabanlı bir hizmet sunar. Ödeme koşulları aşağıdaki gibidir:
+          Hemensalon abonelik tabanlı bir hizmet sunar. Ödeme koşulları aşağıdaki gibidir:
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
@@ -126,14 +126,14 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Salonapy, dijital hizmet niteliği taşıdığından aşağıdaki iade politikası geçerlidir:
+          Hemensalon, dijital hizmet niteliği taşıdığından aşağıdaki iade politikası geçerlidir:
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
             '3 günlük ücretsiz deneme süresi içinde ücret alınmaz; iade söz konusu değildir',
             'Aylık abonelik ücretleri iade edilmez',
             'Platform\'da yaşanan teknik aksaklıklar nedeniyle hizmet kullanılamaması durumunda, etkilenen süre oranında kredi tanımlanabilir',
-            'İade taleplerinizi destek@salonapy.com adresine iletebilirsiniz; her talep bireysel olarak değerlendirilir',
+            'İade taleplerinizi destek@hemensalon.com adresine iletebilirsiniz; her talep bireysel olarak değerlendirilir',
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400" />
@@ -149,7 +149,7 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Salonapy, aşağıdaki durumlarda hesabınızı askıya alabilir veya silebilir:
+          Hemensalon, aşağıdaki durumlarda hesabınızı askıya alabilir veya silebilir:
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
@@ -179,9 +179,9 @@ const SECTIONS = [
     heading: 'Fikri Mülkiyet',
     body: (
       <p>
-        Platform&apos;un tüm içerikleri, yazılımı, logolar, tasarımlar ve ticari markalar Salonapy&apos;ye
+        Platform&apos;un tüm içerikleri, yazılımı, logolar, tasarımlar ve ticari markalar Hemensalon&apos;ye
         aittir. Platforma erişim, bu fikri mülkiyet haklarının size devredildiği anlamına gelmez.
-        Verileriniz (müşteri bilgileri, randevular vb.) ise tamamen size aittir; Salonapy bu verileri
+        Verileriniz (müşteri bilgileri, randevular vb.) ise tamamen size aittir; Hemensalon bu verileri
         yalnızca hizmetin işletilmesi amacıyla işler.
       </p>
     ),
@@ -191,8 +191,8 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          Salonapy, Platform&apos;un kesintisiz veya hatasız çalışacağını garanti etmez. Hizmet
-          kesintileri, veri kaybı veya yetkisiz erişimden doğan zararlardan Salonapy&apos;nin sorumluluğu,
+          Hemensalon, Platform&apos;un kesintisiz veya hatasız çalışacağını garanti etmez. Hizmet
+          kesintileri, veri kaybı veya yetkisiz erişimden doğan zararlardan Hemensalon&apos;nin sorumluluğu,
           ilgili aydaki abonelik ücreti ile sınırlıdır.
         </p>
         <p>

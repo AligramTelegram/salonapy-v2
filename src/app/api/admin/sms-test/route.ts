@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     if (gsmno.startsWith('90')) gsmno = gsmno.slice(2)
     if (gsmno.startsWith('0')) gsmno = gsmno.slice(1)
 
-    const msgheader = header || 'SALONAPY'
-    const message = 'Salonapy admin panel test mesajı. Bu mesajı görmezden gelebilirsiniz.'
+    const msgheader = header || 'HEMENSALON'
+    const message = 'Hemensalon admin panel test mesajı. Bu mesajı görmezden gelebilirsiniz.'
 
     const response = await axios.get(NETGSM_API_URL, {
       params: { usercode, password, gsmno, message, msgheader, filter: 0, startdate: '', stopdate: '' },

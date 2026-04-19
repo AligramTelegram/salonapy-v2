@@ -291,7 +291,7 @@ export default function AdminSmsPage() {
                 <Input
                   value={header}
                   onChange={(e) => setHeader(e.target.value)}
-                  placeholder="SALONAPY"
+                  placeholder="HEMENSALON"
                   maxLength={11}
                   className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"
                 />

@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { ArrowRight, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Entegrasyonlar - Salonapy',
-  description: 'Salonapy\'nin desteklediği entegrasyonlar: SMS, WhatsApp, iyzico, Stripe, Google Takvim ve daha fazlası.',
+  title: 'Entegrasyonlar - Hemensalon',
+  description: 'Hemensalon\'nin desteklediği entegrasyonlar: SMS, WhatsApp, iyzico, Stripe, Google Takvim ve daha fazlası.',
   openGraph: {
-    title: 'Entegrasyonlar - Salonapy',
-    description: 'Salonapy entegrasyon ekosistemi.',
+    title: 'Entegrasyonlar - Hemensalon',
+    description: 'Hemensalon entegrasyon ekosistemi.',
   },
 }
 
@@ -69,7 +69,7 @@ export default function EntegrasyonlarPage() {
             <span className="text-purple-600">sorunsuz çalışır</span>
           </h1>
           <p className="mx-auto max-w-xl text-lg leading-relaxed text-gray-500">
-            Salonapy, ödeme sistemlerinden SMS sağlayıcılarına, muhasebe yazılımlarından
+            Hemensalon, ödeme sistemlerinden SMS sağlayıcılarına, muhasebe yazılımlarından
             takvim uygulamalarına kadar geniş bir ekosisteme entegre olur.
           </p>
         </div>

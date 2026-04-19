@@ -168,7 +168,7 @@ export default function SifremiUnuttumPage() {
                   <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500">
                     <span className="font-display text-lg font-bold text-white">S</span>
                   </div>
-                  <h1 className="font-display text-2xl font-bold text-gray-900">Salonapy</h1>
+                  <h1 className="font-display text-2xl font-bold text-gray-900">Hemensalon</h1>
                 </div>
 
                 {/* Form Title */}

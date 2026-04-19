@@ -8,7 +8,7 @@ export interface StaffWelcomeEmailProps {
   password: string
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://salonapy.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://hemensalon.com'
 
 export function renderStaffWelcomeEmail({
   staffName,
@@ -24,7 +24,7 @@ export function renderStaffWelcomeEmail({
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hesabınız Hazır — Salonapy</title>
+  <title>Hesabınız Hazır — Hemensalon</title>
 </head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:40px 0;">
@@ -34,7 +34,7 @@ export function renderStaffWelcomeEmail({
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:36px 40px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;">Salonapy</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;">Hemensalon</h1>
               <p style="margin:8px 0 0;color:#e9d5ff;font-size:14px;">Personel Paneli</p>
             </td>
           </tr>
@@ -74,14 +74,14 @@ export function renderStaffWelcomeEmail({
               </div>
 
               <p style="margin:0;color:#9ca3af;font-size:13px;text-align:center;">
-                Sorun yaşıyorsanız <a href="mailto:destek@salonapy.com" style="color:#7c3aed;text-decoration:none;">destek@salonapy.com</a> adresiyle iletişime geçin.
+                Sorun yaşıyorsanız <a href="mailto:destek@hemensalon.com" style="color:#7c3aed;text-decoration:none;">destek@hemensalon.com</a> adresiyle iletişime geçin.
               </p>
             </td>
           </tr>
           <!-- Footer -->
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;text-align:center;border-top:1px solid #f3f4f6;">
-              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Salonapy</p>
+              <p style="margin:0;color:#9ca3af;font-size:12px;">© 2025 Hemensalon</p>
             </td>
           </tr>
         </table>

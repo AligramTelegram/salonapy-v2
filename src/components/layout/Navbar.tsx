@@ -38,12 +38,12 @@ export function Navbar() {
     >
       <div className="container-custom flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" title="Salonapy Ana Sayfa" className="group flex items-center gap-2 select-none">
+        <Link href="/" title="Hemensalon Ana Sayfa" className="group flex items-center gap-2 select-none">
   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 shadow-md shadow-purple-200 transition-all group-hover:bg-purple-700 group-hover:scale-105">
-    <span className="font-display text-sm font-bold text-white leading-none">S</span>
+    <span className="font-display text-sm font-bold text-white leading-none">H</span>
   </div>
           <span className="font-display text-lg font-bold text-gray-900">
-            Salon<span className="text-purple-600">apy</span>
+            Hemen<span className="text-purple-600">salon</span>
           </span>
         </Link>
 

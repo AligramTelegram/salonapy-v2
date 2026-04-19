@@ -213,7 +213,7 @@ async function handleInvoiceSucceeded(invoice: Stripe.Invoice) {
       type: 'GIDER',
       amount,
       category: 'Abonelik',
-      description: `Salonapy ${sub.plan} plan - aylık abonelik`,
+      description: `Hemensalon ${sub.plan} plan - aylık abonelik`,
       date: new Date((invoice.created ?? Date.now() / 1000) * 1000),
     },
   })

@@ -1,5 +1,5 @@
-// Salonapy Service Worker — offline fallback + static asset cache
-const CACHE_NAME = 'salonapy-v1'
+// Hemensalon Service Worker — offline fallback + static asset cache
+const CACHE_NAME = 'hemensalon-v1'
 const OFFLINE_URL = '/offline'
 
 // Statik kaynaklar (install sırasında cache'e al)

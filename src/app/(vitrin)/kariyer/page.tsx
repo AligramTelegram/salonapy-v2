@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { MapPin, Clock, ArrowRight, Briefcase } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Kariyer - Salonapy',
-  description: 'Salonapy ekibine katılın. Türkiye\'nin büyüyen SaaS girişiminde kariyer fırsatları.',
+  title: 'Kariyer - Hemensalon',
+  description: 'Hemensalon ekibine katılın. Türkiye\'nin büyüyen SaaS girişiminde kariyer fırsatları.',
   openGraph: {
-    title: 'Kariyer - Salonapy',
-    description: 'Salonapy ekibine katılın.',
+    title: 'Kariyer - Hemensalon',
+    description: 'Hemensalon ekibine katılın.',
   },
 }
 
@@ -24,7 +24,7 @@ const OPEN_ROLES = [
     dept: 'Satış & Destek',
     location: 'İstanbul',
     type: 'Tam Zamanlı',
-    desc: 'Yeni müşterilerin Salonapy\'ye entegrasyonunu kolaylaştıracak ve onboarding süreçlerini yürütecek bir uzman arıyoruz.',
+    desc: 'Yeni müşterilerin Hemensalon\'ye entegrasyonunu kolaylaştıracak ve onboarding süreçlerini yürütecek bir uzman arıyoruz.',
   },
   {
     title: 'Dijital Pazarlama Uzmanı',
@@ -67,7 +67,7 @@ export default function KariyerPage() {
       {/* Yan haklar */}
       <section className="py-12 bg-purple-50/40">
         <div className="container-custom max-w-4xl">
-          <h2 className="mb-8 text-center font-display text-2xl font-bold text-gray-900">Neden Salonapy?</h2>
+          <h2 className="mb-8 text-center font-display text-2xl font-bold text-gray-900">Neden Hemensalon?</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {PERKS.map((p) => (
               <div key={p.label} className="flex items-center gap-3 rounded-xl bg-white border border-purple-100/60 px-4 py-3 shadow-sm">
@@ -104,7 +104,7 @@ export default function KariyerPage() {
                     </div>
                   </div>
                   <a
-                    href={`mailto:kariyer@salonapy.com?subject=${encodeURIComponent(role.title + ' Başvurusu')}`}
+                    href={`mailto:kariyer@hemensalon.com?subject=${encodeURIComponent(role.title + ' Başvurusu')}`}
                     className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 transition-colors"
                   >
                     Başvur
@@ -121,10 +121,10 @@ export default function KariyerPage() {
               Uygun pozisyon bulamadınız mı? Spontane başvurunuzu bekliyoruz.
             </p>
             <a
-              href="mailto:kariyer@salonapy.com?subject=Spontane%20Başvuru"
+              href="mailto:kariyer@hemensalon.com?subject=Spontane%20Başvuru"
               className="inline-flex items-center gap-2 rounded-xl border border-purple-200 px-5 py-2.5 text-sm font-medium text-purple-700 transition-colors hover:bg-purple-100"
             >
-              kariyer@salonapy.com
+              kariyer@hemensalon.com
             </a>
           </div>
         </div>

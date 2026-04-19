@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { Search, BookOpen, MessageCircle, Video, ArrowRight, ChevronRight } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Yardım Merkezi - Salonapy',
-  description: 'Salonapy kullanımıyla ilgili rehberler, sık sorulan sorular ve destek kaynakları.',
+  title: 'Yardım Merkezi - Hemensalon',
+  description: 'Hemensalon kullanımıyla ilgili rehberler, sık sorulan sorular ve destek kaynakları.',
   openGraph: {
-    title: 'Yardım Merkezi - Salonapy',
-    description: 'Salonapy yardım ve destek merkezi.',
+    title: 'Yardım Merkezi - Hemensalon',
+    description: 'Hemensalon yardım ve destek merkezi.',
   },
 }
 

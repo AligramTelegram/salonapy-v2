@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { LegalLayout } from '@/components/vitrin/LegalLayout'
 
 export const metadata: Metadata = {
-  title: 'KVKK Aydınlatma Metni - Salonapy',
-  description: '6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında Salonapy aydınlatma metni.',
+  title: 'KVKK Aydınlatma Metni - Hemensalon',
+  description: '6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında Hemensalon aydınlatma metni.',
   robots: { index: false, follow: false },
 }
 
@@ -13,9 +13,9 @@ const SECTIONS = [
     body: (
       <p>
         6698 sayılı Kişisel Verilerin Korunması Kanunu (&quot;KVKK&quot;) uyarınca, kişisel verileriniz
-        veri sorumlusu sıfatıyla <strong className="text-gray-800">Salonapy</strong> tarafından
+        veri sorumlusu sıfatıyla <strong className="text-gray-800">Hemensalon</strong> tarafından
         işbu Aydınlatma Metni kapsamında işlenecektir.
-        İletişim: <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">destek@salonapy.com</a>
+        İletişim: <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">destek@hemensalon.com</a>
       </p>
     ),
   },
@@ -163,8 +163,8 @@ const SECTIONS = [
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
-            'E-posta: destek@salonapy.com (konu satırında "KVKK Başvurusu" yazınız)',
-            'İletişim formu: salonapy.com/iletisim',
+            'E-posta: destek@hemensalon.com (konu satırında "KVKK Başvurusu" yazınız)',
+            'İletişim formu: hemensalon.com/iletisim',
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400" />

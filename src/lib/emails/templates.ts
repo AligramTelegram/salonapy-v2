@@ -9,15 +9,15 @@ export type EmailType =
   | 'payment-failed'
 
 export function getEmailFrom(): string {
-  return 'Salonapy <noreply@salonapy.com>'
+  return 'Hemensalon <noreply@hemensalon.com>'
 }
 
 export function getEmailSubject(type: EmailType, params?: Record<string, string>): string {
   switch (type) {
     case 'welcome':
-      return `Hoş geldiniz${params?.tenantName ? `, ${params.tenantName}` : ''}! Salonapy'ye başlayın`
+      return `Hoş geldiniz${params?.tenantName ? `, ${params.tenantName}` : ''}! Hemensalon'ye başlayın`
     case 'staff-welcome':
-      return `${params?.staffName ?? 'Hesabınız'} hazır — Salonapy paneline erişin`
+      return `${params?.staffName ?? 'Hesabınız'} hazır — Hemensalon paneline erişin`
     case 'appointment-confirmation':
       return `Randevunuz onaylandı${params?.date ? ` — ${params.date}` : ''}`
     case 'trial-ending':
@@ -27,6 +27,6 @@ export function getEmailSubject(type: EmailType, params?: Record<string, string>
     case 'payment-failed':
       return 'Ödeme başarısız — lütfen ödeme yönteminizi güncelleyin'
     default:
-      return 'Salonapy Bildirimi'
+      return 'Hemensalon Bildirimi'
   }
 }

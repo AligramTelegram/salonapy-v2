@@ -24,8 +24,8 @@ async function main() {
 <p>Müşteriler gece yarısı bile randevu alabilir. Siz uyurken sisteminiz çalışmaya devam ediyor.</p>
 <h2>4. Müşteri Profili</h2>
 <p>Her randevu, müşteri geçmişine eklenir. Bir sonraki ziyarette tercihlerini hatırlarsınız.</p>
-<p>Salonapy ile bu avantajların tamamını bugün kullanmaya başlayabilirsiniz.</p>`,
-      author: 'Salonapy',
+<p>Hemensalon ile bu avantajların tamamını bugün kullanmaya başlayabilirsiniz.</p>`,
+      author: 'Hemensalon',
       published: true,
       publishedAt: new Date('2026-03-15'),
       tags: ['Randevu', 'Dijitalleşme', 'İpuçları'],
@@ -43,8 +43,8 @@ async function main() {
 <p>İsim bazlı kişiselleştirilmiş mesajlar, müşterinin kendini özel hissetmesini sağlar.</p>
 <blockquote>Merhaba Ayşe Hanım, yarın saat 14:00'teki randevunuzu hatırlatıyoruz. Görüşmek üzere!</blockquote>
 <h2>Nasıl Kurulur?</h2>
-<p>Salonapy'de WhatsApp entegrasyonu birkaç tıklamayla aktif edilir. Ayarlar → WhatsApp bölümünden başlayabilirsiniz.</p>`,
-      author: 'Salonapy',
+<p>Hemensalon'de WhatsApp entegrasyonu birkaç tıklamayla aktif edilir. Ayarlar → WhatsApp bölümünden başlayabilirsiniz.</p>`,
+      author: 'Hemensalon',
       published: true,
       publishedAt: new Date('2026-03-10'),
       tags: ['WhatsApp', 'Otomasyon', 'Müşteri Deneyimi'],
@@ -64,8 +64,8 @@ async function main() {
 <p>Günlük, haftalık ve aylık gelir/gider raporları sayesinde salonunuzun mali durumunu anlık görürsünüz.</p>
 <h2>Adım 5: Raporlar ve Analiz</h2>
 <p>Hangi hizmet en çok tercih ediliyor? Hangi personel en yüksek geliri üretiyor? Veriye dayalı kararlar alın.</p>
-<p>Tüm bu adımları Salonapy tek platformda sunar. <a href="/kayit">Ücretsiz başlayın</a>.</p>`,
-      author: 'Salonapy',
+<p>Tüm bu adımları Hemensalon tek platformda sunar. <a href="/kayit">Ücretsiz başlayın</a>.</p>`,
+      author: 'Hemensalon',
       published: true,
       publishedAt: new Date('2026-03-01'),
       tags: ['Dijitalleşme', 'Yönetim', 'İpuçları'],
@@ -83,11 +83,11 @@ async function main() {
 
   // ── Site settings ─────────────────────────────────────────────────────────
   const settings = [
-    { key: 'site_name', value: 'Salonapy', category: 'general' },
+    { key: 'site_name', value: 'Hemensalon', category: 'general' },
     { key: 'site_slogan', value: 'Randevunuzu otomatikleştirin', category: 'general' },
-    { key: 'seo_title', value: 'Salonapy — Salon Randevu Yönetimi', category: 'seo' },
-    { key: 'seo_description', value: 'Salonapy ile salonunuzu dijitalleştirin. Online randevu, WhatsApp bildirimleri, finansal takip ve daha fazlası.', category: 'seo' },
-    { key: 'contact_email', value: 'destek@salonapy.com', category: 'contact' },
+    { key: 'seo_title', value: 'Hemensalon — Salon Randevu Yönetimi', category: 'seo' },
+    { key: 'seo_description', value: 'Hemensalon ile salonunuzu dijitalleştirin. Online randevu, WhatsApp bildirimleri, finansal takip ve daha fazlası.', category: 'seo' },
+    { key: 'contact_email', value: 'destek@hemensalon.com', category: 'contact' },
     { key: 'contact_phone', value: '', category: 'contact' },
     { key: 'contact_address', value: 'İstanbul, Türkiye', category: 'contact' },
     { key: 'social_instagram', value: '', category: 'contact' },

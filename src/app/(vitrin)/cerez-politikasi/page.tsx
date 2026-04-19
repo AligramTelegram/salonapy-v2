@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { LegalLayout } from '@/components/vitrin/LegalLayout'
 
 export const metadata: Metadata = {
-  title: 'Çerez Politikası - Salonapy',
-  description: 'Salonapy çerez politikası: hangi çerezleri kullandığımız ve nasıl kontrol edebileceğiniz hakkında bilgi.',
+  title: 'Çerez Politikası - Hemensalon',
+  description: 'Hemensalon çerez politikası: hangi çerezleri kullandığımız ve nasıl kontrol edebileceğiniz hakkında bilgi.',
   robots: { index: false, follow: false },
 }
 

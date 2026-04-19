@@ -1,6 +1,6 @@
 {
-  "name": "Salonapy - Randevu Yönetim Platformu",
-  "short_name": "Salonapy",
+  "name": "Hemensalon - Randevu Yönetim Platformu",
+  "short_name": "Hemensalon",
   "description": "Kuaför, berber ve güzellik salonları için akıllı randevu yönetim sistemi.",
   "start_url": "/",
   "display": "standalone",

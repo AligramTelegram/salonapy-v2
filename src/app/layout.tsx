@@ -22,13 +22,13 @@ const sora = Sora({
   display: 'swap',
 })
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salonapy.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hemensalon.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: 'Salonapy - Randevu Yönetim Platformu',
-    template: '%s | Salonapy',
+    default: 'Hemensalon - Randevu Yönetim Platformu',
+    template: '%s | Hemensalon',
   },
   description:
     'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. WhatsApp bildirimleri, otomatik hatırlatmalar, 3 gün ücretsiz.',
@@ -41,11 +41,11 @@ export const metadata: Metadata = {
     'salon yönetimi',
     'WhatsApp randevu',
     'online randevu',
-    'salonapy',
+    'hemensalon',
   ],
-  authors: [{ name: 'Salonapy', url: APP_URL }],
-  creator: 'Salonapy',
-  publisher: 'Salonapy',
+  authors: [{ name: 'Hemensalon', url: APP_URL }],
+  creator: 'Hemensalon',
+  publisher: 'Hemensalon',
   robots: {
     index: true,
     follow: true,
@@ -61,8 +61,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'tr_TR',
     url: APP_URL,
-    siteName: 'Salonapy',
-    title: 'Salonapy - Randevu Yönetim Platformu',
+    siteName: 'Hemensalon',
+    title: 'Hemensalon - Randevu Yönetim Platformu',
     description:
       'Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim sistemi. WhatsApp bildirimleri, otomatik hatırlatmalar, 3 gün ücretsiz.',
     images: [
@@ -70,15 +70,15 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Salonapy - Randevu Yönetim Platformu',
+        alt: 'Hemensalon - Randevu Yönetim Platformu',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@salonapy',
-    creator: '@salonapy',
-    title: 'Salonapy - Randevu Yönetim Platformu',
+    site: '@hemensalon',
+    creator: '@hemensalon',
+    title: 'Hemensalon - Randevu Yönetim Platformu',
     description:
       'Kuaför, berber ve güzellik salonları için akıllı randevu sistemi. WhatsApp bildirimleri dahil.',
     images: ['/og-image.png'],

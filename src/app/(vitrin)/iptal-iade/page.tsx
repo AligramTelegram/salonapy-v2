@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { LegalLayout } from '@/components/vitrin/LegalLayout'
 
 export const metadata: Metadata = {
-  title: 'İptal ve İade Politikası - Salonapy',
-  description: 'Salonapy abonelik iptali ve iade koşulları hakkında bilgi alın. 14 günlük cayma hakkınızı kullanabilirsiniz.',
+  title: 'İptal ve İade Politikası - Hemensalon',
+  description: 'Hemensalon abonelik iptali ve iade koşulları hakkında bilgi alın. 14 günlük cayma hakkınızı kullanabilirsiniz.',
   robots: { index: true, follow: true },
 }
 
@@ -22,8 +22,8 @@ const SECTIONS = [
         </p>
         <ul className="ml-4 list-none space-y-2">
           {[
-            'E-posta: destek@salonapy.com',
-            'İletişim formu: salonapy.com/iletisim',
+            'E-posta: destek@hemensalon.com',
+            'İletişim formu: hemensalon.com/iletisim',
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400" />
@@ -73,8 +73,8 @@ const SECTIONS = [
     body: (
       <p>
         İptal ve iade talepleriniz için{' '}
-        <a href="mailto:destek@salonapy.com" className="text-purple-600 hover:underline">
-          destek@salonapy.com
+        <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">
+          destek@hemensalon.com
         </a>{' '}
         adresine e-posta gönderebilir veya{' '}
         <a href="/iletisim" className="text-purple-600 hover:underline">
