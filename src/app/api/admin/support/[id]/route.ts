@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 // PATCH /api/admin/support/[id] — cevap yaz ve/veya status güncelle
 export async function PATCH(
   req: NextRequest,
