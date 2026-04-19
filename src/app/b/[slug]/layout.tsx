@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/layout/BottomNav'
 import { DashboardHeader } from '@/components/layout/DashboardHeader'
 import { TrialBanner } from '@/components/layout/TrialBanner'
 import { AnnouncementPopup } from '@/components/dashboard/AnnouncementPopup'
+import { GrowthTip } from '@/components/dashboard/GrowthTip'
 import { UpgradeCards } from './upgrade/UpgradeCards'
 import { AlertCircle } from 'lucide-react'
 
@@ -174,6 +175,7 @@ export default async function IsletmePaneliLayout({
       </div>
       <BottomNav slug={params.slug} plan={dbUser.tenant.plan} />
       <AnnouncementPopup />
+      <GrowthTip />
     </div>
   )
 }
