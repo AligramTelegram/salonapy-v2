@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
+import { LogoIcon } from '@/components/ui/LogoIcon'
 
 const FOOTER_LINKS = [
   {
@@ -48,9 +49,7 @@ export function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1">
   <Link href="/" title="Hemensalon Ana Sayfa" className="group mb-5 flex items-center gap-2.5 select-none w-fit">
-    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600 shadow-lg shadow-purple-200 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-700">
-      <span className="font-display text-xl font-bold text-white leading-none">H</span>
-    </div>
+    <LogoIcon size={40} className="transition-transform duration-300 group-hover:scale-110" />
               <span className="font-display text-lg font-bold text-gray-900">
                 Hemen<span className="text-purple-600">salon</span>
               </span>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LogoIcon } from '@/components/ui/LogoIcon'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
@@ -39,9 +40,7 @@ export function Navbar() {
       <div className="container-custom flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" title="Hemensalon Ana Sayfa" className="group flex items-center gap-2 select-none">
-  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 shadow-md shadow-purple-200 transition-all group-hover:bg-purple-700 group-hover:scale-105">
-    <span className="font-display text-sm font-bold text-white leading-none">H</span>
-  </div>
+  <LogoIcon size={32} className="transition-transform group-hover:scale-105" />
           <span className="font-display text-lg font-bold text-gray-900">
             Hemen<span className="text-purple-600">salon</span>
           </span>
