@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminSecret } from '@/lib/admin-auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
 // GET /api/admin/invoices?tenantId=xxx
 export async function GET(request: NextRequest) {
-  const authError = verifyAdminSecret(request)
-  if (authError) return authError
-
   const tenantId = request.nextUrl.searchParams.get('tenantId')
 
   const invoices = await prisma.invoice.findMany({
@@ -24,9 +20,6 @@ export async function GET(request: NextRequest) {
 
 // POST /api/admin/invoices — multipart/form-data: file + title + tenantId + amount? + issuedAt?
 export async function POST(request: NextRequest) {
-  const authError = verifyAdminSecret(request)
-  if (authError) return authError
-
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null
