@@ -38,7 +38,7 @@ async function handleCallback(
   }
 
   // conversationId: gerçek İyzico'dan result içinde gelir; mock modda URL param'dan alınır
-  const rawConversationId = result.conversationId ?? conversationIdOverride;
+  const rawConversationId = result.conversationId ?? raw.basketId ?? conversationIdOverride;
   console.log('[Callback] ConversationId:', rawConversationId);
 
   const parsed = rawConversationId ? parseConversationId(rawConversationId) : null;
