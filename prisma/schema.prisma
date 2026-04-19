@@ -1,4 +1,4 @@
-// Prisma Schema - Salonapy v2
+// Prisma Schema - Hemensalon v2
 
 generator client {
   provider = "prisma-client-js"
@@ -325,7 +325,7 @@ model BlogPost {
   excerpt     String
   content     String    @db.Text
   coverImage  String?
-  author      String    @default("Salonapy")
+  author      String    @default("Hemensalon")
   published   Boolean   @default(false)
   publishedAt DateTime?
   tags        String[]

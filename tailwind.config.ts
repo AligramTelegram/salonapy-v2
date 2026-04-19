@@ -52,7 +52,7 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
 
-        /* Salonapy mor paleti */
+        /* Hemensalon mor paleti */
         purple: {
           50: '#f5f3ff',
           100: '#ede9fe',
