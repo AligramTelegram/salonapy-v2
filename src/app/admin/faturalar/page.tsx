@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
-import { FileText, Plus, Trash2, Download, Loader2, X } from 'lucide-react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
+import { FileText, Plus, Trash2, Download, Loader2, X, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,11 +26,14 @@ export default function AdminFaturalarPage() {
 
   // Form state
   const [tenantId, setTenantId] = useState('')
+  const [tenantSearch, setTenantSearch] = useState('')
+  const [showTenantDropdown, setShowTenantDropdown] = useState(false)
   const [title, setTitle] = useState('')
   const [amount, setAmount] = useState('')
   const [issuedAt, setIssuedAt] = useState(new Date().toISOString().split('T')[0])
   const [file, setFile] = useState<File | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const tenantDropdownRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -50,6 +53,26 @@ export default function AdminFaturalarPage() {
 
   useEffect(() => { load() }, [load])
 
+  const filteredTenants = useMemo(() =>
+    tenants.filter((t) => t.name.toLowerCase().includes(tenantSearch.toLowerCase())),
+    [tenants, tenantSearch]
+  )
+
+  const selectedTenantName = useMemo(() =>
+    tenants.find((t) => t.id === tenantId)?.name ?? '',
+    [tenants, tenantId]
+  )
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (tenantDropdownRef.current && !tenantDropdownRef.current.contains(e.target as Node)) {
+        setShowTenantDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!file || !title || !tenantId) { toast.error('İşletme, başlık ve PDF zorunlu'); return }
@@ -67,7 +90,7 @@ export default function AdminFaturalarPage() {
       if (!res.ok) { toast.error(data.error ?? 'Hata'); return }
       toast.success('Fatura eklendi')
       setShowForm(false)
-      setTitle(''); setAmount(''); setTenantId(''); setFile(null)
+      setTitle(''); setAmount(''); setTenantId(''); setTenantSearch(''); setFile(null)
       if (fileRef.current) fileRef.current.value = ''
       load()
     } finally {
@@ -110,19 +133,52 @@ export default function AdminFaturalarPage() {
             <button onClick={() => setShowForm(false)}><X className="h-4 w-4 text-gray-400" /></button>
           </div>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5 sm:col-span-2">
+            <div className="space-y-1.5 sm:col-span-2" ref={tenantDropdownRef}>
               <Label>İşletme</Label>
-              <select
-                value={tenantId}
-                onChange={(e) => setTenantId(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900"
-                required
-              >
-                <option value="">Seçin...</option>
-                {tenants.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => { setShowTenantDropdown((v) => !v); setTenantSearch('') }}
+                  className="w-full flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-left"
+                >
+                  <span className={tenantId ? 'text-gray-900' : 'text-gray-400'}>
+                    {tenantId ? selectedTenantName : 'Seçin...'}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
+                </button>
+                {showTenantDropdown && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <div className="p-2">
+                      <input
+                        autoFocus
+                        type="text"
+                        placeholder="İşletme ara..."
+                        value={tenantSearch}
+                        onChange={(e) => setTenantSearch(e.target.value)}
+                        className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm outline-none focus:border-purple-400"
+                      />
+                    </div>
+                    <ul className="max-h-48 overflow-y-auto pb-1">
+                      {filteredTenants.length === 0 ? (
+                        <li className="px-3 py-2 text-sm text-gray-400">Bulunamadı</li>
+                      ) : filteredTenants.map((t) => (
+                        <li
+                          key={t.id}
+                          onClick={() => { setTenantId(t.id); setShowTenantDropdown(false) }}
+                          className={cn(
+                            'px-3 py-2 text-sm cursor-pointer hover:bg-purple-50',
+                            tenantId === t.id && 'bg-purple-100 text-purple-700 font-medium'
+                          )}
+                        >
+                          {t.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              {/* hidden input for form validation */}
+              <input type="text" required value={tenantId} onChange={() => {}} className="sr-only" />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label>Fatura Başlığı</Label>
