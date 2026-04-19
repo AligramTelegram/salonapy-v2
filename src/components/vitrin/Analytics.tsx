@@ -56,10 +56,10 @@ function fadeUp(delay = 0) {
 
 export function Analytics() {
   return (
-    <section className="relative overflow-hidden py-12 md:py-16">
+    <section className="relative overflow-hidden py-12 md:py-16 bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-purple-200/8 via-transparent to-blue-200/8 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-purple-300/20 via-transparent to-blue-300/20 blur-3xl" />
       </div>
 
       <div className="container-custom">

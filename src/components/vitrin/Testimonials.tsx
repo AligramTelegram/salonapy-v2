@@ -35,8 +35,13 @@ const TESTIMONIALS = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 md:py-32">
-      <div className="container-custom">
+    <section className="relative overflow-hidden py-24 md:py-32" style={{ background: 'linear-gradient(135deg, #3b0764 0%, #581c87 50%, #4c1d95 100%)' }}>
+      {/* Dekoratif daireler */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-purple-300/10 blur-3xl" />
+      </div>
+      <div className="container-custom relative">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,15 +50,15 @@ export function Testimonials() {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <span className="mb-3 inline-block rounded-full bg-purple-100 px-4 py-1.5 text-sm font-medium text-purple-700">
+          <span className="mb-3 inline-block rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-purple-200">
             Müşteri Yorumları
           </span>
-          <h2 className="mb-4 font-display text-3xl font-bold text-gray-900 md:text-4xl">
+          <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">
             7.870+ işletme
             <br />
-            <span className="text-purple-600">bizi tercih ediyor</span>
+            <span className="text-purple-300">bizi tercih ediyor</span>
           </h2>
-          <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-500">
+          <p className="mx-auto max-w-xl text-base leading-relaxed text-purple-200/80">
             Türkiye'nin dört bir yanından işletme sahipleri Hemensalon ile işlerini büyütüyor.
           </p>
         </motion.div>
@@ -82,10 +87,10 @@ function TestimonialCard({ testimonial }: { testimonial: (typeof TESTIMONIALS)[n
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="glass-card flex h-full flex-col p-6"
+      className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm"
     >
       {/* Quote icon */}
-      <Quote className="mb-4 h-7 w-7 text-purple-200" />
+      <Quote className="mb-4 h-7 w-7 text-purple-300/60" />
 
       {/* Stars */}
       <div className="mb-4 flex gap-0.5">
@@ -95,18 +100,16 @@ function TestimonialCard({ testimonial }: { testimonial: (typeof TESTIMONIALS)[n
       </div>
 
       {/* Text */}
-      <p className="mb-6 flex-1 text-sm leading-relaxed text-gray-600">"{testimonial.text}"</p>
+      <p className="mb-6 flex-1 text-sm leading-relaxed text-white/80">"{testimonial.text}"</p>
 
       {/* Author */}
       <div className="flex items-center gap-3">
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ${testimonial.avatarBg} ${testimonial.avatarColor}`}
-        >
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
           {testimonial.avatar}
         </div>
         <div>
-          <div className="text-sm font-semibold text-gray-900">{testimonial.name}</div>
-          <div className="text-xs text-gray-500">{testimonial.business}</div>
+          <div className="text-sm font-semibold text-white">{testimonial.name}</div>
+          <div className="text-xs text-purple-200/70">{testimonial.business}</div>
         </div>
       </div>
     </motion.div>
