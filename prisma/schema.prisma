@@ -89,6 +89,7 @@ model Tenant {
   customerPackages CustomerPackage[]
   announcementDismissals AnnouncementDismissal[]
   supportTickets         SupportTicket[]
+  invoices               Invoice[]
 
   @@map("tenants")
 }
@@ -386,6 +387,20 @@ model AnnouncementDismissal {
 
   @@unique([announcementId, tenantId])
   @@map("announcement_dismissals")
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  tenantId    String
+  title       String
+  amount      Float?
+  pdfUrl      String
+  issuedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
 }
 
 model SupportTicket {
