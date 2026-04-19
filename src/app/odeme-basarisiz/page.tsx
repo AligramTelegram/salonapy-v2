@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function OdemeBasarisizPage({ 
-  searchParams 
-}: { 
-  searchParams: { reason?: string } 
+export default function OdemeBasarisizPage({
+  searchParams
+}: {
+  searchParams: { reason?: string; code?: string }
 }) {
   const reason = searchParams?.reason || 'Bilinmeyen hata';
+  const code = searchParams?.code || '';
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#faf8ff] p-4">
@@ -36,6 +37,9 @@ export default function OdemeBasarisizPage({
         <p className="text-gray-600 mb-6">
           {decodeURIComponent(reason)}
         </p>
+        {code && (
+          <p className="text-xs text-gray-400 mb-4 font-mono">Kod: {decodeURIComponent(code)}</p>
+        )}
         
         <div className="space-y-3">
           <Button asChild className="w-full">

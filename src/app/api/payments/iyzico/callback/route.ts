@@ -29,15 +29,11 @@ async function handleCallback(
   console.log('[Callback] Full result:', JSON.stringify(raw));
 
   if (result.status !== 'success' || result.paymentStatus !== 'SUCCESS') {
-    const errorMsg =
-      raw.errorMessage ??
-      raw.errorCode ??
-      raw.mdErrorMessage ??
-      raw.lastFourDigits ??    // sometimes İyzico puts details here in failures
-      `Ödeme başarısız (${result.paymentStatus ?? result.status})`
-    console.error('[Callback] Ödeme başarısız:', errorMsg)
+    const errorMsg = raw.errorMessage ?? `Ödeme başarısız (${result.paymentStatus ?? result.status})`
+    const errorCode = raw.errorCode ?? raw.errorGroup ?? ''
+    console.error('[Callback] Ödeme başarısız:', errorCode, errorMsg, JSON.stringify(raw))
     return NextResponse.redirect(
-      `${baseUrl}/odeme-basarisiz?reason=${encodeURIComponent(errorMsg)}`
+      `${baseUrl}/odeme-basarisiz?reason=${encodeURIComponent(errorMsg)}&code=${encodeURIComponent(errorCode)}`
     );
   }
 
