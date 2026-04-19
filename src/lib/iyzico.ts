@@ -65,6 +65,7 @@ export async function createCheckoutForm(params: {
   ownerIdNumber?: string | null
   ownerAddress?: string | null
   ownerCity?: string | null
+  buyerIp?: string | null
 }): Promise<IyzicoCheckoutResult> {
   const conversationId = buildConversationId(params.tenantId, params.plan)
   const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/iyzico/callback`
@@ -110,7 +111,7 @@ export async function createCheckoutForm(params: {
       email: buyerEmail,
       identityNumber,
       registrationAddress: billingAddress,
-      ip: '85.34.78.112',
+      ip: params.buyerIp || '85.34.78.112',
       city: billingCity,
       country: 'Turkey',
       gsmNumber: formattedPhone,

@@ -51,6 +51,9 @@ export async function POST(request: NextRequest) {
 
   const { amount, currency } = getPlanPrice(plan, tenant.country)
 
+  const forwarded = request.headers.get('x-forwarded-for')
+  const buyerIp = forwarded ? forwarded.split(',')[0].trim() : '85.34.78.112'
+
   const result = await createCheckoutForm({
     tenantId: tenant.id,
     tenantName: tenant.name,
@@ -65,6 +68,7 @@ export async function POST(request: NextRequest) {
     ownerIdNumber: tenant.ownerIdNumber,
     ownerAddress: tenant.ownerAddress,
     ownerCity: tenant.ownerCity,
+    buyerIp,
   })
 
   if (result.status !== 'success' || !result.paymentPageUrl) {
