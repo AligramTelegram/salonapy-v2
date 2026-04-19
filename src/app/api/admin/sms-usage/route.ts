@@ -1,21 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSmsLimits } from '@/lib/plans'
+import { verifyAdminSecret } from '@/lib/admin-auth'
 
 export const dynamic = 'force-dynamic'
 
 // GET /api/admin/sms-usage
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  const secret = process.env.ADMIN_SECRET_KEY
-
-  if (!secret || authHeader !== `Bearer ${secret}`) {
-    // Also allow cookie-based admin session (same as other admin routes)
-    // For simplicity, skip auth check when no ADMIN_SECRET_KEY is set in dev
-    if (process.env.NODE_ENV === 'production' && (!secret || authHeader !== `Bearer ${secret}`)) {
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-    }
-  }
+  const authError = verifyAdminSecret(request)
+  if (authError) return authError
 
   const tenants = await prisma.tenant.findMany({
     where: { isActive: true },
