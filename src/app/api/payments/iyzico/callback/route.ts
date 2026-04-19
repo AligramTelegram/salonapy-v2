@@ -18,7 +18,7 @@ async function handleCallback(
 
   let result;
   try {
-    result = await retrieveCheckoutForm(token);
+    result = await retrieveCheckoutForm(token, conversationIdOverride ?? undefined);
   } catch (err) {
     console.error('[Callback] retrieveCheckoutForm error:', err);
     return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Sistem+hatas%C4%B1`);
@@ -123,6 +123,9 @@ async function handleCallback(
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
+    const allFields: Record<string, string> = {}
+    formData.forEach((value, key) => { allFields[key] = String(value) })
+    console.log('[Callback] POST fields:', JSON.stringify(allFields))
     const token = formData.get('token') as string | null;
     return handleCallback(req, token);
   } catch (error) {

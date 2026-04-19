@@ -1,14 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const IyzipayLib = require('iyzipay')
 
+const isSandbox = process.env.IYZICO_SANDBOX === 'true'
+const apiKey = isSandbox ? process.env.IYZICO_SANDBOX_API_KEY : process.env.IYZICO_API_KEY
+const secretKey = isSandbox ? process.env.IYZICO_SANDBOX_SECRET_KEY : process.env.IYZICO_SECRET_KEY
+const baseUrl = isSandbox ? 'https://sandbox.iyzipay.com' : (process.env.IYZICO_BASE_URL || 'https://api.iyzipay.com')
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iyzipay: any = process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY
-  ? new IyzipayLib({
-      apiKey: process.env.IYZICO_API_KEY,
-      secretKey: process.env.IYZICO_SECRET_KEY,
-      uri: process.env.IYZICO_BASE_URL || 'https://sandbox.iyzipay.com',
-    })
+const iyzipay: any = apiKey && secretKey
+  ? new IyzipayLib({ apiKey, secretKey, uri: baseUrl })
   : null
+
+export const isIyzicoSandbox = isSandbox
 
 export type IyzicoCheckoutResult = {
   status: 'success' | 'failure'
@@ -159,14 +162,17 @@ export async function createCheckoutForm(params: {
  * Retrieve payment result after callback.
  * Falls back to mock success if not configured.
  */
-export async function retrieveCheckoutForm(token: string): Promise<IyzicoPaymentResult> {
+export async function retrieveCheckoutForm(token: string, conversationId?: string): Promise<IyzicoPaymentResult> {
   if (!iyzipay) {
     return { status: 'success', paymentStatus: 'SUCCESS' }
   }
 
+  const retrieveRequest: Record<string, string> = { locale: 'tr', token }
+  if (conversationId) retrieveRequest.conversationId = conversationId
+
   return new Promise((resolve) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    iyzipay.checkoutForm.retrieve({ locale: 'tr', token }, (err: Error, result: any) => {
+    iyzipay.checkoutForm.retrieve(retrieveRequest, (err: Error, result: any) => {
       if (err) {
         console.error('[Iyzico] Retrieve error:', err)
         resolve({ status: 'failure', errorMessage: err.message })
@@ -204,4 +210,4 @@ export async function cancelIyzicoSubscription(
   })
 }
 
-export const isIyzicoConfigured = !!(process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY)
+export const isIyzicoConfigured = !!(apiKey && secretKey)
