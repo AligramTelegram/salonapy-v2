@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { LogoIcon } from '@/components/ui/LogoIcon'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
@@ -172,9 +173,7 @@ export function DashboardHeader({
         {/* Sol */}
         <div className="flex items-center gap-3">
           <div className="flex lg:hidden items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 shadow-md shadow-purple-200">
-              <span className="font-display text-sm font-bold text-white leading-none">H</span>
-            </div>
+            <LogoIcon size={32} />
             <span className="font-display text-base font-bold text-gray-900">
               Hemen<span className="text-purple-600">salon</span>
             </span>

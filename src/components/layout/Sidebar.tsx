@@ -20,6 +20,7 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LogoIcon } from '@/components/ui/LogoIcon'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { hasFeature, type FeatureKey } from '@/lib/plan-features'
@@ -89,9 +90,7 @@ export function Sidebar({ slug, tenantName, plan, smsUsed, trialExpired = false 
       <div className="flex flex-col h-full m-3 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/90 shadow-[0_8px_40px_rgba(124,58,237,0.10)] overflow-hidden">
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-purple-100/60">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 shadow-md shadow-purple-200">
-            <span className="font-display text-base font-bold text-white leading-none">H</span>
-          </div>
+          <LogoIcon size={36} />
           <div className="min-w-0">
             <p className="font-display text-sm font-bold text-gray-900 truncate">{tenantName}</p>
             <p className="text-xs text-purple-500 font-medium">İşletme Paneli</p>
