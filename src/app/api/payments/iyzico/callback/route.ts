@@ -62,15 +62,47 @@ async function handleCallback(
     return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=%C4%B0%C5%9Fletme+bulunamad%C4%B1`);
   }
 
-  const now = new Date();
-  const endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const amount = result.paidPrice ? parseFloat(result.paidPrice) : 0;
   const currency = result.currency ?? 'TRY';
   const paymentId = result.paymentId ?? null;
+  const now = new Date();
+
+  // SMS paketi satın alımı
+  if (plan.startsWith('SMS_')) {
+    const smsAmount = parseInt(plan.replace('SMS_', ''), 10)
+    if (isNaN(smsAmount) || smsAmount <= 0) {
+      console.error('[Callback] Geçersiz SMS paketi:', plan)
+      return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Ge%C3%A7ersiz+SMS+paketi`)
+    }
+    try {
+      await prisma.$transaction([
+        prisma.tenant.update({
+          where: { id: tenantId },
+          data: { smsCredits: { increment: smsAmount } },
+        }),
+        prisma.transaction.create({
+          data: {
+            tenantId,
+            type: 'GELIR',
+            amount,
+            category: 'sms_paketi',
+            description: `${smsAmount} SMS paketi - Ödeme ID: ${paymentId ?? '-'}`,
+          },
+        }),
+      ])
+      console.log('[Callback] SMS kredisi eklendi:', tenantId, smsAmount)
+    } catch (err) {
+      console.error('[Callback] SMS DB hatası:', err)
+      return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Veritaban%C4%B1+hatas%C4%B1`)
+    }
+    return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}/ayarlar?sms_success=true`, { status: 303 })
+  }
+
+  // Plan aboneliği satın alımı
+  const endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
   try {
     await prisma.$transaction([
-      // Tenant: plan ve sms güncelle
       prisma.tenant.update({
         where: { id: tenantId },
         data: {
@@ -81,7 +113,6 @@ async function handleCallback(
           smsResetAt: now,
         },
       }),
-      // Subscription: upsert ile oluştur veya güncelle
       prisma.subscription.upsert({
         where: { tenantId },
         create: {
@@ -109,7 +140,6 @@ async function handleCallback(
         },
       }),
     ]);
-
     console.log('[Callback] Tenant ve Subscription güncellendi:', tenantId, plan);
   } catch (err) {
     console.error('[Callback] DB güncelleme hatası:', err);

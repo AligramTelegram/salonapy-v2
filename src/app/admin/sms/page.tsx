@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { addMonths } from 'date-fns'
+import { ShoppingBag } from 'lucide-react'
 
 interface TenantSmsUsage {
   id: string
@@ -53,6 +54,13 @@ export default function AdminSmsPage() {
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
 
+  // SMS purchases
+  const [purchases, setPurchases] = useState<Array<{
+    id: string; amount: number; description: string; createdAt: string;
+    tenant: { name: string; slug: string; plan: string }
+  }>>([])
+  const [loadingPurchases, setLoadingPurchases] = useState(true)
+
   const loadUsage = useCallback(async () => {
     setLoadingUsage(true)
     try {
@@ -82,10 +90,22 @@ export default function AdminSmsPage() {
     }
   }, [])
 
+  const loadPurchases = useCallback(async () => {
+    setLoadingPurchases(true)
+    try {
+      const res = await fetch('/api/admin/sms-purchases')
+      const data = await res.json()
+      setPurchases(data.purchases ?? [])
+    } finally {
+      setLoadingPurchases(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadUsage()
     loadSettings()
-  }, [loadUsage, loadSettings])
+    loadPurchases()
+  }, [loadUsage, loadSettings, loadPurchases])
 
   async function saveSettings() {
     setSavingSettings(true)
@@ -235,6 +255,43 @@ export default function AdminSmsPage() {
                 </p>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* SMS Paketi Satın Alımları */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-gray-400" />
+            <h2 className="text-sm font-semibold text-gray-900">SMS Paketi Satın Alımları</h2>
+          </div>
+          <span className="text-xs text-gray-400">Son 100 işlem</span>
+        </div>
+        {loadingPurchases ? (
+          <div className="p-10 text-center text-gray-400 text-sm">Yükleniyor...</div>
+        ) : purchases.length === 0 ? (
+          <div className="p-10 text-center text-gray-400 text-sm">Henüz SMS paketi satın alınmadı</div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {purchases.map((p) => {
+              const smsMatch = p.description.match(/^(\d+) SMS paketi/)
+              const smsAmount = smsMatch ? smsMatch[1] : '?'
+              return (
+                <div key={p.id} className="px-5 py-3 flex items-center justify-between">
+                  <div>
+                    <span className="text-sm font-semibold text-gray-900">{p.tenant.name}</span>
+                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">
+                      +{smsAmount} SMS
+                    </span>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {format(new Date(p.createdAt), 'd MMM yyyy HH:mm', { locale: tr })}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold text-green-600">₺{p.amount.toLocaleString('tr-TR')}</span>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
