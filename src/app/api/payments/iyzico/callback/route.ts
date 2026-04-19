@@ -116,7 +116,7 @@ async function handleCallback(
     return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Veritaban%C4%B1+hatas%C4%B1`);
   }
 
-  return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}?upgrade_success=true`);
+  return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}?upgrade_success=true`, { status: 303 });
 }
 
 // POST — İyzico gerçek callback (form-data ile token gönderir)
