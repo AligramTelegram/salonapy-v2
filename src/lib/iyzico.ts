@@ -144,6 +144,7 @@ export async function createCheckoutForm(params: {
     ],
   }
 
+  console.log('[Iyzico] Checkout request:', JSON.stringify({ ...request, buyer: { ...request.buyer, identityNumber: '***' } }))
   return new Promise((resolve) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     iyzipay.checkoutFormInitialize.create(request, (err: Error, result: any) => {
@@ -152,7 +153,7 @@ export async function createCheckoutForm(params: {
         resolve({ status: 'failure', errorMessage: err.message })
         return
       }
-      console.log('[Iyzico] Checkout result:', result?.status)
+      console.log('[Iyzico] Checkout result:', result?.status, result?.errorCode, result?.errorMessage)
       resolve(result as IyzicoCheckoutResult)
     })
   })
