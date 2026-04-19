@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Calendar, TrendingUp, Users, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -27,97 +28,86 @@ function fadeUp(delay = 0) {
 }
 
 export function Hero() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] })
+
+  const rotateX = useTransform(scrollYProgress, [0, 0.35], [18, 0])
+  const scale = useTransform(scrollYProgress, [0, 0.35], [0.88, 1])
+  const translateY = useTransform(scrollYProgress, [0, 0.35], [60, 0])
+
   return (
-    <section className="relative overflow-hidden pb-20 pt-28 md:pb-28 md:pt-36">
-      {/* Arkaplan dekorasyonlar */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-24 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-purple-400/10 blur-3xl" />
-        <div className="absolute -right-48 top-1/2 h-[400px] w-[400px] rounded-full bg-purple-300/10 blur-3xl" />
-        <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-blue-300/[0.08] blur-3xl" />
-      </div>
+    <div ref={containerRef} className="relative">
+      <section className="relative overflow-hidden pb-0 pt-28 md:pt-36">
+        {/* Arkaplan */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -top-24 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-purple-400/10 blur-3xl" />
+          <div className="absolute -right-48 top-1/2 h-[400px] w-[400px] rounded-full bg-purple-300/10 blur-3xl" />
+          <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-blue-300/[0.08] blur-3xl" />
+        </div>
 
-      <div className="container-custom">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          {/* Sol: Metin */}
-          <div>
-            {/* Badge */}
-            <motion.div
-              {...fadeUp(0)}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700"
-            >
-              <span className="flex h-2 w-2 rounded-full bg-purple-500" />
-              3 gün ücretsiz deneme · Kredi kartı gerekmez
-            </motion.div>
-
-            {/* Başlık */}
-            <motion.h1
-              {...fadeUp(0.1)}
-              className="mb-5 font-display text-4xl font-extrabold leading-tight text-gray-900 md:text-5xl lg:text-[3.25rem]"
-            >
-              Randevunuzu{' '}
-              <span className="relative text-purple-600">
-                Otomatikleştirin
-                <svg
-                  className="absolute -bottom-1 left-0 w-full"
-                  viewBox="0 0 300 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1 7C50 3 100 1 150 1C200 1 250 3 299 7"
-                    stroke="#7c3aed"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    opacity="0.4"
-                  />
-                </svg>
-              </span>
-              ,<br />
-              İşlerinizi  büyütün
-            </motion.h1>
-
-            {/* Alt başlık */}
-            <motion.p {...fadeUp(0.2)} className="mb-8 max-w-lg text-lg leading-relaxed text-gray-500">
-              Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetimi.
-              SMS hatırlatmaları, otomatik bildirimler ve detaylı raporlar.
-            </motion.p>
-
-            {/* CTA Butonlar */}
-            <motion.div {...fadeUp(0.3)} className="mb-10 flex flex-wrap gap-3">
-              <Link href="/kayit" title="3 Gün Ücretsiz Deneme">
-                <Button
-                  size="lg"
-                  className="h-12 bg-purple-600 px-6 text-base shadow-lg shadow-purple-200/60 hover:bg-purple-700"
-                >
-                  Ücretsiz Başla
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
-              </Link>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div {...fadeUp(0.4)} className="flex flex-wrap gap-6">
-              {STATS.map((stat) => (
-                <div key={stat.label}>
-                  <div className="font-display text-2xl font-bold text-gray-900">{stat.value}</div>
-                  <div className="text-sm text-gray-500">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Sağ: Dashboard Mockup */}
+        <div className="container-custom text-center">
+          {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="relative hidden lg:block"
+            {...fadeUp(0)}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700"
           >
-            {/* Floating onay badge */}
+            <span className="flex h-2 w-2 rounded-full bg-purple-500" />
+            3 gün ücretsiz deneme · Kredi kartı gerekmez
+          </motion.div>
+
+          {/* Başlık */}
+          <motion.h1
+            {...fadeUp(0.1)}
+            className="mx-auto mb-5 max-w-3xl font-display text-4xl font-extrabold leading-tight text-gray-900 md:text-5xl lg:text-[3.5rem]"
+          >
+            Randevunuzu{' '}
+            <span className="relative text-purple-600">
+              Otomatikleştirin
+              <svg className="absolute -bottom-1 left-0 w-full" viewBox="0 0 300 10" fill="none">
+                <path d="M1 7C50 3 100 1 150 1C200 1 250 3 299 7" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" opacity="0.4" />
+              </svg>
+            </span>
+            ,{' '}İşlerinizi büyütün
+          </motion.h1>
+
+          {/* Alt başlık */}
+          <motion.p {...fadeUp(0.2)} className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-500">
+            Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetimi.
+            SMS hatırlatmaları, otomatik bildirimler ve detaylı raporlar.
+          </motion.p>
+
+          {/* CTA */}
+          <motion.div {...fadeUp(0.3)} className="mb-10 flex flex-wrap justify-center gap-3">
+            <Link href="/kayit" title="3 Gün Ücretsiz Deneme">
+              <Button size="lg" className="h-12 bg-purple-600 px-6 text-base shadow-lg shadow-purple-200/60 hover:bg-purple-700">
+                Ücretsiz Başla
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div {...fadeUp(0.4)} className="mb-16 flex flex-wrap justify-center gap-10">
+            {STATS.map((stat) => (
+              <div key={stat.label}>
+                <div className="font-display text-2xl font-bold text-gray-900">{stat.value}</div>
+                <div className="text-sm text-gray-500">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* 3D Scroll Container */}
+        <div className="relative flex items-center justify-center" style={{ perspective: '1000px' }}>
+          <motion.div
+            style={{ rotateX, scale, translateY }}
+            className="relative w-full max-w-5xl mx-auto px-4 md:px-8"
+          >
+            {/* Floating badges */}
             <motion.div
               animate={{ y: [-6, 6, -6] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -left-8 top-12 z-10 flex items-center gap-3 rounded-xl border border-white/60 bg-white/90 px-4 py-3 shadow-xl backdrop-blur-xl"
+              className="absolute -left-2 top-10 z-10 hidden md:flex items-center gap-3 rounded-xl border border-white/60 bg-white/90 px-4 py-3 shadow-xl backdrop-blur-xl"
             >
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100">
                 <CheckCircle className="h-5 w-5 text-emerald-600" />
@@ -128,11 +118,10 @@ export function Hero() {
               </div>
             </motion.div>
 
-            {/* Floating WA badge */}
             <motion.div
               animate={{ y: [6, -6, 6] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              className="absolute -right-6 bottom-20 z-10 flex items-center gap-3 rounded-xl border border-white/60 bg-white/90 px-4 py-3 shadow-xl backdrop-blur-xl"
+              className="absolute -right-2 bottom-16 z-10 hidden md:flex items-center gap-3 rounded-xl border border-white/60 bg-white/90 px-4 py-3 shadow-xl backdrop-blur-xl"
             >
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-green-50 to-green-100">
                 <svg viewBox="0 0 24 24" className="h-5 w-5 fill-green-600">
@@ -145,8 +134,8 @@ export function Hero() {
               </div>
             </motion.div>
 
-            {/* Ana dashboard kartı */}
-            <div className="glass-card overflow-hidden rounded-3xl border border-white/40 shadow-2xl">
+            {/* Dashboard kartı */}
+            <div className="glass-card overflow-hidden rounded-2xl border border-white/40 shadow-2xl">
               {/* Titlebar */}
               <div className="flex items-center justify-between border-b border-purple-100/40 bg-gradient-to-r from-white/90 to-white/70 px-6 py-4">
                 <div className="flex items-center gap-2">
@@ -158,7 +147,7 @@ export function Hero() {
                 <div className="h-5 w-5" />
               </div>
 
-              {/* Stats row with gradient backgrounds */}
+              {/* Stats row */}
               <div className="grid grid-cols-3 gap-px bg-gradient-to-b from-purple-50/60 to-transparent border-b border-purple-100/40">
                 {[
                   { icon: Calendar, label: 'Bugün', value: '12', color: 'text-purple-600', bg: 'from-purple-50 to-purple-50/50', lightBg: 'bg-purple-100/60' },
@@ -176,36 +165,30 @@ export function Hero() {
               </div>
 
               {/* Appointment list */}
-              <div className="space-y-0 bg-gradient-to-b from-white/90 to-white/70 p-5">
+              <div className="bg-gradient-to-b from-white/90 to-white/70 p-5">
                 <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <span className="text-sm font-bold text-gray-900">Bugünkü Randevular</span>
-                  </div>
+                  <span className="text-sm font-bold text-gray-900">Bugünkü Randevular</span>
                   <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1 text-[11px] font-semibold text-purple-700">
                     <span className="font-display">{MOCK_APPOINTMENTS.length}</span>
                     <span>randevu</span>
                   </span>
                 </div>
-                <div className="space-y-2.5">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                   {MOCK_APPOINTMENTS.map((apt, i) => (
                     <motion.div
                       key={apt.name}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6 + i * 0.1 }}
-                      className="group relative overflow-hidden rounded-lg border border-gray-100 bg-white/80 px-3.5 py-3 shadow-sm transition-all hover:shadow-md hover:border-purple-200/50"
+                      className="relative overflow-hidden rounded-lg border border-gray-100 bg-white/80 px-3.5 py-3 shadow-sm"
                     >
-                      {/* Colored left border */}
                       <div className={`absolute left-0 top-0 h-full w-1 ${apt.color}`} />
-                      
                       <div className="flex items-center justify-between gap-3 pl-1">
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-xs font-semibold text-gray-900">{apt.name}</div>
                           <div className="text-[11px] text-gray-500">{apt.service}</div>
                         </div>
-                        <div className="shrink-0 rounded-lg bg-gray-50 px-2.5 py-1.5 text-[11px] font-semibold text-gray-700">
-                          {apt.time}
-                        </div>
+                        <div className="shrink-0 rounded-lg bg-gray-50 px-2.5 py-1.5 text-[11px] font-semibold text-gray-700">{apt.time}</div>
                       </div>
                     </motion.div>
                   ))}
@@ -214,7 +197,10 @@ export function Hero() {
             </div>
           </motion.div>
         </div>
-      </div>
-    </section>
+
+        {/* Alt gradient geçiş */}
+        <div className="h-32 bg-gradient-to-b from-transparent to-white" />
+      </section>
+    </div>
   )
 }
