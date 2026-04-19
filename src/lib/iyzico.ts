@@ -102,7 +102,7 @@ export async function createCheckoutForm(params: {
     paidPrice: amountStr,
     currency: params.currency,
     basketId: conversationId,
-    paymentGroup: 'SUBSCRIPTION',
+    paymentGroup: 'PRODUCT',
     callbackUrl,
     buyer: {
       id: params.tenantId,
