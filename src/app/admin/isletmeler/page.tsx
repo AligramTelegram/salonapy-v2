@@ -59,6 +59,14 @@ interface TenantDetail {
     timezone: string
     planStartedAt: string
     planEndsAt: string | null
+    ownerName: string | null
+    ownerPhone: string | null
+    ownerEmail: string | null
+    ownerIdNumber: string | null
+    ownerAddress: string | null
+    ownerCity: string | null
+    taxNumber: string | null
+    taxOffice: string | null
   }
   ownerUser: OwnerUser | null
   stats: {
@@ -107,6 +115,9 @@ export default function IsletmelerPage() {
   // Action loading
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [changingPlanId, setChangingPlanId] = useState<string | null>(null)
+
+  // Fatura bilgileri modal
+  const [faturaOpen, setFaturaOpen] = useState(false)
 
   // Credentials form
   const [newName, setNewName] = useState('')
@@ -679,7 +690,13 @@ export default function IsletmelerPage() {
                     {togglingId === detail.tenant.id ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : null}
                     {detail.tenant.isActive ? 'Pasif Yap' : 'Aktif Et'}
                   </button>
-
+                  <button
+                    onClick={() => setFaturaOpen(true)}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all flex items-center gap-1"
+                  >
+                    <CreditCard className="h-3.5 w-3.5" />
+                    Fatura Bilgileri
+                  </button>
                 </div>
 
                 <a
@@ -694,6 +711,46 @@ export default function IsletmelerPage() {
               </div>
             </div>
           ) : null}
+        </DialogContent>
+      </Dialog>
+
+      {/* Fatura Bilgileri Modal */}
+      <Dialog open={faturaOpen} onOpenChange={setFaturaOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base font-bold flex items-center gap-2">
+              <CreditCard className="h-4 w-4 text-amber-600" />
+              Fatura Bilgileri — {detail?.tenant.name}
+            </DialogTitle>
+          </DialogHeader>
+          {detail && (() => {
+            const t = detail.tenant
+            const rows = [
+              { label: 'Yetkili Ad Soyad', value: t.ownerName },
+              { label: 'Yetkili Telefon', value: t.ownerPhone },
+              { label: 'Yetkili E-posta', value: t.ownerEmail },
+              { label: 'TC / Vergi No', value: t.taxNumber || t.ownerIdNumber },
+              { label: 'Vergi Dairesi', value: t.taxOffice },
+              { label: 'Fatura Adresi', value: t.ownerAddress },
+              { label: 'Şehir', value: t.ownerCity },
+            ]
+            const hasBilling = rows.some(r => r.value)
+            return hasBilling ? (
+              <div className="space-y-2 py-2">
+                {rows.map(({ label, value }) => value ? (
+                  <div key={label} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
+                    <span className="text-xs text-gray-400 w-32 shrink-0 pt-0.5">{label}</span>
+                    <span className="text-sm font-medium text-gray-900">{value}</span>
+                  </div>
+                ) : null)}
+              </div>
+            ) : (
+              <div className="py-8 text-center">
+                <CreditCard className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+                <p className="text-sm text-gray-400">Bu işletme henüz fatura bilgisi girmemiş.</p>
+              </div>
+            )
+          })()}
         </DialogContent>
       </Dialog>
     </div>
