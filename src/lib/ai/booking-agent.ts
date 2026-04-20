@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, FunctionDeclaration, SchemaType } from '@google/generative-ai'
+import { GoogleGenerativeAI, FunctionDeclaration, SchemaType, Part } from '@google/generative-ai'
 import { prisma } from '@/lib/prisma'
 import { getAvailableSlots, getNextAvailableSlots } from './availability'
 
@@ -226,21 +226,17 @@ Kurallar:
   const chat = model.startChat({ history: geminiHistory })
 
   let response = ''
-  let currentMessage: string | object = incomingMessage
+  let currentMessage: string | Part[] = incomingMessage
 
   // Tool use döngüsü
   while (true) {
-    const result = await chat.sendMessage(
-      typeof currentMessage === 'string'
-        ? currentMessage
-        : currentMessage as object
-    )
+    const result = await chat.sendMessage(currentMessage)
     const geminiResponse = result.response
     const functionCalls = geminiResponse.functionCalls()
 
     if (functionCalls && functionCalls.length > 0) {
       // Tool çağrılarını işle
-      const toolResponses = await Promise.all(
+      const toolResponses: Part[] = await Promise.all(
         functionCalls.map(async (fc) => ({
           functionResponse: {
             name: fc.name,
