@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import { prisma } from '@/lib/prisma'
 import { sendInstagramDM } from '@/lib/ai/platform-sender'
 import { handleIncomingMessage } from '@/lib/ai/conversation-helper'
@@ -29,9 +30,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })
   }
 
-  processWebhook(body).catch(err =>
+  waitUntil(processWebhook(body).catch(err =>
     console.error('[IG Webhook] Processing error:', err)
-  )
+  ))
 
   return NextResponse.json({ status: 'ok' })
 }

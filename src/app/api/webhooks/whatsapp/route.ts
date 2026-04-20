@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp } from '@/lib/ai/platform-sender'
 import { handleIncomingMessage } from '@/lib/ai/conversation-helper'
@@ -31,9 +32,9 @@ export async function POST(req: NextRequest) {
   }
 
   // Mesajları işle (async, 200 hemen dön)
-  processWebhook(body).catch(err =>
+  waitUntil(processWebhook(body).catch(err =>
     console.error('[WA Webhook] Processing error:', err)
-  )
+  ))
 
   return NextResponse.json({ status: 'ok' })
 }
