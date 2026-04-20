@@ -37,15 +37,17 @@ export async function POST(req: NextRequest) {
 }
 
 async function processWebhook(body: InstagramWebhookBody) {
+  console.log('[IG Webhook] Body:', JSON.stringify(body))
   for (const entry of body.entry ?? []) {
     for (const msg of entry.messaging ?? []) {
-      // Bot kendi mesajını ignore et
       if (msg.message?.is_echo) continue
       const text = msg.message?.text
       if (!text) continue
 
-      const igUserId = msg.sender?.id          // Mesajı gönderen kullanıcı
-      const recipientId = msg.recipient?.id    // İşletmenin IG account ID
+      const igUserId = msg.sender?.id
+      const recipientId = msg.recipient?.id
+
+      console.log(`[IG Webhook] sender=${igUserId} recipient=${recipientId} text=${text}`)
 
       if (!igUserId || !recipientId) continue
 
@@ -53,6 +55,7 @@ async function processWebhook(body: InstagramWebhookBody) {
         where: { platform: 'INSTAGRAM', instagramAccountId: recipientId },
         include: { tenant: { select: { id: true, name: true, instagramAIEnabled: true } } },
       })
+      console.log(`[IG Webhook] integration=${integration?.id} aiEnabled=${integration?.tenant?.instagramAIEnabled}`)
       if (!integration?.tenant?.instagramAIEnabled) continue
 
       const creds = integration.credentials as Record<string, string>
