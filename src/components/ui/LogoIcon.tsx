@@ -3,8 +3,8 @@ export function LogoIcon({ size = 32, className = '' }: { size?: number; classNa
     <svg width={size} height={size} viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" className={className}>
       <defs>
         <linearGradient id="lbg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#8a7a5a"/>
-          <stop offset="100%" stopColor="#2d6060"/>
+          <stop offset="0%" stopColor="#6d28d9"/>
+          <stop offset="100%" stopColor="#4c1d95"/>
         </linearGradient>
       </defs>
       <rect width="192" height="192" rx="28" fill="url(#lbg)"/>
