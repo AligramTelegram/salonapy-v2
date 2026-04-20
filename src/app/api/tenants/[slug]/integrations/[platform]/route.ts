@@ -99,5 +99,14 @@ export async function PATCH(
     },
   })
 
+  // Credentials kaydedilince AI'ı otomatik aktif et
+  if (Object.keys(mergedCreds).length > 0) {
+    if (platform === 'INSTAGRAM') {
+      await prisma.tenant.update({ where: { id: tenantId }, data: { instagramAIEnabled: true } })
+    } else if (platform === 'WHATSAPP') {
+      await prisma.tenant.update({ where: { id: tenantId }, data: { whatsappAIEnabled: true } })
+    }
+  }
+
   return NextResponse.json({ ...integration, credentials: {} })
 }
