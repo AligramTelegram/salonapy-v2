@@ -55,8 +55,9 @@ async function processWebhook(body: InstagramWebhookBody) {
         where: { platform: 'INSTAGRAM', instagramAccountId: recipientId },
         include: { tenant: { select: { id: true, name: true, instagramAIEnabled: true } } },
       })
-      console.log(`[IG Webhook] integration=${integration?.id} aiEnabled=${integration?.tenant?.instagramAIEnabled}`)
-      if (!integration?.tenant?.instagramAIEnabled) continue
+      console.log(`[IG Webhook] integration=${integration?.id ?? 'NOT_FOUND'} aiEnabled=${integration?.tenant?.instagramAIEnabled}`)
+      if (!integration) { console.log('[IG Webhook] No integration found for recipientId:', recipientId); continue }
+      if (!integration.tenant?.instagramAIEnabled) { console.log('[IG Webhook] instagramAIEnabled=false for tenant:', integration.tenantId); continue }
 
       const creds = integration.credentials as Record<string, string>
       const accessToken = creds?.accessToken
