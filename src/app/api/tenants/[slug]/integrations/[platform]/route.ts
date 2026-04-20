@@ -79,6 +79,7 @@ export async function PATCH(
   const phoneNumberId = body.phoneNumberId ?? existing?.phoneNumberId ?? null
   const instagramAccountId = body.instagramAccountId ?? existing?.instagramAccountId ?? null
   const status = Object.keys(mergedCreds).length > 0 ? 'ACTIVE' : 'PENDING'
+  console.log(`[Integration PATCH] platform=${platform} tenantId=${tenantId} instagramAccountId=${instagramAccountId} credKeys=${Object.keys(mergedCreds).join(',')}`)
 
   const integration = await prisma.integration.upsert({
     where: { tenantId_platform: { tenantId, platform } },
