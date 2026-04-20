@@ -74,6 +74,20 @@ model Tenant {
   taxNumber     String?  // Vergi numarası
   taxOffice     String?  // Vergi dairesi
 
+  // WhatsApp AI Paketi
+  whatsappAIEnabled     Boolean   @default(false)
+  whatsappAIStartedAt   DateTime?
+  whatsappAIEndsAt      DateTime?
+  whatsappMessagesUsed  Int       @default(0)
+  whatsappMessagesLimit Int       @default(500)
+
+  // Instagram AI Paketi
+  instagramAIEnabled     Boolean   @default(false)
+  instagramAIStartedAt   DateTime?
+  instagramAIEndsAt      DateTime?
+  instagramMessagesUsed  Int       @default(0)
+  instagramMessagesLimit Int       @default(500)
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -90,6 +104,9 @@ model Tenant {
   announcementDismissals AnnouncementDismissal[]
   supportTickets         SupportTicket[]
   invoices               Invoice[]
+  integrations           Integration[]
+  aiSettings             AISettings?
+  conversations          Conversation[]
 
   @@map("tenants")
 }
@@ -186,9 +203,10 @@ model Customer {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  tenant       Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  appointments Appointment[]
-  packages     CustomerPackage[]
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+  packages      CustomerPackage[]
+  conversations Conversation[]
 
   @@unique([tenantId, phone])
   @@map("customers")
@@ -418,4 +436,91 @@ model SupportTicket {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("support_tickets")
+}
+
+model Integration {
+  id                 String    @id @default(cuid())
+  tenantId           String
+  platform           String    // WHATSAPP, INSTAGRAM
+  enabled            Boolean   @default(true)
+  status             String    @default("PENDING") // PENDING, ACTIVE, ERROR
+  credentials        Json?
+  phoneNumberId      String?
+  instagramAccountId String?
+  webhookVerified    Boolean   @default(false)
+  lastSyncAt         DateTime?
+  errorMessage       String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, platform])
+  @@index([tenantId])
+  @@map("integrations")
+}
+
+model AISettings {
+  id                 String  @id @default(cuid())
+  tenantId           String  @unique
+  enabled            Boolean @default(true)
+  provider           String  @default("anthropic")
+  model              String  @default("claude-sonnet-4-6")
+  temperature        Float   @default(0.7)
+  whatsappAutoReply  Boolean @default(true)
+  whatsappAutoBook   Boolean @default(false)
+  whatsappPrompt     String? @db.Text
+  instagramAutoReply Boolean @default(true)
+  instagramAutoBook  Boolean @default(false)
+  instagramPrompt    String? @db.Text
+  workingHoursStart  String  @default("09:00")
+  workingHoursEnd    String  @default("18:00")
+  outOfHoursMessage  String? @db.Text
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("ai_settings")
+}
+
+model Conversation {
+  id             String   @id @default(cuid())
+  tenantId       String
+  platform       String   // WHATSAPP, INSTAGRAM
+  platformUserId String
+  customerId     String?
+  status         String   @default("ACTIVE") // ACTIVE, RESOLVED, ARCHIVED
+  lastMessageAt  DateTime @default(now())
+  metadata       Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer  Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  messages  Message[]
+
+  @@unique([tenantId, platform, platformUserId])
+  @@index([tenantId])
+  @@index([customerId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  direction      String   // INBOUND, OUTBOUND
+  content        String   @db.Text
+  contentType    String   @default("TEXT")
+  aiGenerated    Boolean  @default(false)
+  intent         String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("messages")
 }

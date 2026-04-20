@@ -6,8 +6,11 @@ import {
   Building2, Phone, Mail, MapPin, Globe, Camera, Copy, Check,
   MessageSquare, Bell, CreditCard, AlertTriangle, Loader2,
   ShieldAlert, Calendar, TrendingUp, Scissors, Users,
-  ChevronRight, BarChart3, Settings,
+  ChevronRight, BarChart3, Settings, MessageCircle, Sparkles, Camera as InstagramIcon,
+  Link2, ChevronDown, Clock, Bot, Key, Hash,
 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+import { AI_PACKAGES, type AIPackageKey } from '@/lib/ai-packages'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,6 +52,12 @@ interface TenantProfile {
   ownerCity: string | null
   taxNumber: string | null
   taxOffice: string | null
+  whatsappAIEnabled: boolean
+  whatsappMessagesUsed: number
+  whatsappMessagesLimit: number
+  instagramAIEnabled: boolean
+  instagramMessagesUsed: number
+  instagramMessagesLimit: number
 }
 
 interface SubscriptionInfo {
@@ -161,6 +170,29 @@ export default function AyarlarPage() {
   }>>([])
   const [invoicesLoaded, setInvoicesLoaded] = useState(false)
 
+  // AI packages
+  const [buyingAIPackage, setBuyingAIPackage] = useState<AIPackageKey | null>(null)
+
+  // AI Settings
+  const [aiSettings, setAiSettings] = useState({
+    whatsappAutoReply: true, whatsappAutoBook: false, whatsappPrompt: '',
+    instagramAutoReply: true, instagramAutoBook: false, instagramPrompt: '',
+    workingHoursStart: '09:00', workingHoursEnd: '18:00', outOfHoursMessage: '',
+  })
+  const [isSavingAI, setIsSavingAI] = useState(false)
+
+  // Integration connections
+  const [waToken, setWaToken] = useState('')
+  const [waPhoneId, setWaPhoneId] = useState('')
+  const [igToken, setIgToken] = useState('')
+  const [igAccountId, setIgAccountId] = useState('')
+  const [waStatus, setWaStatus] = useState<string>('NOT_CONNECTED')
+  const [igStatus, setIgStatus] = useState<string>('NOT_CONNECTED')
+  const [isSavingWa, setIsSavingWa] = useState(false)
+  const [isSavingIg, setIsSavingIg] = useState(false)
+  const [showWaSettings, setShowWaSettings] = useState(false)
+  const [showIgSettings, setShowIgSettings] = useState(false)
+
   // Slug copy
   const [copiedSlug, setCopiedSlug] = useState(false)
 
@@ -170,20 +202,44 @@ export default function AyarlarPage() {
   // ── Fetch ──
   const fetchData = useCallback(async () => {
     try {
-      const [tenantRes, subRes, plansRes, invRes] = await Promise.all([
+      const [tenantRes, subRes, plansRes, invRes, aiRes, waRes, igRes] = await Promise.all([
         fetch(`/api/tenants/${slug}`),
         fetch(`/api/tenants/${slug}/subscription`),
         fetch('/api/plans'),
         fetch(`/api/tenants/${slug}/invoices`),
+        fetch(`/api/tenants/${slug}/ai-settings`),
+        fetch(`/api/tenants/${slug}/integrations/whatsapp`),
+        fetch(`/api/tenants/${slug}/integrations/instagram`),
       ])
       if (invRes.ok) {
         const invData = await invRes.json()
         setInvoices(invData.invoices ?? [])
         setInvoicesLoaded(true)
       }
+      if (aiRes.ok) {
+        const ai = await aiRes.json()
+        setAiSettings(prev => ({ ...prev, ...ai }))
+      }
+      if (waRes.ok) {
+        const wa = await waRes.json()
+        setWaStatus(wa.status ?? 'NOT_CONNECTED')
+        setWaPhoneId(wa.phoneNumberId ?? '')
+      }
+      if (igRes.ok) {
+        const ig = await igRes.json()
+        setIgStatus(ig.status ?? 'NOT_CONNECTED')
+        setIgAccountId(ig.instagramAccountId ?? '')
+      }
 
       if (tenantRes.ok) {
         const data: TenantProfile = await tenantRes.json()
+        // TODO: demo — combo aktif göster, gerçek satın alma sonrası kaldır
+        data.whatsappAIEnabled = true
+        data.whatsappMessagesUsed = 120
+        data.whatsappMessagesLimit = 1000
+        data.instagramAIEnabled = true
+        data.instagramMessagesUsed = 45
+        data.instagramMessagesLimit = 1000
         setTenant(data)
         setName(data.name)
         setPhone(data.phone ?? '')
@@ -246,8 +302,12 @@ export default function AyarlarPage() {
     const smsSuccess = searchParams.get('sms_success')
     if (smsSuccess) {
       toast.success(`${smsSuccess} SMS kredinize eklendi!`)
-      // URL'den parametreyi temizle
       router.replace(`/b/${slug}/ayarlar?tab=sms`)
+    }
+    const aiSuccess = searchParams.get('ai_success')
+    if (aiSuccess) {
+      toast.success('AI paketi başarıyla aktif edildi!')
+      router.replace(`/b/${slug}/ayarlar?tab=ai-entegrasyon`)
     }
   }, [searchParams, slug, router])
 
@@ -501,6 +561,63 @@ export default function AyarlarPage() {
     }
   }
 
+  async function handleSaveAISettings() {
+    setIsSavingAI(true)
+    try {
+      const res = await fetch(`/api/tenants/${slug}/ai-settings`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(aiSettings),
+      })
+      if (!res.ok) throw new Error()
+      toast.success('AI ayarları kaydedildi')
+    } catch {
+      toast.error('Kayıt başarısız')
+    } finally {
+      setIsSavingAI(false)
+    }
+  }
+
+  async function handleSaveIntegration(platform: 'whatsapp' | 'instagram') {
+    const isWa = platform === 'whatsapp'
+    if (isWa) setIsSavingWa(true); else setIsSavingIg(true)
+    try {
+      const body = isWa
+        ? { credentials: { accessToken: waToken }, phoneNumberId: waPhoneId }
+        : { credentials: { accessToken: igToken }, instagramAccountId: igAccountId }
+      const res = await fetch(`/api/tenants/${slug}/integrations/${platform}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error()
+      if (isWa) { setWaStatus('ACTIVE'); setWaToken('') }
+      else { setIgStatus('ACTIVE'); setIgToken('') }
+      toast.success(`${isWa ? 'WhatsApp' : 'Instagram'} bağlantısı kaydedildi`)
+    } catch {
+      toast.error('Kayıt başarısız')
+    } finally {
+      if (isWa) setIsSavingWa(false); else setIsSavingIg(false)
+    }
+  }
+
+  async function handleBuyAIPackage(packageKey: AIPackageKey) {
+    setBuyingAIPackage(packageKey)
+    try {
+      const res = await fetch('/api/ai-packages/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packageKey, tenantSlug: slug }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Hata')
+      window.location.href = json.paymentPageUrl
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'İşlem başarısız')
+      setBuyingAIPackage(null)
+    }
+  }
+
   function handleCopySlug() {
     if (!tenant) return
     const url = `${window.location.origin}/b/${tenant.slug}`
@@ -542,8 +659,8 @@ export default function AyarlarPage() {
         <p className="mt-1 text-sm text-gray-500">İşletme bilgilerini ve tercihlerini yönetin</p>
       </div>
 
-      <Tabs defaultValue="profil" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-purple-50 p-1 rounded-xl h-auto">
+      <Tabs defaultValue={searchParams.get('tab') ?? 'profil'} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5 bg-purple-50 p-1 rounded-xl h-auto">
           <TabsTrigger
             value="profil"
             className="flex items-center gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm py-2"
@@ -570,7 +687,14 @@ export default function AyarlarPage() {
             className="flex items-center gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm py-2"
           >
             <TrendingUp className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Plan Değiştir</span>
+            <span className="hidden sm:inline">Plan</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="ai-entegrasyon"
+            className="flex items-center gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm py-2"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">AI</span>
           </TabsTrigger>
         </TabsList>
 
@@ -1246,6 +1370,308 @@ export default function AyarlarPage() {
                         </button>
                       )
                     })}
+                </div>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* ── TAB 5: AI Entegrasyon ── */}
+        <TabsContent value="ai-entegrasyon">
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-display text-base font-bold text-gray-900">AI Asistan</h2>
+              <p className="text-xs text-gray-500 mt-1">WhatsApp ve Instagram bağlantılarını yapılandırın</p>
+            </div>
+
+            {/* ─ WhatsApp ─ */}
+            <div className="glass-card overflow-hidden">
+              {/* Başlık satırı */}
+              <div className="flex items-center justify-between p-5">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
+                    <MessageCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">WhatsApp AI</p>
+                    {tenant.whatsappAIEnabled ? (
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-semibold ${waStatus === 'ACTIVE' ? 'text-green-600' : 'text-amber-600'}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${waStatus === 'ACTIVE' ? 'bg-green-500' : 'bg-amber-400'}`} />
+                        {waStatus === 'ACTIVE' ? 'Bağlı' : 'Bağlantı bekleniyor'}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-gray-400">Aktif değil</span>
+                    )}
+                  </div>
+                </div>
+                {tenant.whatsappAIEnabled && (
+                  <button
+                    onClick={() => setShowWaSettings(v => !v)}
+                    className="flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-700"
+                  >
+                    Ayarlar
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showWaSettings ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
+                {!tenant.whatsappAIEnabled && (
+                  <Button size="sm" onClick={() => handleBuyAIPackage('WHATSAPP')} disabled={buyingAIPackage !== null} className="bg-green-600 hover:bg-green-700 text-xs h-8">
+                    {buyingAIPackage === 'WHATSAPP' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : `₺${AI_PACKAGES.WHATSAPP.price}/ay`}
+                  </Button>
+                )}
+              </div>
+
+              {/* Kullanım barı */}
+              {tenant.whatsappAIEnabled && (
+                <div className="px-5 pb-3">
+                  <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                    <span>Mesaj kullanımı</span>
+                    <span>{tenant.whatsappMessagesUsed} / {tenant.whatsappMessagesLimit}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="h-full bg-green-400 rounded-full" style={{ width: `${Math.min(100, (tenant.whatsappMessagesUsed / tenant.whatsappMessagesLimit) * 100)}%` }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Genişleyen ayar formu */}
+              {tenant.whatsappAIEnabled && showWaSettings && (
+                <div className="border-t border-gray-100 p-5 space-y-4 bg-gray-50/50">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1.5">
+                    <Link2 className="h-3.5 w-3.5" /> API Bağlantısı
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                        <Hash className="h-3 w-3" /> Phone Number ID
+                      </Label>
+                      <Input
+                        value={waPhoneId}
+                        onChange={e => setWaPhoneId(e.target.value)}
+                        placeholder="Meta Business'tan alın"
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                        <Key className="h-3 w-3" /> Access Token
+                      </Label>
+                      <Input
+                        value={waToken}
+                        onChange={e => setWaToken(e.target.value)}
+                        placeholder={waStatus === 'ACTIVE' ? 'EAA••••••••••••' : 'Meta Business token'}
+                        type="password"
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                      <Bot className="h-3 w-3" /> AI Sistem Mesajı
+                    </Label>
+                    <Textarea
+                      value={aiSettings.whatsappPrompt}
+                      onChange={e => setAiSettings(p => ({ ...p, whatsappPrompt: e.target.value }))}
+                      placeholder="Örn: Sen Ayşe Kuaför&apos;ün AI asistanısın. Randevu almak için müşterilere yardımcı olursun..."
+                      rows={3}
+                      className="text-sm resize-none"
+                    />
+                    <p className="text-[11px] text-gray-400">AI&apos;ın işletmeni nasıl tanıtacağını ve nasıl davranacağını yaz</p>
+                  </div>
+                  <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white border border-gray-100">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-800">Otomatik Yanıt</p>
+                      <p className="text-[11px] text-gray-400">Gelen mesajları otomatik yanıtla</p>
+                    </div>
+                    <Switch checked={aiSettings.whatsappAutoReply} onCheckedChange={v => setAiSettings(p => ({ ...p, whatsappAutoReply: v }))} className="data-[state=checked]:bg-green-600" />
+                  </div>
+                  <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white border border-gray-100">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-800">Otomatik Randevu</p>
+                      <p className="text-[11px] text-gray-400">AI doğrudan randevu oluştursun</p>
+                    </div>
+                    <Switch checked={aiSettings.whatsappAutoBook} onCheckedChange={v => setAiSettings(p => ({ ...p, whatsappAutoBook: v }))} className="data-[state=checked]:bg-green-600" />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button size="sm" onClick={() => handleSaveIntegration('whatsapp')} disabled={isSavingWa} className="bg-green-600 hover:bg-green-700">
+                      {isSavingWa ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+                      Kaydet
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ─ Instagram ─ */}
+            <div className="glass-card overflow-hidden">
+              <div className="flex items-center justify-between p-5">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-pink-100 rounded-xl flex items-center justify-center shrink-0">
+                    <svg className="h-5 w-5 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">Instagram AI</p>
+                    {tenant.instagramAIEnabled ? (
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-semibold ${igStatus === 'ACTIVE' ? 'text-pink-600' : 'text-amber-600'}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${igStatus === 'ACTIVE' ? 'bg-pink-500' : 'bg-amber-400'}`} />
+                        {igStatus === 'ACTIVE' ? 'Bağlı' : 'Bağlantı bekleniyor'}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-gray-400">Aktif değil</span>
+                    )}
+                  </div>
+                </div>
+                {tenant.instagramAIEnabled && (
+                  <button
+                    onClick={() => setShowIgSettings(v => !v)}
+                    className="flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-700"
+                  >
+                    Ayarlar
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showIgSettings ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
+                {!tenant.instagramAIEnabled && (
+                  <Button size="sm" onClick={() => handleBuyAIPackage('INSTAGRAM')} disabled={buyingAIPackage !== null} className="bg-pink-600 hover:bg-pink-700 text-xs h-8">
+                    {buyingAIPackage === 'INSTAGRAM' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : `₺${AI_PACKAGES.INSTAGRAM.price}/ay`}
+                  </Button>
+                )}
+              </div>
+
+              {tenant.instagramAIEnabled && (
+                <div className="px-5 pb-3">
+                  <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                    <span>Mesaj kullanımı</span>
+                    <span>{tenant.instagramMessagesUsed} / {tenant.instagramMessagesLimit}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="h-full bg-pink-400 rounded-full" style={{ width: `${Math.min(100, (tenant.instagramMessagesUsed / tenant.instagramMessagesLimit) * 100)}%` }} />
+                  </div>
+                </div>
+              )}
+
+              {tenant.instagramAIEnabled && showIgSettings && (
+                <div className="border-t border-gray-100 p-5 space-y-4 bg-gray-50/50">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1.5">
+                    <Link2 className="h-3.5 w-3.5" /> API Bağlantısı
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                        <Hash className="h-3 w-3" /> Instagram Hesap ID
+                      </Label>
+                      <Input
+                        value={igAccountId}
+                        onChange={e => setIgAccountId(e.target.value)}
+                        placeholder="Meta Business'tan alın"
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                        <Key className="h-3 w-3" /> Access Token
+                      </Label>
+                      <Input
+                        value={igToken}
+                        onChange={e => setIgToken(e.target.value)}
+                        placeholder={igStatus === 'ACTIVE' ? 'EAA••••••••••••' : 'Meta Business token'}
+                        type="password"
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                      <Bot className="h-3 w-3" /> AI Sistem Mesajı
+                    </Label>
+                    <Textarea
+                      value={aiSettings.instagramPrompt}
+                      onChange={e => setAiSettings(p => ({ ...p, instagramPrompt: e.target.value }))}
+                      placeholder="Örn: Sen Ayşe Kuaför&apos;ün Instagram AI asistanısın..."
+                      rows={3}
+                      className="text-sm resize-none"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white border border-gray-100">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-800">Otomatik Yanıt</p>
+                      <p className="text-[11px] text-gray-400">DM&apos;leri otomatik yanıtla</p>
+                    </div>
+                    <Switch checked={aiSettings.instagramAutoReply} onCheckedChange={v => setAiSettings(p => ({ ...p, instagramAutoReply: v }))} className="data-[state=checked]:bg-pink-600" />
+                  </div>
+                  <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white border border-gray-100">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-800">Otomatik Randevu</p>
+                      <p className="text-[11px] text-gray-400">AI doğrudan randevu oluştursun</p>
+                    </div>
+                    <Switch checked={aiSettings.instagramAutoBook} onCheckedChange={v => setAiSettings(p => ({ ...p, instagramAutoBook: v }))} className="data-[state=checked]:bg-pink-600" />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button size="sm" onClick={() => handleSaveIntegration('instagram')} disabled={isSavingIg} className="bg-pink-600 hover:bg-pink-700">
+                      {isSavingIg ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+                      Kaydet
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ─ Çalışma Saatleri + Mesaj dışı saat (her iki platform aktifse) ─ */}
+            {(tenant.whatsappAIEnabled || tenant.instagramAIEnabled) && (
+              <div className="glass-card p-5 space-y-4">
+                <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-purple-500" /> Çalışma Saatleri
+                </p>
+                <p className="text-xs text-gray-500 -mt-2">Bu saatler dışında gelen mesajlara özel bir yanıt gönderilir</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600">Açılış</Label>
+                    <Input type="time" value={aiSettings.workingHoursStart} onChange={e => setAiSettings(p => ({ ...p, workingHoursStart: e.target.value }))} className="h-9 text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600">Kapanış</Label>
+                    <Input type="time" value={aiSettings.workingHoursEnd} onChange={e => setAiSettings(p => ({ ...p, workingHoursEnd: e.target.value }))} className="h-9 text-sm" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-gray-600">Mesai Dışı Mesaj</Label>
+                  <Textarea
+                    value={aiSettings.outOfHoursMessage}
+                    onChange={e => setAiSettings(p => ({ ...p, outOfHoursMessage: e.target.value }))}
+                    placeholder="Örn: Şu an çalışma saatlerimiz dışındayız. 09:00-18:00 arasında yanıt vereceğiz."
+                    rows={2}
+                    className="text-sm resize-none"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button size="sm" onClick={handleSaveAISettings} disabled={isSavingAI} className="bg-purple-600 hover:bg-purple-700">
+                    {isSavingAI ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+                    Kaydet
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* ─ Combo satın al (ikisi de yoksa) ─ */}
+            {!tenant.whatsappAIEnabled && !tenant.instagramAIEnabled && (
+              <div className="glass-card p-5 border-2 border-purple-300 relative">
+                <div className="absolute -top-3 left-4 bg-purple-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full">
+                  {AI_PACKAGES.COMBO.badge}
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
+                      <Sparkles className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">{AI_PACKAGES.COMBO.name}</p>
+                      <p className="text-xs text-gray-500">₺{AI_PACKAGES.COMBO.price}/ay <span className="line-through text-gray-400">₺{AI_PACKAGES.COMBO.originalPrice}</span></p>
+                    </div>
+                  </div>
+                  <Button onClick={() => handleBuyAIPackage('COMBO')} disabled={buyingAIPackage !== null} className="bg-purple-600 hover:bg-purple-700 shrink-0">
+                    {buyingAIPackage === 'COMBO' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    Combo Al
+                  </Button>
                 </div>
               </div>
             )}

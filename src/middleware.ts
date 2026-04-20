@@ -36,13 +36,19 @@ export async function middleware(request: NextRequest) {
 
   // ── 1. Admin IP kontrolü ───────────────────────────────────────────────────
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-    const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
-    if (!ADMIN_ALLOWED_IPS.includes(ip)) {
-      return new NextResponse('<h1>403 — Erişim Reddedildi</h1>', {
-        status: 403,
-        headers: { 'Content-Type': 'text/html' },
-      })
+    // Development modunda IP kontrolü atla
+    if (process.env.NODE_ENV !== 'development') {
+      const forwarded = request.headers.get('x-forwarded-for')
+      const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
+      // IPv4 + IPv6 loopback her zaman geçerli
+      const LOCAL_IPS = ['127.0.0.1', '::1', '::ffff:127.0.0.1']
+      const allowed = [...ADMIN_ALLOWED_IPS, ...LOCAL_IPS]
+      if (!allowed.includes(ip)) {
+        return new NextResponse('<h1>403 — Erişim Reddedildi</h1>', {
+          status: 403,
+          headers: { 'Content-Type': 'text/html' },
+        })
+      }
     }
   }
 

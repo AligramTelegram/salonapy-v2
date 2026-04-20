@@ -98,6 +98,49 @@ async function handleCallback(
     return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}/ayarlar?sms_success=true`, { status: 303 })
   }
 
+  // AI Paketi satın alımı
+  if (plan.startsWith('AI_')) {
+    const packageType = plan.replace('AI_', '') // WHATSAPP, INSTAGRAM, COMBO
+    const endsAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+
+    const updates: Record<string, unknown> = {}
+    if (packageType === 'WHATSAPP' || packageType === 'COMBO') {
+      updates.whatsappAIEnabled = true
+      updates.whatsappAIStartedAt = now
+      updates.whatsappAIEndsAt = endsAt
+      updates.whatsappMessagesUsed = 0
+      updates.whatsappMessagesLimit = packageType === 'COMBO' ? 1000 : 500
+    }
+    if (packageType === 'INSTAGRAM' || packageType === 'COMBO') {
+      updates.instagramAIEnabled = true
+      updates.instagramAIStartedAt = now
+      updates.instagramAIEndsAt = endsAt
+      updates.instagramMessagesUsed = 0
+      updates.instagramMessagesLimit = packageType === 'COMBO' ? 1000 : 500
+    }
+
+    try {
+      await prisma.$transaction([
+        prisma.tenant.update({ where: { id: tenantId }, data: updates }),
+        prisma.transaction.create({
+          data: {
+            tenantId,
+            type: 'GELIR',
+            amount,
+            category: 'ai_paketi',
+            description: `AI ${packageType} paketi - Ödeme ID: ${paymentId ?? '-'}`,
+          },
+        }),
+      ])
+      console.log('[Callback] AI paketi aktif edildi:', tenantId, packageType)
+    } catch (err) {
+      console.error('[Callback] AI DB hatası:', err)
+      return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Veritaban%C4%B1+hatas%C4%B1`)
+    }
+
+    return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}/ayarlar?tab=ai-entegrasyon&ai_success=${packageType}`, { status: 303 })
+  }
+
   // Plan aboneliği satın alımı
   const endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 

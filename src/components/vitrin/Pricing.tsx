@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Zap, Star } from 'lucide-react'
+import { Check, Zap, Star, MessageCircle, Sparkles, Bot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { PlanConfig, PlansConfig } from '@/app/api/plans/route'
 
@@ -112,6 +112,150 @@ export function Pricing() {
         >
           Ek 250 SMS için +₺300/ay · Fiyatlar KDV dahildir
         </motion.p>
+
+        {/* AI Eklenti Paketleri */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="mt-20"
+        >
+          {/* Başlık */}
+          <div className="mb-10 text-center">
+            <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 px-4 py-1.5 text-sm font-medium text-purple-700">
+              <Bot className="h-4 w-4" />
+              Eklenti Paketleri
+            </span>
+            <h2 className="mb-3 font-display text-2xl font-bold text-gray-900 md:text-3xl">
+              AI Asistan ile işletmenizi
+              <br />
+              <span className="text-purple-600">otomatikleştirin</span>
+            </h2>
+            <p className="mx-auto max-w-lg text-sm text-gray-500 leading-relaxed">
+              Herhangi bir plana ek olarak ekleyebilirsiniz. WhatsApp ve Instagram DM&apos;lerinizi AI ile otomatik yanıtlayın, randevu alın.
+            </p>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {/* WhatsApp */}
+            <motion.div
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="relative rounded-2xl border border-green-100 bg-white p-6 shadow-sm"
+            >
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-100">
+                  <MessageCircle className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-green-600">WhatsApp</p>
+                  <h3 className="font-display text-base font-bold text-gray-900">AI Asistan</h3>
+                </div>
+              </div>
+              <div className="mb-4 flex items-end gap-1">
+                <span className="font-display text-3xl font-extrabold text-gray-900">₺350</span>
+                <span className="mb-1 text-sm text-gray-500">/ay</span>
+              </div>
+              <ul className="mb-5 space-y-2">
+                {['WhatsApp Business API', 'Otomatik randevu oluşturma', 'Hizmet/fiyat sorguları', '500 AI mesaj/ay dahil', 'Konuşma geçmişi'].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-600">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-green-500" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/kayit">
+                <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300">
+                  Başla
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* Instagram */}
+            <motion.div
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="relative rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+            >
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100">
+                  <svg className="h-5 w-5 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-pink-600">Instagram</p>
+                  <h3 className="font-display text-base font-bold text-gray-900">AI Asistan</h3>
+                </div>
+              </div>
+              <div className="mb-4 flex items-end gap-1">
+                <span className="font-display text-3xl font-extrabold text-gray-900">₺350</span>
+                <span className="mb-1 text-sm text-gray-500">/ay</span>
+              </div>
+              <ul className="mb-5 space-y-2">
+                {['Instagram DM otomasyonu', 'Otomatik randevu oluşturma', 'Hizmet/fiyat sorguları', '500 AI mesaj/ay dahil', 'Konuşma geçmişi'].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-600">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-pink-500" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/kayit">
+                <Button variant="outline" className="w-full border-pink-200 text-pink-700 hover:bg-pink-50 hover:border-pink-300">
+                  Başla
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* Combo */}
+            <motion.div
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="relative rounded-2xl border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-white p-6 shadow-md shadow-purple-100/60"
+            >
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-purple-600 px-3 py-0.5 text-[11px] font-bold text-white">
+                  <Sparkles className="h-3 w-3" />
+                  ₺100 İNDİRİMLİ
+                </span>
+              </div>
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-purple-600">Combo</p>
+                  <h3 className="font-display text-base font-bold text-gray-900">WhatsApp + Instagram</h3>
+                </div>
+              </div>
+              <div className="mb-1 flex items-end gap-1">
+                <span className="font-display text-3xl font-extrabold text-gray-900">₺600</span>
+                <span className="mb-1 text-sm text-gray-500">/ay</span>
+              </div>
+              <p className="mb-4 text-xs text-gray-400 line-through">₺700/ay yerine</p>
+              <ul className="mb-5 space-y-2">
+                {['Her iki platform dahil', 'Birleşik konuşma yönetimi', '1000 AI mesaj/ay dahil', 'Tüm AI özellikler'].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-600">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-purple-500" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/kayit">
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-200/60">
+                  Combo Al
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
+
+          <p className="mt-6 text-center text-xs text-gray-400">
+            AI paketleri mevcut aboneliğinize ek olarak uygulanır · Her ay yenilenebilir
+          </p>
+        </motion.div>
       </div>
     </section>
   )

@@ -1,0 +1,55 @@
+export const AI_PACKAGES = {
+  WHATSAPP: {
+    id: 'AI_WHATSAPP',
+    name: 'WhatsApp AI Asistan',
+    price: 350,
+    messagesIncluded: 500,
+    features: [
+      'WhatsApp Business API entegrasyonu',
+      'AI chatbot (Claude Sonnet)',
+      'Otomatik randevu oluşturma',
+      'Müşteri sorgulama yanıtları',
+      'Hizmet/fiyat bilgilendirme',
+      '500 AI mesaj/ay dahil',
+      'Konuşma geçmişi',
+    ],
+    icon: 'MessageCircle',
+    color: 'green' as const,
+  },
+  INSTAGRAM: {
+    id: 'AI_INSTAGRAM',
+    name: 'Instagram AI Asistan',
+    price: 350,
+    messagesIncluded: 500,
+    features: [
+      'Instagram DM otomasyonu',
+      'AI chatbot (Claude Sonnet)',
+      'Otomatik randevu oluşturma',
+      'DM\'den bilgi sorgulama',
+      'Hizmet/fiyat bilgilendirme',
+      '500 AI mesaj/ay dahil',
+      'Konuşma geçmişi',
+    ],
+    icon: 'Instagram',
+    color: 'pink' as const,
+  },
+  COMBO: {
+    id: 'AI_COMBO',
+    name: 'Combo (WhatsApp + Instagram)',
+    price: 600,
+    originalPrice: 700,
+    messagesIncluded: 1000,
+    features: [
+      'Her iki platform dahil',
+      'Birleşik konuşma yönetimi',
+      '1000 AI mesaj/ay dahil',
+      'Tüm AI özellikler',
+      '₺100 indirimli!',
+    ],
+    icon: 'Sparkles',
+    color: 'purple' as const,
+    badge: '₺100 İNDİRİMLİ',
+  },
+} as const
+
+export type AIPackageKey = keyof typeof AI_PACKAGES
