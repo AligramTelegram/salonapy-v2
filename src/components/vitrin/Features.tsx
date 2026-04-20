@@ -3,11 +3,11 @@
 import { motion, type Variants } from 'framer-motion'
 import {
   Calendar,
-  Users,
   Bell,
   TrendingUp,
   Shield,
   Zap,
+  Bot,
 } from 'lucide-react'
 
 const FEATURES = [
@@ -20,20 +20,23 @@ const FEATURES = [
     bg: 'bg-purple-50',
     glow: 'rgba(124,58,237,0.12)',
     gradient: 'from-purple-200/60 via-white to-purple-100/40',
+    badge: null,
   },
   {
-    icon: Users,
-    title: 'Müşteri Yönetimi',
+    icon: Bot,
+    title: 'AI Randevu Asistanı',
     description:
-      'Ziyaret geçmişi, harcama özeti ve notlarla zenginleştirilmiş müşteri kartları. Sadık müşteri takibi.',
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-    glow: 'rgba(59,130,246,0.12)',
-    gradient: 'from-blue-200/60 via-white to-blue-100/40',
+      'WhatsApp ve Instagram üzerinden gelen mesajlara yapay zeka yanıt verir, müsait slotları gösterir ve randevu oluşturur.',
+    color: 'text-violet-600',
+    bg: 'bg-violet-50',
+    glow: 'rgba(139,92,246,0.12)',
+    gradient: 'from-violet-200/60 via-white to-violet-100/40',
+    badge: 'Yakında',
   },
   {
     icon: Bell,
     title: 'SMS Hatırlatmaları',
+    badge: null,
     description:
       'Randevu onayı, hatırlatma ve iptal mesajları SMS üzerinden otomatik gönderilir.',
     color: 'text-green-600',
@@ -44,6 +47,7 @@ const FEATURES = [
   {
     icon: TrendingUp,
     title: 'Finansal Raporlar',
+    badge: null,
     description:
       'Günlük, haftalık ve aylık gelir/gider takibi. Personel bazında performans ve hizmet analizi.',
     color: 'text-amber-600',
@@ -54,6 +58,7 @@ const FEATURES = [
   {
     icon: Shield,
     title: 'Güvenli & KVKK Uyumlu',
+    badge: null,
     description:
       'Müşteri verileri şifrelenmiş altyapıda saklanır. KVKK ve GDPR gerekliliklerine tam uyum.',
     color: 'text-rose-600',
@@ -64,6 +69,7 @@ const FEATURES = [
   {
     icon: Zap,
     title: '5 Dakikada Kurulum',
+    badge: null,
     description:
       'İşletmenizi tanımlayın, çalışanlarınızı ekleyin, hazır. Teknik bilgi gerekmez. Hemen başlayın.',
     color: 'text-indigo-600',
@@ -141,17 +147,19 @@ function FeatureCard({
     >
       {/* Inner white card */}
       <div className="h-full rounded-[15px] bg-white p-6">
-        {/* İkon */}
-        <div className={`mb-4 inline-flex rounded-xl p-3 ${feature.bg}`}>
-          <feature.icon className={`h-6 w-6 ${feature.color}`} />
+        <div className="mb-4 flex items-center justify-between">
+          <div className={`inline-flex rounded-xl p-3 ${feature.bg}`}>
+            <feature.icon className={`h-6 w-6 ${feature.color}`} />
+          </div>
+          {feature.badge && (
+            <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700">
+              {feature.badge}
+            </span>
+          )}
         </div>
-
-        {/* Başlık */}
         <h3 className="mb-2 font-display text-base font-bold text-gray-900">
           {feature.title}
         </h3>
-
-        {/* Açıklama */}
         <p className="text-sm leading-relaxed text-gray-500">{feature.description}</p>
       </div>
     </motion.div>

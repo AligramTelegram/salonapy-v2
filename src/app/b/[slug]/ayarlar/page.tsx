@@ -1378,7 +1378,22 @@ export default function AyarlarPage() {
 
         {/* ── TAB 5: AI Entegrasyon ── */}
         <TabsContent value="ai-entegrasyon">
-          <div className="space-y-4">
+          <div className="relative">
+            {/* Yakında overlay */}
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-white/60 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-xl border border-purple-100 p-8 max-w-sm w-full mx-4 text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-purple-100 mb-4">
+                  <Bot className="h-7 w-7 text-purple-600" />
+                </div>
+                <span className="inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700 mb-3">Yakında</span>
+                <h3 className="font-display text-lg font-bold text-gray-900 mb-2">AI Randevu Asistanı</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  WhatsApp ve Instagram üzerinden gelen mesajlara yapay zeka yanıt verir, müsait slotları gösterir ve randevu oluşturur.
+                </p>
+                <p className="text-xs text-purple-600 font-medium mt-4">Çok yakında hizmetinizde olacak!</p>
+              </div>
+            </div>
+          <div className="space-y-4 blur-sm pointer-events-none select-none">
             <div>
               <h2 className="font-display text-base font-bold text-gray-900">AI Asistan</h2>
               <p className="text-xs text-gray-500 mt-1">WhatsApp ve Instagram bağlantılarını yapılandırın</p>
@@ -1675,6 +1690,7 @@ export default function AyarlarPage() {
                 </div>
               </div>
             )}
+          </div>
           </div>
         </TabsContent>
 
