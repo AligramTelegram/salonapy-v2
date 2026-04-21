@@ -30,7 +30,7 @@ async function getSubscriptionData() {
   const today = new Date()
   const monthStart = startOfMonth(today)
   const monthEnd = endOfMonth(today)
-  const next30Days = addDays(today, 30)
+  const next5Days = addDays(today, 5)
 
   const [
     // Gerçek ödemeli: ACTIVE plan, süresi dolmamış
@@ -65,11 +65,11 @@ async function getSubscriptionData() {
     prisma.subscription.count({
       where: { status: 'ACTIVE', createdAt: { gte: monthStart, lte: monthEnd } },
     }),
-    // Yaklaşan plan yenilemeleri (30 gün içinde, ödemeli)
+    // Yaklaşan plan yenilemeleri (5 gün içinde, ödemeli)
     prisma.tenant.findMany({
       where: {
         isActive: true,
-        planEndsAt: { gte: today, lte: next30Days },
+        planEndsAt: { gte: today, lte: next5Days },
         subscription: { status: 'ACTIVE' },
       },
       select: {
@@ -115,13 +115,13 @@ async function getSubscriptionData() {
       },
       orderBy: { name: 'asc' },
     }),
-    // Yaklaşan AI yenilemeleri (30 gün içinde)
+    // Yaklaşan AI yenilemeleri (5 gün içinde)
     prisma.tenant.findMany({
       where: {
         isActive: true,
         OR: [
-          { whatsappAIEnabled: true, whatsappAIEndsAt: { gte: today, lte: next30Days } },
-          { instagramAIEnabled: true, instagramAIEndsAt: { gte: today, lte: next30Days } },
+          { whatsappAIEnabled: true, whatsappAIEndsAt: { gte: today, lte: next5Days } },
+          { instagramAIEnabled: true, instagramAIEndsAt: { gte: today, lte: next5Days } },
         ],
       },
       select: {
@@ -242,7 +242,7 @@ export default async function AboneliklerPage() {
           </div>
           <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Yenileme</p>
           <p className="text-xl font-bold text-gray-900 mt-0.5">{upcomingRenewals.length}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5">30 gün içinde plan</p>
+          <p className="text-[11px] text-gray-400 mt-0.5">5 gün içinde plan</p>
         </div>
 
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
@@ -296,7 +296,7 @@ export default async function AboneliklerPage() {
           {upcomingRenewals.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <CreditCard className="h-8 w-8 text-gray-300 mb-2" />
-              <p className="text-sm text-gray-400">30 gün içinde yenilenecek plan yok</p>
+              <p className="text-sm text-gray-400">5 gün içinde yenilenecek plan yok</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-50">
@@ -409,7 +409,7 @@ export default async function AboneliklerPage() {
           {aiUpcoming.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <Zap className="h-8 w-8 text-gray-300 mb-2" />
-              <p className="text-sm text-gray-400">30 gün içinde yenilenecek AI paketi yok</p>
+              <p className="text-sm text-gray-400">5 gün içinde yenilenecek AI paketi yok</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-50">
@@ -420,7 +420,7 @@ export default async function AboneliklerPage() {
                   <div key={t.id} className="py-3">
                     <p className="font-semibold text-sm text-gray-900 mb-1">{t.name}</p>
                     <div className="space-y-1">
-                      {t.whatsappAIEnabled && t.whatsappAIEndsAt && waDays !== null && waDays <= 30 && (
+                      {t.whatsappAIEnabled && t.whatsappAIEndsAt && waDays !== null && waDays <= 5 && (
                         <div className="flex items-center gap-2">
                           <MessageCircle className="h-3.5 w-3.5 text-green-500" />
                           <span className="text-[11px] text-gray-500">
@@ -431,7 +431,7 @@ export default async function AboneliklerPage() {
                           </span>
                         </div>
                       )}
-                      {t.instagramAIEnabled && t.instagramAIEndsAt && igDays !== null && igDays <= 30 && (
+                      {t.instagramAIEnabled && t.instagramAIEndsAt && igDays !== null && igDays <= 5 && (
                         <div className="flex items-center gap-2">
                           <Camera className="h-3.5 w-3.5 text-pink-500" />
                           <span className="text-[11px] text-gray-500">
