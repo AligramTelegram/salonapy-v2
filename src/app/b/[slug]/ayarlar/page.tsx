@@ -233,13 +233,6 @@ export default function AyarlarPage() {
 
       if (tenantRes.ok) {
         const data: TenantProfile = await tenantRes.json()
-        // TODO: demo — combo aktif göster, gerçek satın alma sonrası kaldır
-        data.whatsappAIEnabled = true
-        data.whatsappMessagesUsed = 120
-        data.whatsappMessagesLimit = 1000
-        data.instagramAIEnabled = true
-        data.instagramMessagesUsed = 45
-        data.instagramMessagesLimit = 1000
         setTenant(data)
         setName(data.name)
         setPhone(data.phone ?? '')

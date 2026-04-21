@@ -95,7 +95,7 @@ async function handleCallback(
       console.error('[Callback] SMS DB hatası:', err)
       return NextResponse.redirect(`${baseUrl}/odeme-basarisiz?reason=Veritaban%C4%B1+hatas%C4%B1`)
     }
-    return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}/ayarlar?sms_success=true`, { status: 303 })
+    return NextResponse.redirect(`${baseUrl}/b/${tenant.slug}/ayarlar?sms_success=${smsAmount}`, { status: 303 })
   }
 
   // AI Paketi satın alımı
