@@ -7,7 +7,7 @@ import { Testimonials } from '@/components/vitrin/Testimonials'
 import { BlogPreview } from '@/components/vitrin/BlogPreview'
 import { SectorGuide } from '@/components/vitrin/SectorGuide'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Hemensalon - Randevu Yönetim Platformu',

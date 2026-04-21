@@ -1,24 +1,40 @@
-'use client'
-
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { ArrowRight, Clock } from 'lucide-react'
-import { getAllPosts, formatDate } from '@/lib/blog'
+import { ArrowRight, Clock, User } from 'lucide-react'
+import { prisma } from '@/lib/prisma'
+import { format } from 'date-fns'
+import { tr } from 'date-fns/locale'
 
-export function BlogPreview() {
-  const posts = getAllPosts().slice(0, 3)
+const COVER_GRADIENTS = [
+  'from-purple-500 via-violet-500 to-indigo-600',
+  'from-blue-500 via-cyan-500 to-teal-500',
+  'from-amber-400 via-orange-500 to-rose-500',
+  'from-rose-400 via-pink-500 to-purple-600',
+  'from-emerald-400 via-green-500 to-teal-600',
+]
+
+export async function BlogPreview() {
+  const posts = await prisma.blogPost.findMany({
+    where: { published: true },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      author: true,
+      tags: true,
+      publishedAt: true,
+    },
+  })
+
+  if (posts.length === 0) return null
 
   return (
     <section className="py-24 md:py-32">
       <div className="container-custom">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end"
-        >
+        <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <span className="mb-3 inline-block rounded-full bg-purple-100 px-4 py-1.5 text-sm font-medium text-purple-700">
               Blog
@@ -36,53 +52,49 @@ export function BlogPreview() {
             Tüm Yazılar
             <ArrowRight className="h-4 w-4" />
           </Link>
-        </motion.div>
+        </div>
 
         {/* Posts */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, i) => (
-            <motion.div
-              key={post.slug}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+            <Link
+              key={post.id}
+              href={`/blog/${post.slug}`}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-purple-100/60 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-100/40"
             >
-              <Link
-                href={`/blog/${post.slug}`}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-purple-100/60 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-100/40"
-              >
-                {/* Cover */}
-                <div
-                  className={`h-40 w-full bg-gradient-to-br ${post.coverGradient}`}
-                />
+              {/* Cover */}
+              <div className={`h-40 w-full bg-gradient-to-br ${COVER_GRADIENTS[i % COVER_GRADIENTS.length]}`} />
 
-                {/* Body */}
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="mb-3 flex items-center gap-3 text-xs text-gray-400">
-                    <span>{formatDate(post.date)}</span>
-                    <span>·</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {post.readTime} dk
-                    </span>
-                  </div>
-
-                  <h3 className="mb-2 font-display text-sm font-bold leading-snug text-gray-900 transition-colors group-hover:text-purple-600 line-clamp-2">
-                    {post.title}
-                  </h3>
-
-                  <p className="mb-4 flex-1 text-xs leading-relaxed text-gray-500 line-clamp-2">
-                    {post.excerpt}
-                  </p>
-
-                  <div className="flex items-center gap-1 text-xs font-medium text-purple-600">
-                    Devamını Oku
-                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                  </div>
+              {/* Body */}
+              <div className="flex flex-1 flex-col p-5">
+                <div className="mb-3 flex items-center gap-3 text-xs text-gray-400">
+                  {post.publishedAt && (
+                    <span>{format(new Date(post.publishedAt), 'd MMM yyyy', { locale: tr })}</span>
+                  )}
+                  {post.tags[0] && (
+                    <>
+                      <span>·</span>
+                      <span className="flex items-center gap-1">
+                        {post.tags[0]}
+                      </span>
+                    </>
+                  )}
                 </div>
-              </Link>
-            </motion.div>
+
+                <h3 className="mb-2 font-display text-sm font-bold leading-snug text-gray-900 transition-colors group-hover:text-purple-600 line-clamp-2">
+                  {post.title}
+                </h3>
+
+                <p className="mb-4 flex-1 text-xs leading-relaxed text-gray-500 line-clamp-2">
+                  {post.excerpt}
+                </p>
+
+                <div className="flex items-center gap-1 text-xs font-medium text-purple-600">
+                  Devamını Oku
+                  <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
