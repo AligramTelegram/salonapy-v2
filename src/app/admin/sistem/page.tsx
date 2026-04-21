@@ -160,7 +160,7 @@ export default async function SistemPage() {
           </div>
           <p className="text-sm font-bold text-gray-900 mt-3">Server Uptime</p>
           <p className="text-xs font-semibold text-blue-600 mt-0.5">
-            {uptimeHours}s {uptimeMinutes}dk çalışıyor
+            {uptimeHours}sa {uptimeMinutes}dk çalışıyor
           </p>
         </div>
       </div>

@@ -34,6 +34,7 @@ async function getAdminStats() {
 
   const [
     payingTenants,
+    activeAiTenants,
     trialCount,
     expiredCount,
     totalCount,
@@ -44,10 +45,21 @@ async function getAdminStats() {
     criticalRenewals,
     criticalAiRenewals,
   ] = await Promise.all([
-    // Gerçek ödemeli
+    // Gerçek ödemeli: planı aktif ve süresi dolmamış
     prisma.tenant.findMany({
       where: { isActive: true, subscription: { status: 'ACTIVE' }, planEndsAt: { gte: today } },
-      select: { plan: true, whatsappAIEnabled: true, instagramAIEnabled: true, whatsappAIEndsAt: true, instagramAIEndsAt: true },
+      select: { plan: true },
+    }),
+    // AI geliri: plandan bağımsız, sadece aktif AI paketi olanlar
+    prisma.tenant.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { whatsappAIEnabled: true, whatsappAIEndsAt: { gte: today } },
+          { instagramAIEnabled: true, instagramAIEndsAt: { gte: today } },
+        ],
+      },
+      select: { whatsappAIEnabled: true, whatsappAIEndsAt: true, instagramAIEnabled: true, instagramAIEndsAt: true },
     }),
     // Deneme sayısı
     prisma.tenant.count({ where: { isActive: true, subscription: { status: 'TRIAL' } } }),
@@ -108,9 +120,10 @@ async function getAdminStats() {
 
   const planPrices = await getPlanPricesTRY()
 
-  // Gerçek MRR: plan + AI (sadece ödemeli ve süresi dolmamış)
+  // Gerçek MRR: sadece ödemeli plan
   const planMrr = payingTenants.reduce((s, t) => s + (planPrices[t.plan] ?? 0), 0)
-  const aiMrr = payingTenants.reduce((sum, t) => {
+  // AI MRR: plandan bağımsız, aktif AI paketi olan tüm işletmeler
+  const aiMrr = activeAiTenants.reduce((sum, t) => {
     const waActive = t.whatsappAIEnabled && t.whatsappAIEndsAt && new Date(t.whatsappAIEndsAt) >= today
     const igActive = t.instagramAIEnabled && t.instagramAIEndsAt && new Date(t.instagramAIEndsAt) >= today
     if (waActive && igActive) return sum + AI_PRICE_COMBO

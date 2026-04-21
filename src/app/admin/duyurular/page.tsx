@@ -218,6 +218,11 @@ export default function DuyurularPage() {
                             Pasif
                           </span>
                         )}
+                        {row.expiresAt && new Date(row.expiresAt) < new Date() && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/60 text-red-400 font-medium">
+                            Süresi Doldu
+                          </span>
+                        )}
                         {row.targetPlan && (
                           <span className="text-xs px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-300 font-medium">
                             {PLAN_LABELS[row.targetPlan] ?? row.targetPlan}
