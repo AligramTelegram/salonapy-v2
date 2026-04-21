@@ -33,32 +33,44 @@ async function getSubscriptionData() {
   const next30Days = addDays(today, 30)
 
   const [
-    activeTenants,
+    // Gerçek ödemeli: ACTIVE plan, süresi dolmamış
+    payingTenants,
+    // Tüm aktif (plan dağılımı için)
     planGroups,
     newSubscriptions,
     upcomingRenewals,
     trialTenants,
+    // Süresi dolmuş / yenilenmeyen işletmeler
+    expiredTenants,
     aiTenants,
     aiUpcoming,
   ] = await Promise.all([
     prisma.tenant.findMany({
-      where: { isActive: true },
-      select: { plan: true, whatsappAIEnabled: true, instagramAIEnabled: true },
+      where: {
+        isActive: true,
+        subscription: { status: 'ACTIVE' },
+        planEndsAt: { gte: today },
+      },
+      select: { plan: true, whatsappAIEnabled: true, instagramAIEnabled: true, whatsappAIEndsAt: true, instagramAIEndsAt: true },
     }),
     prisma.tenant.groupBy({
       by: ['plan'],
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        subscription: { status: 'ACTIVE' },
+        planEndsAt: { gte: today },
+      },
       _count: { _all: true },
     }),
     prisma.subscription.count({
-      where: { createdAt: { gte: monthStart, lte: monthEnd } },
+      where: { status: 'ACTIVE', createdAt: { gte: monthStart, lte: monthEnd } },
     }),
-    // Yaklaşan plan yenilemeleri (30 gün içinde)
+    // Yaklaşan plan yenilemeleri (30 gün içinde, ödemeli)
     prisma.tenant.findMany({
       where: {
         isActive: true,
         planEndsAt: { gte: today, lte: next30Days },
-        subscription: { status: { not: 'TRIAL' } },
+        subscription: { status: 'ACTIVE' },
       },
       select: {
         id: true, name: true, slug: true, plan: true, planEndsAt: true,
@@ -77,6 +89,18 @@ async function getSubscriptionData() {
         subscription: { select: { endDate: true, status: true } },
       },
       orderBy: { createdAt: 'desc' },
+    }),
+    // Süresi dolmuş veya yenilenmeyen işletmeler (aktif ama plan süresi geçmiş)
+    prisma.tenant.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { planEndsAt: { lt: today }, subscription: { status: { not: 'TRIAL' } } },
+          { subscription: { status: { notIn: ['ACTIVE', 'TRIAL'] } } },
+        ],
+      },
+      select: { id: true, name: true, plan: true, planEndsAt: true, subscription: { select: { status: true, endDate: true } } },
+      orderBy: { planEndsAt: 'asc' },
     }),
     // Aktif AI paketleri olan işletmeler
     prisma.tenant.findMany({
@@ -111,28 +135,37 @@ async function getSubscriptionData() {
 
   const planPrices = await getPlanPricesTRY()
 
-  // MRR: plan gelirleri
-  const planMrr = activeTenants.reduce((sum, t) => sum + (planPrices[t.plan] ?? 0), 0)
+  // GERÇEK MRR: sadece aktif ödemeli planlar (TRIAL ve süresi dolmuş hariç)
+  const planMrr = payingTenants.reduce((sum, t) => sum + (planPrices[t.plan] ?? 0), 0)
 
-  // MRR: AI gelirleri (her iki enabled = COMBO varsayımı)
-  const aiMrr = activeTenants.reduce((sum, t) => {
-    if (t.whatsappAIEnabled && t.instagramAIEnabled) return sum + AI_PRICE_COMBO
-    if (t.whatsappAIEnabled) return sum + AI_PRICE_WA
-    if (t.instagramAIEnabled) return sum + AI_PRICE_IG
+  // GERÇEK AI MRR: sadece süresi dolmamış AI paketleri
+  const aiMrr = payingTenants.reduce((sum, t) => {
+    const waActive = t.whatsappAIEnabled && t.whatsappAIEndsAt && new Date(t.whatsappAIEndsAt) >= today
+    const igActive = t.instagramAIEnabled && t.instagramAIEndsAt && new Date(t.instagramAIEndsAt) >= today
+    if (waActive && igActive) return sum + AI_PRICE_COMBO
+    if (waActive) return sum + AI_PRICE_WA
+    if (igActive) return sum + AI_PRICE_IG
     return sum
   }, 0)
+
+  // TAHMİNİ POTANSIYEL: deneme + süresi dolmuş işletmeler ödeme yaparsa
+  const trialPotential = trialTenants.reduce((sum, t) => sum + (planPrices[t.plan] ?? planPrices['BASLANGIC'] ?? 0), 0)
+  const expiredPotential = expiredTenants.reduce((sum, t) => sum + (planPrices[t.plan] ?? 0), 0)
+  const estimatedPotential = trialPotential + expiredPotential
 
   const planDistribution: Record<string, number> = { BASLANGIC: 0, PROFESYONEL: 0, ISLETME: 0 }
   for (const g of planGroups) planDistribution[g.plan] = g._count._all
 
   return {
     planMrr, aiMrr, totalMrr: planMrr + aiMrr,
+    estimatedPotential, trialPotential, expiredPotential,
     newSubscriptions, planDistribution,
     upcomingRenewals,
     trialTenants,
+    expiredTenants,
     aiTenants,
     aiUpcoming,
-    total: activeTenants.length,
+    total: payingTenants.length,
     planPrices,
   }
 }
@@ -152,8 +185,9 @@ function urgencyColor(days: number | null) {
 export default async function AboneliklerPage() {
   const {
     planMrr, aiMrr, totalMrr,
+    estimatedPotential, trialPotential, expiredPotential,
     newSubscriptions, planDistribution,
-    upcomingRenewals, trialTenants, aiTenants, aiUpcoming,
+    upcomingRenewals, trialTenants, expiredTenants, aiTenants, aiUpcoming,
     total, planPrices,
   } = await getSubscriptionData()
 
@@ -164,19 +198,32 @@ export default async function AboneliklerPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-900">Abonelikler</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{total} aktif işletme</p>
+        <p className="text-sm text-gray-500 mt-0.5">{total} ödemeli aktif işletme</p>
       </div>
 
       {/* Stats — 4 kart */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* GERÇEK KAZANÇ */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <div className="h-9 w-9 rounded-xl bg-emerald-500 flex items-center justify-center mb-3">
             <TrendingUp className="h-4 w-4 text-white" />
           </div>
-          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Toplam MRR</p>
+          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Gerçek MRR</p>
           <p className="text-xl font-bold text-gray-900 mt-0.5">₺{totalMrr.toLocaleString('tr-TR')}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">
             Plan ₺{planMrr.toLocaleString('tr-TR')} + AI ₺{aiMrr.toLocaleString('tr-TR')}
+          </p>
+        </div>
+
+        {/* TAHMİNİ POTANSIYEL */}
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 shadow-sm border border-amber-100">
+          <div className="h-9 w-9 rounded-xl bg-amber-500 flex items-center justify-center mb-3">
+            <Sparkles className="h-4 w-4 text-white" />
+          </div>
+          <p className="text-[11px] font-semibold text-amber-600 uppercase tracking-wide">Tahmini Potansiyel</p>
+          <p className="text-xl font-bold text-gray-900 mt-0.5">₺{estimatedPotential.toLocaleString('tr-TR')}</p>
+          <p className="text-[11px] text-amber-500 mt-0.5">
+            Deneme ₺{trialPotential.toLocaleString('tr-TR')} + Süresi dolan ₺{expiredPotential.toLocaleString('tr-TR')}
           </p>
         </div>
 
@@ -202,9 +249,9 @@ export default async function AboneliklerPage() {
           <div className="h-9 w-9 rounded-xl bg-sky-500 flex items-center justify-center mb-3">
             <FlaskConical className="h-4 w-4 text-white" />
           </div>
-          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Denemede</p>
-          <p className="text-xl font-bold text-gray-900 mt-0.5">{trialTenants.length}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5">aktif deneme hesabı</p>
+          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Deneme / Süresi Dolmuş</p>
+          <p className="text-xl font-bold text-gray-900 mt-0.5">{trialTenants.length + expiredTenants.length}</p>
+          <p className="text-[11px] text-gray-400 mt-0.5">{trialTenants.length} deneme · {expiredTenants.length} süresi dolmuş</p>
         </div>
       </div>
 
@@ -404,54 +451,94 @@ export default async function AboneliklerPage() {
         </div>
       </div>
 
-      {/* Deneme İşletmeleri */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <FlaskConical className="h-4 w-4 text-sky-500" />
-            Denemede Olan İşletmeler
-          </h2>
-          <span className="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-0.5 rounded-full">
-            {trialTenants.length} aktif
-          </span>
-        </div>
-        {trialTenants.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <FlaskConical className="h-8 w-8 text-gray-300 mb-2" />
-            <p className="text-sm text-gray-400">Şu anda deneme kullanan işletme yok</p>
+      {/* Potansiyel: Deneme + Süresi Dolmuş */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Deneme işletmeleri */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <FlaskConical className="h-4 w-4 text-sky-500" />
+              Denemede Olan İşletmeler
+            </h2>
+            <span className="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-0.5 rounded-full">
+              Pot. ₺{trialPotential.toLocaleString('tr-TR')}/ay
+            </span>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {trialTenants.map((t) => {
-              const trialEnd = t.subscription?.endDate
-              const days = daysLeft(trialEnd)
-              const isExpired = days !== null && days < 0
-              return (
-                <div key={t.id} className={`rounded-xl border p-3 ${isExpired ? 'border-red-200 bg-red-50' : 'border-sky-100 bg-sky-50'}`}>
-                  <div className="flex items-start justify-between gap-2">
+          {trialTenants.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <FlaskConical className="h-8 w-8 text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">Şu anda deneme kullanan işletme yok</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {trialTenants.map((t) => {
+                const trialEnd = t.subscription?.endDate
+                const days = daysLeft(trialEnd)
+                const isExpired = days !== null && days < 0
+                return (
+                  <div key={t.id} className={`rounded-xl border p-3 flex items-center justify-between gap-2 ${isExpired ? 'border-red-200 bg-red-50' : 'border-sky-100 bg-sky-50'}`}>
                     <div className="min-w-0">
                       <p className="font-semibold text-sm text-gray-900 truncate">{t.name}</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">
+                      <p className="text-[10px] text-gray-500">
                         Kayıt: {format(new Date(t.createdAt), 'd MMM yyyy', { locale: tr })}
                       </p>
                     </div>
                     <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
                       isExpired ? 'bg-red-100 text-red-600' : 'bg-sky-100 text-sky-700'
                     }`}>
-                      {isExpired ? 'Süresi doldu' : `${days} gün`}
+                      {isExpired ? 'Bitti' : `${days} gün`}
                     </span>
                   </div>
-                  {trialEnd && (
-                    <p className={`text-[10px] mt-1 ${isExpired ? 'text-red-500' : 'text-sky-500'}`}>
-                      {isExpired ? 'Bitti: ' : 'Bitiş: '}
-                      {format(new Date(trialEnd), 'd MMM yyyy', { locale: tr })}
-                    </p>
-                  )}
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Süresi dolmuş / yenilenmeyen işletmeler */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <Clock className="h-4 w-4 text-orange-500" />
+              Süresi Dolmuş / Yenilenmeyen
+            </h2>
+            <span className="text-xs bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">
+              Pot. ₺{expiredPotential.toLocaleString('tr-TR')}/ay
+            </span>
           </div>
-        )}
+          {expiredTenants.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <Clock className="h-8 w-8 text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">Süresi dolmuş abonelik yok</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {expiredTenants.map((t) => {
+                const days = daysLeft(t.planEndsAt)
+                return (
+                  <div key={t.id} className="rounded-xl border border-orange-100 bg-orange-50 p-3 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm text-gray-900 truncate">{t.name}</p>
+                      <p className="text-[10px] text-gray-500">
+                        {t.planEndsAt
+                          ? `Bitti: ${format(new Date(t.planEndsAt), 'd MMM yyyy', { locale: tr })}`
+                          : 'Bitiş tarihi yok'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${PLAN_COLORS[t.plan]}`}>
+                        {PLAN_LABELS[t.plan]}
+                      </span>
+                      {days !== null && days < 0 && (
+                        <span className="text-[11px] font-bold text-red-600">{Math.abs(days)}g önce</span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bu ay yeni abonelik */}
