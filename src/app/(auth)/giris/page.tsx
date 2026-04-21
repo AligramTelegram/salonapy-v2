@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,23 +30,42 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+const URL_ERRORS: Record<string, string> = {
+  'staff-inactive': 'Hesabınız devre dışı bırakılmış. Lütfen işletmenizle iletişime geçin.',
+  'not-staff': 'Bu hesapla personel paneline erişim yetkiniz yok.',
+}
+
 export default function GirisPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  // URL'den hata parametresi göster (örn. ?error=staff-inactive)
+  useEffect(() => {
+    const urlError = searchParams.get('error')
+    if (urlError && URL_ERRORS[urlError]) {
+      setError(URL_ERRORS[urlError])
+    }
+  }, [searchParams])
 
   // Client-side fallback: zaten giriş yapmışsa doğru panele yönlendir
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        getRedirectPath()
-          .then((path) => router.replace(path))
-          .catch(() => router.replace('/'))
+        const from = searchParams.get('from')
+        if (from && from.startsWith('/')) {
+          router.replace(from)
+        } else {
+          getRedirectPath()
+            .then((path) => router.replace(path))
+            .catch(() => router.replace('/'))
+        }
       }
     })
-  }, [router])
+  }, [router, searchParams])
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -58,8 +77,13 @@ export default function GirisPage() {
     setError(null)
     try {
       await login(data.email, data.password)
-      const redirectPath = await getRedirectPath()
-      router.push(redirectPath)
+      const from = searchParams.get('from')
+      if (from && from.startsWith('/')) {
+        router.push(from)
+      } else {
+        const redirectPath = await getRedirectPath()
+        router.push(redirectPath)
+      }
       router.refresh()
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Giriş yapılamadı'
