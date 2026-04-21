@@ -5,6 +5,7 @@ import { Features } from '@/components/vitrin/Features'
 import { Pricing } from '@/components/vitrin/Pricing'
 import { Testimonials } from '@/components/vitrin/Testimonials'
 import { BlogPreview } from '@/components/vitrin/BlogPreview'
+import { SectorGuide } from '@/components/vitrin/SectorGuide'
 
 export const dynamic = 'force-static'
 
@@ -25,6 +26,7 @@ export default function HomePage() {
     <>
       <Hero />
       <Features />
+      <SectorGuide />
       <Pricing />
       <Testimonials />
       <Analytics />
