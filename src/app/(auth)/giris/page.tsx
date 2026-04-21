@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
@@ -35,7 +35,7 @@ const URL_ERRORS: Record<string, string> = {
   'not-staff': 'Bu hesapla personel paneline erişim yetkiniz yok.',
 }
 
-export default function GirisPage() {
+function GirisForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
@@ -322,10 +322,18 @@ export default function GirisPage() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-8 text-center text-sm text-gray-500"
           >
-            
+
           </motion.div>
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function GirisPage() {
+  return (
+    <Suspense fallback={null}>
+      <GirisForm />
+    </Suspense>
   )
 }
