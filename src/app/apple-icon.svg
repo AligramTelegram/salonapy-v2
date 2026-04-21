@@ -5,10 +5,7 @@
       <stop offset="100%" stop-color="#4c1d95"/>
     </linearGradient>
   </defs>
-  <rect width="180" height="180" rx="28" fill="url(#bg)"/>
-  <line x1="58" y1="52" x2="58" y2="128" stroke="white" stroke-width="7" stroke-linecap="round"/>
-  <line x1="70" y1="52" x2="70" y2="128" stroke="white" stroke-width="7" stroke-linecap="round"/>
-  <line x1="110" y1="52" x2="110" y2="128" stroke="white" stroke-width="7" stroke-linecap="round"/>
-  <line x1="122" y1="52" x2="122" y2="128" stroke="white" stroke-width="7" stroke-linecap="round"/>
-  <path d="M70 112 L104 68 Q110 60 116 66" fill="none" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="180" height="180" rx="38" fill="url(#bg)"/>
+  <circle cx="90" cy="90" r="64" fill="none" stroke="rgba(196,181,253,0.5)" stroke-width="2.5"/>
+  <text x="90" y="105" font-family="Georgia, serif" font-size="60" font-style="italic" fill="white" text-anchor="middle" letter-spacing="-2">hs</text>
 </svg>

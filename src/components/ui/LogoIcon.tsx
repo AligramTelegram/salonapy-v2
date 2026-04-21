@@ -7,15 +7,18 @@ export function LogoIcon({ size = 32, className = '' }: { size?: number; classNa
           <stop offset="100%" stopColor="#4c1d95"/>
         </linearGradient>
       </defs>
-      <rect width="192" height="192" rx="28" fill="url(#lbg)"/>
-      {/* Sol çift dikey çizgi */}
-      <line x1="62" y1="56" x2="62" y2="136" stroke="white" strokeWidth="7" strokeLinecap="round"/>
-      <line x1="74" y1="56" x2="74" y2="136" stroke="white" strokeWidth="7" strokeLinecap="round"/>
-      {/* Sağ çift dikey çizgi */}
-      <line x1="118" y1="56" x2="118" y2="136" stroke="white" strokeWidth="7" strokeLinecap="round"/>
-      <line x1="130" y1="56" x2="130" y2="136" stroke="white" strokeWidth="7" strokeLinecap="round"/>
-      {/* Çapraz köprü çizgisi */}
-      <path d="M74 120 L110 72 Q116 64 122 70" fill="none" stroke="white" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
+      <rect width="192" height="192" rx="40" fill="url(#lbg)"/>
+      <circle cx="96" cy="96" r="68" fill="none" stroke="rgba(196,181,253,0.5)" strokeWidth="2.5"/>
+      <text
+        x="96" y="112"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="64"
+        fontStyle="italic"
+        fontWeight="400"
+        fill="white"
+        textAnchor="middle"
+        letterSpacing="-2"
+      >hs</text>
     </svg>
   )
 }
