@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Scissors, Sparkles, Stethoscope, Palette, Car } from 'lucide-react'
 
 const SECTORS = [
   {
-    icon: '✂️',
+    icon: Scissors,
+    iconBg: 'bg-violet-100',
+    iconColor: 'text-violet-600',
     title: 'Kuaför ve Berberler',
     slug: 'kuafor-berber',
     summary: 'Boş koltuk = boş cüzdan. Randevusuna gelmeyen tek müşteri bile günün dengesini bozar.',
@@ -21,7 +23,9 @@ Bir de randevusuz gelen müşteriye ne diyorsunuz? "Bekleyebilir misiniz?" Bekle
 **SMS hatırlatma** konusuna ayrıca değinmek lazım. "Yarın randevunuz var, sizi bekliyoruz" mesajı göndermek için tek tek aramak ne kadar vakit alır? Bir berber düşünün — günde 15 randevu. Her birini aramak 3 dakika. Günde 45 dakika sadece hatırlatma telefonu. Haftada 5 gün — 225 dakika. Neredeyse dört saatlik iş gücü. Sistemin bunu otomatik yapması, size o dört saati geri veriyor.`,
   },
   {
-    icon: '💆',
+    icon: Sparkles,
+    iconBg: 'bg-pink-100',
+    iconColor: 'text-pink-600',
     title: 'Güzellik Merkezleri & Lazer Epilasyon',
     slug: 'guzellik-merkezi-lazer',
     summary: 'Hangi müşteri kaçıncı seansta? Paket takibi olmadan işletmek, delik kovaya su doldurmak gibi.',
@@ -36,7 +40,9 @@ Güzellik merkezlerinde ayrıca çalışan takvimi kritik. Kim saat kaçta müsa
 Paket satışları ise ayrı bir tartışma. "Bu müşteri 5 seans almıştı, kaçı kaldı?" sorusu her gün sorulmak yerine, sistem zaten bunu takip ediyor ve son seans yaklaşınca hatırlatma yapıyor. Müşteriye "Seansınız bitiyor, yeni paket ister misiniz?" demek için doğru zamanı kaçırmıyorsunuz.`,
   },
   {
-    icon: '🏥',
+    icon: Stethoscope,
+    iconBg: 'bg-sky-100',
+    iconColor: 'text-sky-600',
     title: 'Klinikler ve Diyetisyenler',
     slug: 'klinik-diyetisyen',
     summary: 'Hasta dosyası, ölçüm takibi, randevu akışı — bunları ayrı ayrı yönetmek artık gerekmiyor.',
@@ -51,7 +57,9 @@ SMS hatırlatma kliniklerde özellikle kritik çünkü hastalar randevuyu 2-3 ha
 Raporlama tarafında ise ay sonunda hangi hizmet ne kadar gelir getirdi, hangi paketler daha çok tercih edildi, aylık hasta sayısı nasıl seyretti — bunları elle hesaplamak değil, bir ekranda görmek istiyorsunuz. İşletme sahiplerinin en çok zaman harcadığı yer bu hesaplamalar. Sistemin bunu otomatik yapması, o zamanı hastalarınıza ve işinize verebilmeniz demek.`,
   },
   {
-    icon: '🎨',
+    icon: Palette,
+    iconBg: 'bg-orange-100',
+    iconColor: 'text-orange-600',
     title: 'Dövme Stüdyoları & Sanat Atölyeleri',
     slug: 'dovme-studyo',
     summary: 'Kapora takibi, referans görsel notları, uzun seans planlaması — kağıtta değil, sistemde.',
@@ -66,7 +74,9 @@ Uzun seanslar (full back, sleeve gibi büyük işler) için seans arası planlam
 Sanat atölyelerinde de benzer tablo geçerli. Seramik kursu, resim atölyesi, takı yapımı — sınıf kapasitesi var, her hafta tekrarlayan gruplar var. Kimin hangi kursa kayıtlı olduğunu takip etmek, elle tutulur bir iş yükü. Sistemde grup randevusu tanımlamak ve kayıtları buradan yönetmek bu yükü ortadan kaldırıyor.`,
   },
   {
-    icon: '🚗',
+    icon: Car,
+    iconBg: 'bg-emerald-100',
+    iconColor: 'text-emerald-600',
     title: 'Oto Bakım & Detailing Merkezleri',
     slug: 'oto-bakim',
     summary: 'Araç bazlı takip, servis kapasitesi planlaması ve müşteri sadakati — hepsi bir arada.',
@@ -112,13 +122,16 @@ function AccordionItem({
   isOpen: boolean
   toggle: () => void
 }) {
+  const IconComponent = item.icon
   return (
-    <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white">
+    <div className={`border rounded-2xl overflow-hidden bg-white transition-all duration-200 ${isOpen ? 'border-purple-200 shadow-sm' : 'border-gray-100'}`}>
       <button
         onClick={toggle}
-        className="w-full flex items-center gap-4 p-5 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-4 p-5 text-left hover:bg-gray-50/80 transition-colors"
       >
-        <span className="text-2xl shrink-0">{item.icon}</span>
+        <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${item.iconBg}`}>
+          <IconComponent className={`h-5 w-5 ${item.iconColor}`} />
+        </div>
         <div className="flex-1 min-w-0">
           <p className="font-display font-bold text-gray-900 text-sm md:text-base">{item.title}</p>
           <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{item.summary}</p>
