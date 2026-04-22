@@ -69,10 +69,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </>
       )}
 
-      {/* Google Ads Conversion Tag */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17862980295" />
-      <script
+      {/* Google Ads — afterInteractive ile LCP'yi bloklamaz */}
+      <Script id="google-ads" strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=AW-17862980295" />
+      <Script
         id="google-ads-init"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-17862980295');`,
         }}

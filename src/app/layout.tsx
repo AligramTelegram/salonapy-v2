@@ -17,7 +17,7 @@ const inter = Inter({
 
 const sora = Sora({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
+  weight: ['700', '800'],
   variable: '--font-sora',
   display: 'swap',
 })
@@ -107,10 +107,7 @@ export default async function RootLayout({
   return (
     <html lang="tr" className={`${inter.variable} ${sora.variable}`}>
       <head>
-        {/* Resource hints — FCP iyileştirmesi */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        {/* next/font self-host ediyor — GTM için dns-prefetch yeterli */}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
         <TrackingHeadScripts />
