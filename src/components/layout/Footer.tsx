@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Sparkles } from 'lucide-react'
+import Image from 'next/image'
 import { LogoIcon } from '@/components/ui/LogoIcon'
 
 const FOOTER_LINKS = [
@@ -104,9 +104,9 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-500">Güvenli Ödeme:</span>
               <div className="flex gap-3 items-center">
-                <img src="/images/payment/visa.svg" alt="Visa" className="h-8 rounded" />
-                <img src="/images/payment/mastercard.svg" alt="Mastercard" className="h-8 rounded" />
-                <img src="/images/payment/iyzico.svg" alt="iyzico" className="h-8 rounded" />
+                <Image src="/images/payment/visa.svg" alt="Visa ödeme yöntemi" width={48} height={32} className="h-8 w-auto rounded" />
+                <Image src="/images/payment/mastercard.svg" alt="Mastercard ödeme yöntemi" width={48} height={32} className="h-8 w-auto rounded" />
+                <Image src="/images/payment/iyzico.svg" alt="iyzico güvenli ödeme" width={64} height={32} className="h-8 w-auto rounded" />
               </div>
             </div>
           </div>

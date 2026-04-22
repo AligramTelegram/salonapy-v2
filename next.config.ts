@@ -4,6 +4,25 @@ const nextConfig = {
     serverComponentsExternalPackages: ['iyzipay'],
   },
 
+  // ─── Image optimizasyonu ────────────────────────────────────────────────
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2592000, // 30 gün
+    deviceSizes: [375, 640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
+  // ─── Compiler optimizasyonları ──────────────────────────────────────────
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // ─── Bundle optimizasyonu ───────────────────────────────────────────────
+  poweredByHeader: false,
+
   async headers() {
     return [
       // ─── Global güvenlik başlıkları ───────────────────────────────────────

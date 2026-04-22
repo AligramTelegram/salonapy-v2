@@ -45,7 +45,7 @@ export function Hero() {
           <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-blue-300/[0.08] blur-3xl" />
         </div>
 
-        <div className="container-custom text-center">
+        <div className="container-custom text-center" style={{ contain: 'layout' }}>
           {/* Badge */}
           <motion.div
             {...fadeUp(0)}

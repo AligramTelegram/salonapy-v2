@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
+import lazy from 'next/dynamic'
+// Above-fold: senkron yükle (LCP için kritik)
 import { Hero } from '@/components/vitrin/Hero'
-import { Analytics } from '@/components/vitrin/Analytics'
 import { Features } from '@/components/vitrin/Features'
-import { Pricing } from '@/components/vitrin/Pricing'
-import { Testimonials } from '@/components/vitrin/Testimonials'
 import { BlogPreview } from '@/components/vitrin/BlogPreview'
-import { SectorGuide } from '@/components/vitrin/SectorGuide'
-import { FaqSection } from '@/components/vitrin/FaqSection'
+// Below-fold: lazy yükle (TBT düşürür, JS chunk splitting)
+const SectorGuide = lazy(() => import('@/components/vitrin/SectorGuide').then(m => ({ default: m.SectorGuide })))
+const Pricing = lazy(() => import('@/components/vitrin/Pricing').then(m => ({ default: m.Pricing })))
+const Testimonials = lazy(() => import('@/components/vitrin/Testimonials').then(m => ({ default: m.Testimonials })))
+const Analytics = lazy(() => import('@/components/vitrin/Analytics').then(m => ({ default: m.Analytics })))
+const FaqSection = lazy(() => import('@/components/vitrin/FaqSection').then(m => ({ default: m.FaqSection })))
 
 export const dynamic = 'force-dynamic'
 

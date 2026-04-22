@@ -107,6 +107,12 @@ export default async function RootLayout({
   return (
     <html lang="tr" className={`${inter.variable} ${sora.variable}`}>
       <head>
+        {/* Resource hints — FCP iyileştirmesi */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
         <TrackingHeadScripts />
       </head>
       <body className="font-sans antialiased bg-[#faf8ff]">

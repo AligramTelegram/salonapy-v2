@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Core Web Vitals optimizasyonları ──────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* CLS önleme: animasyon başlamadan önce element görünür olsun */
+[data-framer-component-type] {
+  will-change: auto;
+}
+
+/* Görsel stabilite: img/video için aspect-ratio korunumu */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* GPU hızlandırma gereken elementler için */
+.glass-card,
+.gradient-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 @layer base {
   :root {
     /* shadcn/ui HSL değişkenleri */
