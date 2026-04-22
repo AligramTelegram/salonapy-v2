@@ -11,7 +11,8 @@ const Testimonials = lazy(() => import('@/components/vitrin/Testimonials').then(
 const Analytics = lazy(() => import('@/components/vitrin/Analytics').then(m => ({ default: m.Analytics })))
 const FaqSection = lazy(() => import('@/components/vitrin/FaqSection').then(m => ({ default: m.FaqSection })))
 
-export const dynamic = 'force-dynamic'
+// ISR: 60sn cache — LCP/FCP için kritik, blog yazıları 1dk'da yenilenir
+export const revalidate = 60
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hemensalon.com'
 
