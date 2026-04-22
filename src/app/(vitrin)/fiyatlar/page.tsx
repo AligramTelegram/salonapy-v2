@@ -5,12 +5,16 @@ import { ArrowRight, HelpCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Fiyatlar - Hemensalon',
+  title: 'Salon Yazılımı Fiyatları | Online Randevu Sistemi Planları – Hemensalon',
   description:
-    'Hemensalon fiyat planları: Başlangıç ₺540, Profesyonel ₺1.140, İşletme ₺1.740/ay. 3 gün ücretsiz deneme.',
+    'Kuaför ve güzellik salonu yazılımı fiyatları: Başlangıç ₺540, Profesyonel ₺1.140, İşletme ₺1.740/ay. 3 gün ücretsiz deneme, kredi kartı gerekmez.',
+  keywords: 'salon yazılımı fiyatları, kuaför programı fiyat, online randevu sistemi fiyat, salon yönetim yazılımı ücret',
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://hemensalon.com/fiyatlar' },
   openGraph: {
-    title: 'Fiyatlar - Hemensalon',
-    description: '3 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal.',
+    title: 'Salon Yazılımı Fiyatları | Online Randevu Sistemi – Hemensalon',
+    description: 'Kuaför ve güzellik salonu için uygun fiyatlı randevu yazılımı. 3 gün ücretsiz deneyin. Kredi kartı gerekmez.',
+    url: 'https://hemensalon.com/fiyatlar',
   },
 }
 

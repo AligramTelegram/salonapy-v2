@@ -3,11 +3,14 @@ import Link from 'next/link'
 import { ArrowRight, Target, Heart, Zap, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Hakkımızda - Hemensalon',
-  description: 'Hemensalon\'nin hikayesi, misyonu ve ekibi. Türkiye\'nin güzellik sektörünü dijitalleştiriyoruz.',
+  title: 'Hakkımızda | Türkiye\'nin Lider Salon Yazılımı – Hemensalon',
+  description: 'Hemensalon, Türkiye\'deki kuaför, berber ve güzellik salonlarının dijitalleşmesi için kuruldu. Hikayemiz, misyonumuz ve vizyonumuz.',
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://hemensalon.com/hakkimizda' },
   openGraph: {
-    title: 'Hakkımızda - Hemensalon',
-    description: 'Hemensalon\'nin hikayesi, misyonu ve ekibi.',
+    title: 'Hakkımızda | Türkiye\'nin Lider Salon Yazılımı – Hemensalon',
+    description: 'Türkiye\'nin güzellik sektörünü dijitalleştiren Hemensalon\'un hikayesi ve misyonu.',
+    url: 'https://hemensalon.com/hakkimizda',
   },
 }
 

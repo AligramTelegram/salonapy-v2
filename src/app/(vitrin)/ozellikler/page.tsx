@@ -4,12 +4,16 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Özellikler - Hemensalon',
+  title: 'Kuaför & Salon Yazılımı Özellikleri | Online Randevu, SMS, CRM – Hemensalon',
   description:
-    'Akıllı randevu, SMS hatırlatmaları, müşteri CRM, finansal raporlar ve daha fazlası. Hemensalon\'nin tüm özellikleri.',
+    'Hemensalon kuaför ve salon yazılımı özellikleri: online randevu sistemi, SMS & WhatsApp hatırlatmaları, müşteri CRM, personel yönetimi, finansal raporlar. Tümü tek platformda.',
+  keywords: 'kuaför yazılımı özellikleri, salon randevu sistemi, SMS hatırlatma, müşteri CRM, personel yönetimi, finansal rapor',
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://hemensalon.com/ozellikler' },
   openGraph: {
-    title: 'Özellikler - Hemensalon',
-    description: 'Hemensalon\'nin işletmenizi büyütecek tüm özellikleri tek platformda.',
+    title: 'Kuaför & Salon Yazılımı Özellikleri – Hemensalon',
+    description: 'Online randevu sistemi, SMS hatırlatmaları, müşteri CRM ve finansal raporlar tek platformda.',
+    url: 'https://hemensalon.com/ozellikler',
   },
 }
 
@@ -23,14 +27,30 @@ export default function OzelliklerPage() {
             Özellikler
           </span>
           <h1 className="mb-4 font-display text-4xl font-bold text-gray-900 md:text-5xl">
-            İşletmeniz için ihtiyacınız olan
+            Kuaför &amp; Salon Yazılımında
             <br />
-            <span className="text-purple-600">her şey tek platformda</span>
+            <span className="text-purple-600">ihtiyacınız olan her şey tek platformda</span>
           </h1>
-          <p className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-500">
-            Randevu yönetiminden finansal raporlara, SMS hatırlatmalarından müşteri CRM'ine
-            kadar işletmenizi büyütecek tüm araçlar.
+          <p className="mx-auto mb-6 max-w-xl text-lg leading-relaxed text-gray-500">
+            Online randevu sisteminden finansal raporlara, SMS hatırlatmalarından müşteri CRM'ine
+            kadar kuaför ve güzellik salonunuzu büyütecek tüm araçlar.
           </p>
+          <div className="flex flex-wrap justify-center gap-3 mb-4">
+            <Link
+              href="/kayit"
+              className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition-colors hover:bg-purple-700"
+            >
+              3 Gün Ücretsiz Dene
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/fiyatlar"
+              className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-6 py-3 text-sm font-semibold text-purple-700 transition-colors hover:bg-purple-50"
+            >
+              Fiyat Planlarını Gör
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
           <Link
             href="/kayit"
             className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition-colors hover:bg-purple-700"
@@ -49,18 +69,27 @@ export default function OzelliklerPage() {
         <div className="container-custom">
           <div className="rounded-2xl bg-gradient-to-br from-purple-600 to-violet-700 p-12 text-center shadow-xl shadow-purple-300/30">
             <h2 className="mb-3 font-display text-3xl font-bold text-white">
-              Hemen başlayın
+              Kuaför ve salon yazılımını bugün deneyin
             </h2>
             <p className="mb-8 text-purple-100">
-              3 gün ücretsiz deneyin. Kredi kartı gerekmez.
+              3 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal.
             </p>
-            <Link
-              href="/kayit"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-sm font-bold text-purple-700 shadow-lg transition-colors hover:bg-purple-50"
-            >
-              Ücretsiz Başla
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                href="/kayit"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-sm font-bold text-purple-700 shadow-lg transition-colors hover:bg-purple-50"
+              >
+                Ücretsiz Başla
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-white/20"
+              >
+                Rehberleri Oku
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

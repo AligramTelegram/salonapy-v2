@@ -9,11 +9,16 @@ import { CalendarDays, User, Tag } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Blog - Hemensalon',
-  description: 'Güzellik sektörü ipuçları, salon yönetimi rehberleri ve sektör haberleri.',
+  title: 'Salon Yönetimi Rehberleri & İpuçları | Kuaför Blog – Hemensalon',
+  description: 'Kuaför, berber ve güzellik salonu sahipleri için salon yönetimi rehberleri, online randevu ipuçları, personel yönetimi ve sektör haberleri.',
+  keywords: 'kuaför blog, salon yönetimi rehberi, güzellik salonu ipuçları, online randevu ipuçları, salon yazılımı blog',
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://hemensalon.com/blog' },
   openGraph: {
-    title: 'Blog - Hemensalon',
-    description: 'Güzellik sektörü ipuçları, salon yönetimi rehberleri ve sektör haberleri.',
+    title: 'Salon Yönetimi Rehberleri & İpuçları – Hemensalon Blog',
+    description: 'Kuaför ve güzellik salonu sahipleri için pratik rehberler ve sektör haberleri.',
+    url: 'https://hemensalon.com/blog',
+    type: 'website',
   },
 }
 

@@ -43,7 +43,7 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-purple-100/60 bg-white/60">
+    <footer className="border-t border-purple-100/60 bg-white/60" itemScope itemType="https://schema.org/WPFooter">
       <div className="container-custom py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand column */}
@@ -54,8 +54,8 @@ export function Footer() {
                 Hemen<span className="text-purple-600">salon</span>
               </span>
             </Link>
-            <p className="mb-5 text-sm leading-relaxed text-gray-500">
-              Kuaför, berber ve güzellik salonları için akıllı randevu yönetim sistemi.
+            <p className="mb-5 text-sm leading-relaxed text-gray-500" itemProp="description">
+              Kuaför, berber ve güzellik salonları için <strong className="font-medium text-gray-700">online randevu sistemi</strong> ve salon yönetim yazılımı.
             </p>
             {/* Social links */}
             <div className="flex gap-3">
@@ -139,7 +139,7 @@ function SocialLink({
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer nofollow"
       aria-label={label}
       title={label}
       className="flex h-8 w-8 items-center justify-center rounded-lg border border-purple-100 text-gray-400 transition-colors hover:border-purple-200 hover:bg-purple-50 hover:text-purple-600"

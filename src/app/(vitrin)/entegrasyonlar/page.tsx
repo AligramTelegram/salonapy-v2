@@ -3,11 +3,15 @@ import Link from 'next/link'
 import { ArrowRight, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Entegrasyonlar - Hemensalon',
-  description: 'Hemensalon\'nin desteklediği entegrasyonlar: SMS, WhatsApp, iyzico, Stripe, Google Takvim ve daha fazlası.',
+  title: 'Entegrasyonlar | SMS, WhatsApp, iyzico – Hemensalon Salon Yazılımı',
+  description: 'Hemensalon salon yazılımı entegrasyonları: SMS servisleri, WhatsApp Business, iyzico ödeme, Google Takvim ve daha fazlası. Tek platform, çoklu entegrasyon.',
+  keywords: 'salon yazılımı entegrasyon, WhatsApp randevu, SMS entegrasyon, iyzico ödeme entegrasyon, Google Takvim senkronizasyon',
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://hemensalon.com/entegrasyonlar' },
   openGraph: {
-    title: 'Entegrasyonlar - Hemensalon',
-    description: 'Hemensalon entegrasyon ekosistemi.',
+    title: 'Entegrasyonlar | SMS, WhatsApp, iyzico – Hemensalon',
+    description: 'SMS, WhatsApp, iyzico ve Google Takvim entegrasyonları ile salon yönetimini kolaylaştırın.',
+    url: 'https://hemensalon.com/entegrasyonlar',
   },
 }
 
