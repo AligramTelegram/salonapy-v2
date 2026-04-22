@@ -28,29 +28,20 @@ async function getDashboardData(slug: string) {
   const monthStart = startOfMonth(today)
   const monthEnd = endOfMonth(today)
 
-  const [todayAppointments, monthAppointments, monthRevenue, monthExpense, recentAppointments, customersCount] = await Promise.all([
+  const [todayAppointments, monthCount, monthRevenue, monthExpense, recentAppointments, customersCount] = await Promise.all([
     prisma.appointment.findMany({
       where: {
         tenantId: tenant.id,
-        date: {
-          gte: todayStart,
-          lt: todayEnd,
-        },
+        date: { gte: todayStart, lt: todayEnd },
       },
-      include: {
-        customer: true,
-        service: true,
-        staff: true,
-      },
+      include: { customer: true, service: true, staff: true },
       orderBy: { startTime: 'asc' },
     }),
-    prisma.appointment.findMany({
+    // count ile tüm kayıtları çekmiyoruz
+    prisma.appointment.count({
       where: {
         tenantId: tenant.id,
-        date: {
-          gte: monthStart,
-          lte: monthEnd,
-        },
+        date: { gte: monthStart, lte: monthEnd },
       },
     }),
     // Sadece GELIR tipi işlemler
@@ -89,7 +80,7 @@ async function getDashboardData(slug: string) {
   return {
     tenant,
     todayAppointments,
-    monthAppointments,
+    monthCount,
     monthRevenue: monthRevenue._sum.amount ?? 0,
     monthExpense: monthExpense._sum.amount ?? 0,
     recentAppointments,
@@ -111,7 +102,7 @@ export default async function IsletmeDashboardPage({
   const {
     today,
     todayAppointments,
-    monthAppointments,
+    monthCount,
     monthRevenue,
     monthExpense,
     recentAppointments,
@@ -127,7 +118,7 @@ export default async function IsletmeDashboardPage({
 
   const statistics = {
     todayCount: todayAppointments.length,
-    monthCount: monthAppointments.length,
+    monthCount,
     monthRevenue,
     monthExpense,
     netProfit: monthRevenue - monthExpense,

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import {
   LayoutDashboard,
   Calendar,
@@ -44,35 +43,18 @@ const PLAN_LABELS: Record<string, string> = {
   ISLETME: 'İşletme',
 }
 
-const SMS_LIMIT_DEFAULTS: Record<string, number> = {
-  BASLANGIC: 200,
-  PROFESYONEL: 600,
-  ISLETME: 1500,
-}
-
 interface SidebarProps {
   slug: string
   tenantName: string
   plan: string
   smsUsed: number
+  smsLimit: number
   trialExpired?: boolean
 }
 
-export function Sidebar({ slug, tenantName, plan, smsUsed, trialExpired = false }: SidebarProps) {
+export function Sidebar({ slug, tenantName, plan, smsUsed, smsLimit, trialExpired = false }: SidebarProps) {
   const pathname = usePathname()
   const base = `/b/${slug}`
-
-  const [smsLimit, setSmsLimit] = useState(SMS_LIMIT_DEFAULTS[plan] ?? 200)
-
-  useEffect(() => {
-    fetch('/api/plans')
-      .then((r) => r.json())
-      .then((data) => {
-        const limit = data[plan]?.smsLimit
-        if (typeof limit === 'number') setSmsLimit(limit)
-      })
-      .catch(() => {/* fallback to default */})
-  }, [plan])
 
   const planLabel = PLAN_LABELS[plan] ?? plan
   const smsPercent = Math.min(100, Math.round((smsUsed / smsLimit) * 100))

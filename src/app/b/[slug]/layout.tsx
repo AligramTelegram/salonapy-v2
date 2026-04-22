@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { getPlans } from '@/lib/plans'
@@ -6,10 +7,12 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { DashboardHeader } from '@/components/layout/DashboardHeader'
 import { TrialBanner } from '@/components/layout/TrialBanner'
-import { AnnouncementPopup } from '@/components/dashboard/AnnouncementPopup'
-import { GrowthTip } from '@/components/dashboard/GrowthTip'
 import { UpgradeCards } from './upgrade/UpgradeCards'
 import { AlertCircle } from 'lucide-react'
+
+// Kritik yol dışı — sayfa interaktif olduktan sonra yükle
+const AnnouncementPopup = dynamic(() => import('@/components/dashboard/AnnouncementPopup').then(m => ({ default: m.AnnouncementPopup })), { ssr: false })
+const GrowthTip = dynamic(() => import('@/components/dashboard/GrowthTip').then(m => ({ default: m.GrowthTip })), { ssr: false })
 
 export default async function IsletmePaneliLayout({
   children,
@@ -50,6 +53,10 @@ export default async function IsletmePaneliLayout({
     redirect('/giris?error=tenant-inactive')
   }
 
+  // smsLimit: plans cache'den al (5dk TTL, DB hit yok)
+  const plans = await getPlans()
+  const smsLimit = plans[dbUser.tenant.plan as keyof typeof plans]?.smsLimit ?? 200
+
   const sub = dbUser.tenant.subscription
   const now = Date.now()
 
@@ -75,7 +82,6 @@ export default async function IsletmePaneliLayout({
   // Trial süresi dolmuşsa redirect yerine doğrudan upgrade UI'ı göster.
   // redirect() RSC soft-navigation'da blank page açabiliyor; inline render güvenilir.
   if (isBlocked) {
-    const plans = await getPlans()
     const planData = {
       BASLANGIC: {
         name: plans.BASLANGIC.name,
@@ -110,6 +116,7 @@ export default async function IsletmePaneliLayout({
           tenantName={dbUser.tenant.name}
           plan={dbUser.tenant.plan}
           smsUsed={dbUser.tenant.smsUsed}
+          smsLimit={smsLimit}
           trialExpired={true}
         />
         <div className="flex flex-1 flex-col min-w-0">
@@ -156,6 +163,7 @@ export default async function IsletmePaneliLayout({
         tenantName={dbUser.tenant.name}
         plan={dbUser.tenant.plan}
         smsUsed={dbUser.tenant.smsUsed}
+        smsLimit={smsLimit}
         trialExpired={false}
       />
       <div className="flex flex-1 flex-col min-w-0">
