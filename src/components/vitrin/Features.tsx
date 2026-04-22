@@ -13,9 +13,9 @@ import {
 const FEATURES = [
   {
     icon: Calendar,
-    title: 'Akıllı Randevu',
+    title: 'Online Randevu Sistemi',
     description:
-      'Çakışmaları önleyen otomatik planlama. Online randevu, çalışan takvimi ve boşluk yönetimi tek ekranda.',
+      'Müşterileriniz 7/24 online randevu alabilir. Çakışma önleme, personel takvimi ve boşluk yönetimi tek ekranda — telefon trafiği sıfıra iner.',
     color: 'text-purple-600',
     bg: 'bg-purple-50',
     glow: 'rgba(124,58,237,0.12)',
@@ -26,7 +26,7 @@ const FEATURES = [
     icon: Bot,
     title: 'AI Randevu Asistanı',
     description:
-      'WhatsApp ve Instagram üzerinden gelen mesajlara yapay zeka yanıt verir, müsait slotları gösterir ve randevu oluşturur.',
+      'WhatsApp ve Instagram mesajlarına yapay zeka otomatik yanıt verir, müsait saatleri gösterir ve randevu oluşturur. Siz uyurken sistem çalışır.',
     color: 'text-violet-600',
     bg: 'bg-violet-50',
     glow: 'rgba(139,92,246,0.12)',
@@ -35,10 +35,10 @@ const FEATURES = [
   },
   {
     icon: Bell,
-    title: 'SMS Hatırlatmaları',
+    title: 'SMS & WhatsApp Hatırlatma',
     badge: null,
     description:
-      'Randevu onayı, hatırlatma ve iptal mesajları SMS üzerinden otomatik gönderilir.',
+      'Randevu onayı, 24 saat ve 2 saat öncesi hatırlatmalar otomatik iletilir. İptal oranı ortalama %30 düşer, gelir artışı ilk ayda hissedilir.',
     color: 'text-green-600',
     bg: 'bg-green-50',
     glow: 'rgba(34,197,94,0.12)',
@@ -46,10 +46,10 @@ const FEATURES = [
   },
   {
     icon: TrendingUp,
-    title: 'Finansal Raporlar',
+    title: 'Finansal Raporlar & Analiz',
     badge: null,
     description:
-      'Günlük, haftalık ve aylık gelir/gider takibi. Personel bazında performans ve hizmet analizi.',
+      'Günlük, haftalık ve aylık gelir/gider takibi. Personel bazında performans, en çok tercih edilen hizmetler — veriye dayalı karar alın.',
     color: 'text-amber-600',
     bg: 'bg-amber-50',
     glow: 'rgba(245,158,11,0.12)',
@@ -57,10 +57,10 @@ const FEATURES = [
   },
   {
     icon: Shield,
-    title: 'Güvenli & KVKK Uyumlu',
+    title: 'KVKK Uyumlu & Güvenli',
     badge: null,
     description:
-      'Müşteri verileri şifrelenmiş altyapıda saklanır. KVKK ve GDPR gerekliliklerine tam uyum.',
+      'Müşteri verileri Türkiye\'nin KVKK yasasına ve GDPR\'a uygun, şifreli altyapıda saklanır. Güvenlik sertifikası dahil, ek ücret yok.',
     color: 'text-rose-600',
     bg: 'bg-rose-50',
     glow: 'rgba(244,63,94,0.12)',
@@ -68,10 +68,10 @@ const FEATURES = [
   },
   {
     icon: Zap,
-    title: '5 Dakikada Kurulum',
+    title: '5 Dakikada Hazır',
     badge: null,
     description:
-      'İşletmenizi tanımlayın, çalışanlarınızı ekleyin, hazır. Teknik bilgi gerekmez. Hemen başlayın.',
+      'Kuaför veya salon yazılımına geçiş bu kadar kolay: işletmenizi tanımlayın, hizmetleri ekleyin, linki paylaşın. Teknik bilgi gerekmez.',
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
     glow: 'rgba(99,102,241,0.12)',
@@ -105,13 +105,13 @@ export function Features() {
             Özellikler
           </span>
           <h2 className="mb-4 font-display text-3xl font-bold text-gray-900 md:text-4xl">
-            İşletmeniz için ihtiyacınız olan
+            Kuaför ve Salon Yazılımında
             <br />
-            <span className="text-purple-600">her şey tek platformda</span>
+            <span className="text-purple-600">ihtiyacınız olan her şey tek platformda</span>
           </h2>
           <p className="mx-auto max-w-xl text-base text-gray-500 leading-relaxed">
-            Randevu yönetiminden finansal raporlara, SMS hatırlatmalarından müşteri CRM'ine
-            kadar işletmenizi büyütecek tüm araçlar.
+            Online randevu sisteminden finansal raporlara, SMS hatırlatmalarından müşteri CRM'ine
+            kadar — kuaför, berber ve güzellik salonunuzu büyütecek tüm araçlar.
           </p>
         </motion.div>
 

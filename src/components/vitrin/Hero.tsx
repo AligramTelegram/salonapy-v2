@@ -60,20 +60,20 @@ export function Hero() {
             {...fadeUp(0.1)}
             className="mx-auto mb-5 max-w-3xl font-display text-4xl font-extrabold leading-tight text-gray-900 md:text-5xl lg:text-[3.5rem]"
           >
-            Randevunuzu{' '}
+            Kuaför & Güzellik Salonu için{' '}
             <span className="relative text-purple-600">
-              Otomatikleştirin
+              Online Randevu
               <svg className="absolute -bottom-1 left-0 w-full" viewBox="0 0 300 10" fill="none">
                 <path d="M1 7C50 3 100 1 150 1C200 1 250 3 299 7" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" opacity="0.4" />
               </svg>
             </span>
-            ,{' '}İşlerinizi büyütün
+            {' '}Sistemi
           </motion.h1>
 
           {/* Alt başlık */}
           <motion.p {...fadeUp(0.2)} className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-500">
-            Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetimi.
-            SMS hatırlatmaları, otomatik bildirimler ve detaylı raporlar.
+            Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim yazılımı.
+            SMS &amp; WhatsApp hatırlatmaları, personel yönetimi ve finansal raporlar — tek platformda.
           </motion.p>
 
           {/* CTA */}

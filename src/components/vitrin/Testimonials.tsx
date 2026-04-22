@@ -6,30 +6,30 @@ import { Star, Quote } from 'lucide-react'
 const TESTIMONIALS = [
   {
     name: 'Ayşe Yılmaz',
-    business: 'Kuaför Ayşe - İstanbul',
+    business: 'Kuaför Salonu Sahibi — İstanbul, Kadıköy',
     avatar: 'AY',
     avatarBg: 'bg-purple-100',
     avatarColor: 'text-purple-700',
     rating: 5,
-    text: 'Hemensalon ile randevu yönetimimiz tamamen değişti. SMS hatırlatmaları sayesinde müşterilerim artık randevularını unutmuyor. Aylık 30% daha az iptal yaşıyoruz.',
+    text: 'Hemensalon online randevu sistemi sayesinde telefonla uğraşmak bitti. SMS hatırlatmaları ile müşterilerim artık randevularını unutmuyor — aylık %30 daha az iptal yaşıyoruz.',
   },
   {
     name: 'Mehmet Karaoğlu',
-    business: 'Berber Mehmet - Ankara',
+    business: 'Berber İşletmecisi — Ankara, Çankaya',
     avatar: 'MK',
     avatarBg: 'bg-blue-100',
     avatarColor: 'text-blue-700',
     rating: 5,
-    text: 'Kurulumu 5 dakikada tamamladım, teknik bilgim olmadan. Personelimi ekledim, hizmetlerimi tanımladım ve hemen kullanmaya başladım. Müşteri memnuniyetim gözle görülür arttı.',
+    text: 'Berber yazılımına geçişi 5 dakikada tamamladım, sıfır teknik bilgiyle. Personelimi ekledim, hizmetlerimi tanımladım, link hazır. Müşteri memnuniyetim ilk haftadan arttı.',
   },
   {
     name: 'Zeynep Demir',
-    business: 'Beauty Studio Zeynep - İzmir',
+    business: 'Güzellik Salonu Sahibi — İzmir, Alsancak',
     avatar: 'ZD',
     avatarBg: 'bg-pink-100',
     avatarColor: 'text-pink-700',
     rating: 5,
-    text: 'Finansal raporlar özelliği harika. Hangi hizmetimin daha karlı olduğunu, personelimin performansını artık net görüyorum. Fiyatımı buna göre güncelledim.',
+    text: 'Güzellik merkezi yönetim programı olarak Hemensalon\'u seçtim, çok doğru karar. Finansal raporlarda hangi hizmetin karlı olduğunu görüyorum, personel performansını takip ediyorum.',
   },
 ]
 
@@ -54,12 +54,13 @@ export function Testimonials() {
             Müşteri Yorumları
           </span>
           <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">
-            7.870+ işletme
+            7.870+ kuaför ve salon
             <br />
-            <span className="text-purple-300">bizi tercih ediyor</span>
+            <span className="text-purple-300">Hemensalon'u tercih etti</span>
           </h2>
           <p className="mx-auto max-w-xl text-base leading-relaxed text-purple-200/80">
-            Türkiye'nin dört bir yanından işletme sahipleri Hemensalon ile işlerini büyütüyor.
+            Türkiye'nin dört bir yanından kuaför, berber ve güzellik salonu sahipleri
+            online randevu sistemiyle işlerini büyütüyor.
           </p>
         </motion.div>
 

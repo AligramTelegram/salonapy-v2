@@ -66,10 +66,10 @@ export function Analytics() {
         {/* Başlık */}
         <motion.div {...fadeUp(0)} className="mb-8 text-center">
           <h2 className="mb-2 font-display text-2xl font-extrabold text-gray-900 md:text-3xl">
-            Platform İstatistikleri
+            Türkiye&apos;nin Lider Online Randevu Sistemi
           </h2>
           <p className="mx-auto max-w-2xl text-sm md:text-base text-gray-600">
-            Binlerce işletme tarafından güvenilen platform
+            Binlerce kuaför, berber ve güzellik salonu tarafından tercih edilen platform
           </p>
         </motion.div>
 
