@@ -68,8 +68,8 @@ export function Sidebar({ slug, tenantName, plan, smsUsed, smsLimit, trialExpire
 
   return (
     <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 shrink-0">
-      {/* Glass panel */}
-      <div className="flex flex-col h-full m-3 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/90 shadow-[0_8px_40px_rgba(124,58,237,0.10)] overflow-hidden">
+      {/* Panel */}
+      <div className="flex flex-col h-full m-3 rounded-2xl bg-white border border-purple-100/60 shadow-[0_2px_16px_rgba(124,58,237,0.07)] overflow-hidden">
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-purple-100/60">
           <LogoIcon size={36} />

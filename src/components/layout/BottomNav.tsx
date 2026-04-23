@@ -41,7 +41,7 @@ export function BottomNav({ slug, plan }: BottomNavProps) {
   const base = `/b/${slug}`
 
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-purple-100/60 shadow-[0_-4px_20px_rgba(124,58,237,0.08)]">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-purple-100/60 shadow-[0_-2px_12px_rgba(124,58,237,0.08)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="overflow-x-auto">
         <div className="flex items-center gap-1 px-2 py-2 safe-area-inset-bottom min-w-max">
         {BOTTOM_ITEMS.map(({ href, label, icon: Icon, feature }) => {

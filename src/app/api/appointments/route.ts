@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
       customer: { select: { id: true, name: true, phone: true } },
     },
     orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
+    take: 500,
   })
 
   return NextResponse.json(appointments)

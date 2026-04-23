@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { format } from 'date-fns'
+import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import {
   Plus,
@@ -80,10 +80,15 @@ export default function RandevularPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // --- API ---
-  const { data: appointments = [], isLoading } = useAppointments({
-    ...(view === 'liste' ? { date: dateStr } : {}),
-  })
+  // --- API --- liste: gün bazlı, takvim: ay bazlı (tüm DB yerine)
+  const { data: appointments = [], isLoading } = useAppointments(
+    view === 'liste'
+      ? { date: dateStr }
+      : {
+          from: format(startOfMonth(selectedDate), 'yyyy-MM-dd'),
+          to: format(endOfMonth(selectedDate), 'yyyy-MM-dd'),
+        }
+  )
   const { mutateAsync: updateApt, isPending: isUpdating } = useUpdateAppointment()
   const { mutateAsync: deleteApt, isPending: isDeleting } = useDeleteAppointment()
 

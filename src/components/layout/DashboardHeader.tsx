@@ -169,7 +169,7 @@ export function DashboardHeader({
     <>
       <header
         className={cn(
-          'sticky top-0 z-30 flex h-16 items-center justify-between gap-4 bg-white/80 backdrop-blur-xl border-b border-purple-100/60 px-4 lg:px-6',
+          'sticky top-0 z-30 flex h-16 items-center justify-between gap-4 bg-white border-b border-purple-100/60 px-4 lg:px-6',
           className
         )}
       >
@@ -331,7 +331,7 @@ export function DashboardHeader({
           className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4"
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false) }}
         >
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setSearchOpen(false)} />
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSearchOpen(false)} />
           <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
             {/* Input */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">

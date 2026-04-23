@@ -100,10 +100,10 @@ export function GrowthTip() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, x: 80, y: 0 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          exit={{ opacity: 0, x: 80 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 40 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
           className="fixed bottom-20 right-4 z-50 w-72 lg:bottom-6 lg:right-6"
         >
           <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-200/60">
