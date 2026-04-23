@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { LogoIcon } from '@/components/ui/LogoIcon'
@@ -23,6 +24,7 @@ import { tr } from 'date-fns/locale'
 interface DashboardHeaderProps {
   slug: string
   tenantName: string
+  tenantLogo?: string | null
   userName: string
   userEmail: string
   userAvatarUrl?: string | null
@@ -67,6 +69,7 @@ interface SearchResults {
 export function DashboardHeader({
   slug,
   tenantName,
+  tenantLogo,
   userName,
   userEmail,
   userAvatarUrl,
@@ -173,9 +176,19 @@ export function DashboardHeader({
         {/* Sol */}
         <div className="flex items-center gap-3">
           <div className="flex lg:hidden items-center gap-2">
-            <LogoIcon size={32} />
-            <span className="font-display text-base font-bold text-gray-900">
-              Hemen<span className="text-purple-600">salon</span>
+            {tenantLogo ? (
+              <Image
+                src={tenantLogo}
+                alt={tenantName}
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-lg object-cover"
+              />
+            ) : (
+              <LogoIcon size={32} />
+            )}
+            <span className="font-display text-base font-bold text-gray-900 truncate max-w-[140px]">
+              {tenantName}
             </span>
           </div>
           <div className="hidden lg:block">

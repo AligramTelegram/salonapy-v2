@@ -91,12 +91,27 @@ export async function createCheckoutForm(params: {
 
   const buyerEmail = params.ownerEmail?.trim() || params.email || `tenant-${params.tenantId}@hemensalon.com`
   const rawPhone = (params.ownerPhone || params.phone || '').replace(/\D/g, '')
-  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : '+905551234567'
+  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : null
 
-  const identityNumber = params.ownerIdNumber?.trim() || '74300864791'
+  if (!formattedPhone) {
+    return { status: 'failure', errorMessage: 'Telefon numarası eksik. Lütfen ayarlar sayfasından iletişim bilgilerinizi doldurun.' }
+  }
+
+  const identityNumber = params.ownerIdNumber?.trim()
+  if (!identityNumber) {
+    return { status: 'failure', errorMessage: 'TC kimlik numarası eksik. Lütfen ayarlar sayfasından fatura bilgilerinizi doldurun.' }
+  }
+
   const billingAddress = params.ownerAddress?.trim() || 'Türkiye'
-  const billingCity = params.ownerCity?.trim() || 'Istanbul'
+  const billingCity = params.ownerCity?.trim() || 'İstanbul'
   const contactName = buyerFullName || params.tenantName
+
+  const PLAN_LABELS: Record<string, string> = {
+    BASLANGIC: 'Başlangıç',
+    PROFESYONEL: 'Profesyonel',
+    ISLETME: 'İşletme',
+  }
+  const planLabel = PLAN_LABELS[params.plan] ?? params.plan
 
   const request = {
     locale: 'tr',
@@ -114,7 +129,7 @@ export async function createCheckoutForm(params: {
       email: buyerEmail,
       identityNumber,
       registrationAddress: billingAddress,
-      ip: params.buyerIp || '85.34.78.112',
+      ip: params.buyerIp || '127.0.0.1',
       city: billingCity,
       country: 'Turkey',
       gsmNumber: formattedPhone,
@@ -136,7 +151,7 @@ export async function createCheckoutForm(params: {
     basketItems: [
       {
         id: `HEMENSALON_${params.plan}`,
-        name: `Hemensalon ${params.plan} Plan (Aylık)`,
+        name: `Hemensalon ${planLabel} Plan (Aylık)`,
         category1: 'Yazılım',
         itemType: 'VIRTUAL',
         price: amountStr,

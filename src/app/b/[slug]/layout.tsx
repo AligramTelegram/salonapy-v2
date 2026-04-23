@@ -123,6 +123,7 @@ export default async function IsletmePaneliLayout({
           <DashboardHeader
             slug={params.slug}
             tenantName={dbUser.tenant.name}
+            tenantLogo={dbUser.tenant.logo}
             userName={dbUser.name}
             userEmail={dbUser.email}
             userAvatarUrl={dbUser.avatarUrl}
