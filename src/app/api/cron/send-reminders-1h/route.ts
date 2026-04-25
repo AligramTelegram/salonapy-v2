@@ -22,9 +22,10 @@ export async function GET(request: NextRequest) {
 
   const now = new Date()
 
-  // 1 saat sonraki pencere: şu andan +55dk ile +65dk arası
-  const windowStart = new Date(now.getTime() + 55 * 60 * 1000)
-  const windowEnd = new Date(now.getTime() + 65 * 60 * 1000)
+  // 1 saat sonraki pencere: şu andan +30dk ile +90dk arası
+  // Cron tam saatte çalıştığı için geniş pencere gerekli
+  const windowStart = new Date(now.getTime() + 30 * 60 * 1000)
+  const windowEnd = new Date(now.getTime() + 90 * 60 * 1000)
 
   // Bugünün tarihini al (saat kısmı olmadan)
   const today = new Date(now)
