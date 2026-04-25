@@ -178,16 +178,13 @@ export function renderAppointmentConfirmation(props: AppointmentConfirmationProp
                 </tr>
               </table>` : ''}
 
-              <!-- CTA Button -->
+              <!-- Note -->
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding:0 40px 40px;">
-                    <p style="margin:0 0 20px;color:#9ca3af;font-size:13px;text-align:center;line-height:1.6;">
+                    <p style="margin:0;color:#9ca3af;font-size:13px;text-align:center;line-height:1.6;">
                       İptal veya değişiklik için lütfen işletmeyle iletişime geçin.
                     </p>
-                    <a href="${APP_URL}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 36px;border-radius:50px;letter-spacing:0.2px;box-shadow:0 4px 16px rgba(124,58,237,0.35);">
-                      Hemensalon'a Git →
-                    </a>
                   </td>
                 </tr>
               </table>
