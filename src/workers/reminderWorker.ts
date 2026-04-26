@@ -33,7 +33,7 @@ function getRedisConnection(): { host: string; port: number; password?: string; 
 }
 
 async function processReminder(job: Job<ReminderJobData>): Promise<void> {
-  const { appointmentId, tenantId, type } = job.data
+  const { appointmentId, tenantId, type, customerPhone } = job.data
   console.log(`[Worker] İşleniyor: ${type} | appointment: ${appointmentId}`)
 
   const appointment = await prisma.appointment.findUnique({
@@ -81,6 +81,9 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
   const hasMonthlyQuota = tenant.smsUsed < limit
   const hasCredits = (tenant.smsCredits ?? 0) > 0
 
+  const notifyPhone = appointment.customer?.phone ?? appointment.guestPhone ?? customerPhone
+  const notifyName = appointment.customer?.name ?? appointment.guestName ?? 'Müşteri'
+
   if (!hasMonthlyQuota && !hasCredits) {
     console.log(`[Worker] SMS limiti ve kredi tükendi: ${tenant.smsUsed}/${limit}, credits: ${tenant.smsCredits}`)
     await prisma.notification.create({
@@ -88,7 +91,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
         tenantId,
         appointmentId,
         channel: 'SMS',
-        to: appointment.customer.phone,
+        to: notifyPhone,
         message: `${type} hatırlatma: limit aşıldı`,
         status: 'BASARISIZ',
         errorMessage: `SMS limiti aşıldı (${tenant.smsUsed}/${limit}), ek kredi yok`,
@@ -99,26 +102,23 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
 
   const dateStr = format(new Date(appointment.date), 'd MMMM yyyy', { locale: tr })
 
-  // SMS mesajını oluştur (maks 160 karakter, Türkçe karakter içerdiğinden unicode)
   const message =
-    `Merhaba ${appointment.customer.name}, ${tenant.name} randevunuz yaklasıyor. ` +
+    `Merhaba ${notifyName}, ${tenant.name} randevunuz yaklasıyor. ` +
     `Tarih: ${dateStr} Saat: ${appointment.startTime} ` +
     `Hizmet: ${appointment.service.name} Personel: ${appointment.staff.name}`
 
   const result = await sendSms({
-    phone: appointment.customer.phone,
+    phone: notifyPhone,
     message,
   })
 
   if (result.success) {
     if (hasMonthlyQuota) {
-      // Önce aylık limitten düş
       await prisma.tenant.update({
         where: { id: tenantId },
         data: { smsUsed: { increment: 1 } },
       })
     } else {
-      // Aylık limit doldu, ek krediden düş
       await prisma.tenant.update({
         where: { id: tenantId },
         data: { smsCredits: { decrement: 1 } },
@@ -131,7 +131,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
       tenantId,
       appointmentId,
       channel: 'SMS',
-      to: appointment.customer.phone,
+      to: notifyPhone,
       message: type === 'reminder-1h' ? '1 saat öncesi SMS hatırlatma' : '24 saat öncesi SMS hatırlatma',
       status: result.success ? 'GONDERILDI' : 'BASARISIZ',
       sentAt: result.success ? new Date() : undefined,
@@ -140,7 +140,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
   })
 
   console.log(
-    `[Worker] ${type} ${result.success ? '✓ SMS gönderildi' : '✗ başarısız'} | ${appointment.customer.phone}`
+    `[Worker] ${type} ${result.success ? '✓ SMS gönderildi' : '✗ başarısız'} | ${notifyPhone}`
   )
 }
 

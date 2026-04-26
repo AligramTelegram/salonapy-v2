@@ -95,19 +95,21 @@ export async function PUT(
           type: 'GELIR',
           amount: updated.price,
           category: 'Randevu',
-          description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
+          description: `Randevu ${updated.customer?.name ?? existing.guestName ?? 'Misafir'} - ${updated.service.name}`,
           date: new Date(),
         },
       })
 
-      await prisma.customer.update({
-        where: { id: updated.customerId },
-        data: {
-          totalVisits: { increment: 1 },
-          totalSpent: { increment: updated.price },
-          lastVisitAt: new Date(),
-        },
-      })
+      if (updated.customerId) {
+        await prisma.customer.update({
+          where: { id: updated.customerId },
+          data: {
+            totalVisits: { increment: 1 },
+            totalSpent: { increment: updated.price },
+            lastVisitAt: new Date(),
+          },
+        })
+      }
 
     }
 

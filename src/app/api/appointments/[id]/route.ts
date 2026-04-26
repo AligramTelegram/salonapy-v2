@@ -147,15 +147,17 @@ export async function PUT(
       },
     })
 
-    // Müşterinin toplam ziyaret ve harcama bilgilerini güncelle
-    await prisma.customer.update({
-      where: { id: updated.customerId },
-      data: {
-        totalVisits: { increment: 1 },
-        totalSpent: { increment: updated.price },
-        lastVisitAt: new Date(),
-      },
-    })
+    // Müşterinin toplam ziyaret ve harcama bilgilerini güncelle (kayıtsız randevularda atla)
+    if (updated.customerId) {
+      await prisma.customer.update({
+        where: { id: updated.customerId },
+        data: {
+          totalVisits: { increment: 1 },
+          totalSpent: { increment: updated.price },
+          lastVisitAt: new Date(),
+        },
+      })
+    }
 
   }
 

@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
   // Paket veya normal randevu için fiyat doğrulaması
   if (customerPackageId) {
     const cp = await prisma.customerPackage.findFirst({
-      where: { id: customerPackageId, customerId, tenantId, isActive: true },
+      where: { id: customerPackageId, customerId: customerId ?? undefined, tenantId, isActive: true },
     })
     if (!cp) return NextResponse.json({ error: 'Geçersiz paket' }, { status: 400 })
     if (cp.remainingSessions <= 0) return NextResponse.json({ error: 'Pakette seans kalmadı' }, { status: 400 })

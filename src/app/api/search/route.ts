@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       customers,
       appointments: appointments.map((a) => ({
         id: a.id,
-        customerName: a.customer.name,
+        customerName: a.customer?.name ?? a.guestName ?? 'Misafir',
         serviceName: a.service.name,
         date: a.date.toISOString(),
         startTime: a.startTime,

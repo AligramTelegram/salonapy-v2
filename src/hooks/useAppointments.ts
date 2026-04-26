@@ -23,7 +23,7 @@ export interface AppointmentFull {
 }
 
 export interface CreateAppointmentInput {
-  customerId: string
+  customerId?: string
   serviceId: string
   staffId: string
   date: string      // "2025-03-26"
