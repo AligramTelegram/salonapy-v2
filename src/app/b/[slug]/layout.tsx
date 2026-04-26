@@ -13,6 +13,7 @@ import { AlertCircle } from 'lucide-react'
 // Kritik yol dışı — sayfa interaktif olduktan sonra yükle
 const AnnouncementPopup = dynamic(() => import('@/components/dashboard/AnnouncementPopup').then(m => ({ default: m.AnnouncementPopup })), { ssr: false })
 const GrowthTip = dynamic(() => import('@/components/dashboard/GrowthTip').then(m => ({ default: m.GrowthTip })), { ssr: false })
+const ProfileCompletePopup = dynamic(() => import('@/components/dashboard/ProfileCompletePopup').then(m => ({ default: m.ProfileCompletePopup })), { ssr: false })
 
 export default async function IsletmePaneliLayout({
   children,
@@ -185,6 +186,9 @@ export default async function IsletmePaneliLayout({
       <BottomNav slug={params.slug} plan={dbUser.tenant.plan} />
       <AnnouncementPopup />
       <GrowthTip />
+      {hasActiveSubscription && !dbUser.tenant.phone && (
+        <ProfileCompletePopup slug={params.slug} />
+      )}
     </div>
   )
 }
