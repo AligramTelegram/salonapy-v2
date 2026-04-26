@@ -23,9 +23,15 @@ export default function BusinessError({
             <AlertTriangle className="w-8 h-8 text-red-600" />
           </div>
         </div>
-        <h2 className="text-lg font-bold text-gray-900 mb-2">Bir hata oluştu</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-2">
+          {error.message?.includes('fetch') || error.message?.includes('network') || error.message?.includes('Network')
+            ? 'Bağlantı Sorunu'
+            : 'Bir hata oluştu'}
+        </h2>
         <p className="text-gray-500 text-sm mb-6">
-          İşletme panelinde beklenmeyen bir sorun oluştu. Lütfen tekrar deneyin.
+          {error.message?.includes('fetch') || error.message?.includes('network') || error.message?.includes('Network')
+            ? 'İnternet bağlantınız kesildi veya sunucuya ulaşılamıyor. Bağlantınızı kontrol edip tekrar deneyin.'
+            : 'İşletme panelinde beklenmeyen bir sorun oluştu. Lütfen tekrar deneyin.'}
         </p>
         {error.digest && (
           <p className="text-xs text-gray-400 mb-4 font-mono">Kod: {error.digest}</p>
