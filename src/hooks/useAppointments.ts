@@ -7,7 +7,9 @@ export interface AppointmentFull {
   tenantId: string
   staffId: string
   serviceId: string
-  customerId: string
+  customerId?: string | null
+  guestName?: string | null
+  guestPhone?: string | null
   date: string
   startTime: string
   endTime: string
@@ -19,7 +21,7 @@ export interface AppointmentFull {
   updatedAt: string
   staff: { id: string; name: string; color: string; avatarUrl?: string }
   service: { id: string; name: string; duration: number; color?: string }
-  customer: { id: string; name: string; phone: string }
+  customer?: { id: string; name: string; phone: string } | null
 }
 
 export interface CreateAppointmentInput {

@@ -309,7 +309,7 @@ function ListeView({
 
             {/* Bilgi */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{apt.customer.name}</p>
+              <p className="text-sm font-semibold text-gray-900 truncate">{apt.customer?.name ?? apt.guestName ?? 'Misafir'}</p>
               <p className="text-xs text-gray-500 truncate">
                 {apt.service.name} · {apt.staff?.name}
               </p>
@@ -360,7 +360,7 @@ function DetailModal({
 
         {/* Özet */}
         <div className="space-y-3 py-1">
-          <Row icon={<User className="h-4 w-4" />} label="Müşteri" value={`${apt.customer.name} — ${apt.customer.phone}`} />
+          <Row icon={<User className="h-4 w-4" />} label="Müşteri" value={`${apt.customer?.name ?? apt.guestName ?? 'Misafir'} — ${apt.customer?.phone ?? apt.guestPhone ?? '—'}`} />
           <Row icon={<Scissors className="h-4 w-4" />} label="Hizmet" value={`${apt.service.name} (${apt.service.duration} dk)`} />
           <Row
             icon={<div className="h-3 w-3 rounded-full" style={{ backgroundColor: apt.staff?.color }} />}
