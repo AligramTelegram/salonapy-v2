@@ -34,5 +34,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL(`/b/${dbUser.tenant.slug}`, base))
   }
 
-  return NextResponse.redirect(new URL('/giris', base))
+  // Supabase'de oturum var ama DB'de kayıt yok — çıkış yap ve kayıt sayfasına yönlendir
+  await supabase.auth.signOut()
+  const res = NextResponse.redirect(new URL('/kayit?error=no-account', base))
+  // Tüm Supabase cookie'lerini temizle (mobilde loop kırıcı)
+  const cookies = (await import('next/headers')).cookies
+  const cookieStore = cookies()
+  cookieStore.getAll().forEach((c) => {
+    if (c.name.startsWith('sb-')) {
+      res.cookies.set(c.name, '', { maxAge: 0, path: '/' })
+    }
+  })
+  return res
 }
