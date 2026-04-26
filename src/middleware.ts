@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 /**
  * Korumalı rotalar — giriş yapmadan erişilemez
  */
-const PROTECTED_PREFIXES = ['/p/', '/b/', '/admin']
+const PROTECTED_PREFIXES = ['/p/', '/b/']
 
 /**
  * Auth rotaları — giriş yapılıyken açılmaz (/giris redirect eder)
@@ -12,12 +12,13 @@ const PROTECTED_PREFIXES = ['/p/', '/b/', '/admin']
 const AUTH_ROUTES = ['/giris', '/kayit', '/sifremi-unuttum']
 
 /**
- * Admin IP whitelist — ADMIN_ALLOWED_IPS env değişkeninden okunur
- * Örnek: ADMIN_ALLOWED_IPS=127.0.0.1,192.168.1.100
+ * Admin email whitelist — ADMIN_EMAILS env değişkeninden okunur
+ * Örnek: ADMIN_EMAILS=admin@hemensalon.com,dev@hemensalon.com
  */
-const ADMIN_ALLOWED_IPS = (process.env.ADMIN_ALLOWED_IPS ?? '127.0.0.1')
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
   .split(',')
-  .map((ip) => ip.trim())
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -34,22 +35,10 @@ export async function middleware(request: NextRequest) {
     return redirectResponse
   }
 
-  // ── 1. Admin IP kontrolü ───────────────────────────────────────────────────
-  if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-    // Development modunda IP kontrolü atla
-    if (process.env.NODE_ENV !== 'development') {
-      const forwarded = request.headers.get('x-forwarded-for')
-      const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
-      // IPv4 + IPv6 loopback her zaman geçerli
-      const LOCAL_IPS = ['127.0.0.1', '::1', '::ffff:127.0.0.1']
-      const allowed = [...ADMIN_ALLOWED_IPS, ...LOCAL_IPS]
-      if (!allowed.includes(ip)) {
-        return new NextResponse('<h1>403 — Erişim Reddedildi</h1>', {
-          status: 403,
-          headers: { 'Content-Type': 'text/html' },
-        })
-      }
-    }
+  // ── 1. Admin giriş sayfası herkese açık, diğer admin rotaları korumalı ──────
+  if (pathname.startsWith('/admin') && pathname !== '/admin/giris') {
+    // Supabase session kontrolü admin rotalarında ayrıca yapılır (layout'ta)
+    // Burada sadece /admin/giris dışındaki rotalar için geçiş izni ver
   }
 
   // ── 2. Supabase session yönetimi (token refresh) ──────────────────────────

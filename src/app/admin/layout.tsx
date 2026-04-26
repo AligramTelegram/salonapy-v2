@@ -1,12 +1,25 @@
-import { Shield } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { Shield, LogOut } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 import { AdminNav } from '@/components/admin/AdminNav'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+
+  if (!user || !adminEmails.includes(user.email?.toLowerCase() ?? '')) {
+    redirect('/admin/giris')
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="hidden lg:flex flex-col w-56 bg-gray-900 min-h-screen shrink-0">
-        {/* Logo */}
         <div className="p-4 border-b border-gray-800">
           <div className="flex items-center gap-2.5">
             <div className="h-9 w-9 rounded-xl bg-red-600 flex items-center justify-center shrink-0">
@@ -21,10 +34,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <AdminNav />
 
-        <div className="p-3 border-t border-gray-800">
-          <p className="text-[10px] text-gray-600 font-semibold uppercase tracking-wider text-center">
-            IP Kısıtlı Erişim
-          </p>
+        <div className="p-3 border-t border-gray-800 mt-auto">
+          <p className="text-[10px] text-gray-500 text-center mb-2 truncate">{user.email}</p>
+          <form action="/api/admin/logout" method="POST">
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 text-xs text-gray-400 hover:text-white transition-colors py-1.5"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Çıkış Yap
+            </button>
+          </form>
         </div>
       </aside>
 
@@ -37,7 +57,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <span className="text-[10px] text-red-400 font-bold uppercase tracking-wider">Admin</span>
       </div>
 
-      {/* Content */}
       <main className="flex-1 min-w-0 lg:overflow-y-auto pt-14 lg:pt-0">
         {children}
       </main>
