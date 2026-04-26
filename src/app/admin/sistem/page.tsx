@@ -200,7 +200,6 @@ export default async function SistemPage() {
             { label: 'Upstash Redis', configured: !!process.env.UPSTASH_REDIS_REST_URL },
             { label: 'WhatsApp Token', configured: !!process.env.WHATSAPP_ACCESS_TOKEN },
             { label: 'İyzico API Key', configured: !!process.env.IYZICO_API_KEY },
-            { label: 'Stripe Secret', configured: !!process.env.STRIPE_SECRET_KEY },
             { label: 'Resend API Key', configured: !!process.env.RESEND_API_KEY },
           ].map(({ label, configured }) => (
             <div

@@ -161,8 +161,6 @@ export default function AyarlarPage() {
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<string | null>(null)
   const [upgradePlanKey, setUpgradePlanKey] = useState<PlanKey | null>(null)
 
-  // Stripe portal
-  const [isLoadingPortal, setIsLoadingPortal] = useState(false)
 
   // Faturalar
   const [invoices, setInvoices] = useState<Array<{
@@ -470,83 +468,38 @@ export default function AyarlarPage() {
     if (!tenant) return
     setCheckoutLoadingPlan(plan)
     try {
-      const isTR = !tenant.country || tenant.country.toUpperCase() === 'TR'
-      if (isTR) {
-        // Turkey → İyzico
-        const res = await fetch('/api/payments/iyzico/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan, tenantSlug: slug }),
-        })
-        if (!res.ok) {
-          const err = await res.json()
-          throw new Error(err.error ?? 'Ödeme sayfası açılamadı')
-        }
-        const data: { paymentPageUrl: string } = await res.json()
-        window.location.href = data.paymentPageUrl
-      } else {
-        // Global → Stripe
-        const res = await fetch('/api/payments/stripe/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan, tenantSlug: slug }),
-        })
-        if (!res.ok) {
-          const err = await res.json()
-          throw new Error(err.error ?? 'Ödeme sayfası açılamadı')
-        }
-        const data: { url: string } = await res.json()
-        window.location.href = data.url
+      const res = await fetch('/api/payments/iyzico/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan, tenantSlug: slug }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error ?? 'Ödeme sayfası açılamadı')
       }
+      const data: { paymentPageUrl: string } = await res.json()
+      window.location.href = data.paymentPageUrl
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Ödeme sayfası açılamadı')
       setCheckoutLoadingPlan(null)
     }
   }
 
-  async function handleStripePortal() {
-    setIsLoadingPortal(true)
+  async function handleCancelSubscription() {
+    setIsCancellingSubscription(true)
     try {
-      const res = await fetch('/api/payments/stripe/portal', {
+      const res = await fetch('/api/payments/iyzico/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tenantSlug: slug }),
       })
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error ?? 'Portal açılamadı')
+        throw new Error(err.error ?? 'İptal başarısız')
       }
-      const data: { url: string } = await res.json()
-      window.location.href = data.url
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Fatura portalı açılamadı')
-    } finally {
-      setIsLoadingPortal(false)
-    }
-  }
-
-  async function handleCancelSubscription() {
-    setIsCancellingSubscription(true)
-    try {
-      if (subscription?.paymentProvider === 'stripe') {
-        // Stripe cancellation is done via Customer Portal
-        setCancelSubOpen(false)
-        await handleStripePortal()
-      } else {
-        // İyzico cancellation
-        const res = await fetch('/api/payments/iyzico/cancel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tenantSlug: slug }),
-        })
-        if (!res.ok) {
-          const err = await res.json()
-          throw new Error(err.error ?? 'İptal başarısız')
-        }
-        toast.success('Abonelik iptal edildi')
-        setCancelSubOpen(false)
-        await fetchData()
-      }
+      toast.success('Abonelik iptal edildi')
+      setCancelSubOpen(false)
+      await fetchData()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Abonelik iptal edilemedi')
     } finally {
@@ -1271,22 +1224,6 @@ export default function AyarlarPage() {
             {invoicesLoaded && invoices.length > 0 && (
               <div className="glass-card p-5 space-y-3">
                 <h2 className="font-display text-sm font-bold text-gray-900">Fatura Geçmişi</h2>
-                {subscription?.paymentProvider === 'stripe' ? (
-                  <div className="space-y-3">
-                    <p className="text-xs text-gray-500">
-                      Stripe üzerinden yapılan ödemelerinizi ve faturalarınızı görüntülemek için aşağıdaki butonu kullanın.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleStripePortal}
-                      disabled={isLoadingPortal}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 py-2.5 text-sm font-semibold text-purple-700 transition-colors disabled:opacity-60"
-                    >
-                      {isLoadingPortal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                      Faturalarımı Görüntüle (Stripe)
-                    </button>
-                  </div>
-                ) : (
                   <div className="divide-y divide-gray-100">
                     {invoices.map((inv) => (
                       <div key={inv.id} className="flex items-center justify-between py-3">
@@ -1312,7 +1249,6 @@ export default function AyarlarPage() {
                       </div>
                     ))}
                   </div>
-                )}
               </div>
             )}
           </div>

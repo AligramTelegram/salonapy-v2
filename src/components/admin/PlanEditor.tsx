@@ -20,17 +20,17 @@ const PLAN_STYLE: Record<PlanKey, { label: string; color: string; accent: string
 
 const DEFAULT_PLANS: PlansConfig = {
   BASLANGIC: {
-    name: 'Başlangıç', price: '540', priceEur: '35', priceUsd: '19', smsLimit: 200, popular: false, trial: true,
+    name: 'Başlangıç', price: '540', smsLimit: 200, popular: false, trial: true,
     description: 'Küçük işletmeler ve tek kişilik salonlar için ideal başlangıç.',
     features: ['200 SMS/ay', '1 personel', 'Online randevu', 'SMS hatırlatmaları', 'Temel raporlar', 'Müşteri kaydı', '3 gün ücretsiz deneme'],
   },
   PROFESYONEL: {
-    name: 'Profesyonel', price: '1.140', priceEur: '69', priceUsd: '49', smsLimit: 600, popular: true, trial: false,
+    name: 'Profesyonel', price: '1.140', smsLimit: 600, popular: true, trial: false,
     description: 'Büyüyen salonlar için gelişmiş özellikler ve daha fazla kapasite.',
     features: ['600 SMS/ay', '3 personel', 'Online randevu', 'SMS hatırlatmaları', 'Gelişmiş raporlar', 'Müşteri CRM', 'Finansal takip'],
   },
   ISLETME: {
-    name: 'İşletme', price: '1.740', priceEur: '119', priceUsd: '99', smsLimit: 1500, popular: false, trial: false,
+    name: 'İşletme', price: '1.740', smsLimit: 1500, popular: false, trial: false,
     description: 'Çok şubeli ve büyük ekipli işletmeler için tam kapasite.',
     features: ['1.500 SMS/ay', '10 personel', 'Online randevu', 'SMS hatırlatmaları', 'Tam analiz & raporlar', 'Müşteri CRM', 'Finansal takip', 'Öncelikli destek'],
   },
@@ -159,24 +159,6 @@ export function PlanEditor() {
                       value={plan.price}
                       onChange={(e) => updatePlan(key, 'price', e.target.value)}
                       placeholder="450"
-                      className="bg-gray-50 border-gray-200 text-gray-900"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-sm font-medium text-gray-700">Fiyat (€)</Label>
-                    <Input
-                      value={plan.priceEur}
-                      onChange={(e) => updatePlan(key, 'priceEur', e.target.value)}
-                      placeholder="35"
-                      className="bg-gray-50 border-gray-200 text-gray-900"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-sm font-medium text-gray-700">Fiyat ($)</Label>
-                    <Input
-                      value={plan.priceUsd ?? ''}
-                      onChange={(e) => updatePlan(key, 'priceUsd', e.target.value)}
-                      placeholder="19"
                       className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                   </div>

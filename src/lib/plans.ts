@@ -1,7 +1,6 @@
 /**
  * Merkezi plan konfigürasyon modülü.
  * DB'deki siteSetting tablosundan okur, 5 dakika in-memory cache tutar.
- * Tüm sunucu tarafı kodlar buradan import eder.
  */
 
 import { prisma } from './prisma'
@@ -10,10 +9,6 @@ export interface PlanData {
   name: string
   /** TRY fiyatı (₺) */
   priceTRY: number
-  /** EUR fiyatı (€) */
-  priceEUR: number
-  /** USD fiyatı ($) */
-  priceUSD: number
   /** Aylık SMS limiti */
   smsLimit: number
   description: string
@@ -27,7 +22,7 @@ export type PlansMap = Record<'BASLANGIC' | 'PROFESYONEL' | 'ISLETME', PlanData>
 const DEFAULTS: PlansMap = {
   BASLANGIC: {
     name: 'Başlangıç',
-    priceTRY: 540, priceEUR: 35, priceUSD: 19,
+    priceTRY: 540,
     smsLimit: 200,
     description: 'Küçük işletmeler ve tek kişilik salonlar için ideal başlangıç.',
     popular: false, trial: true,
@@ -35,7 +30,7 @@ const DEFAULTS: PlansMap = {
   },
   PROFESYONEL: {
     name: 'Profesyonel',
-    priceTRY: 1140, priceEUR: 69, priceUSD: 49,
+    priceTRY: 1140,
     smsLimit: 600,
     description: 'Büyüyen salonlar için gelişmiş özellikler ve daha fazla kapasite.',
     popular: true, trial: false,
@@ -43,7 +38,7 @@ const DEFAULTS: PlansMap = {
   },
   ISLETME: {
     name: 'İşletme',
-    priceTRY: 1740, priceEUR: 119, priceUSD: 99,
+    priceTRY: 1740,
     smsLimit: 1500,
     description: 'Çok şubeli ve büyük ekipli işletmeler için tam kapasite.',
     popular: false, trial: false,
@@ -81,8 +76,6 @@ export async function getPlans(): Promise<PlansMap> {
         plans[key] = {
           name: json.name ?? def.name,
           priceTRY: parsePrice(json.price, def.priceTRY),
-          priceEUR: parsePrice(json.priceEur, def.priceEUR),
-          priceUSD: parsePrice(json.priceUsd, def.priceUSD),
           smsLimit: typeof json.smsLimit === 'number' ? json.smsLimit : def.smsLimit,
           description: json.description ?? def.description,
           popular: json.popular ?? def.popular,
@@ -104,7 +97,7 @@ export function invalidatePlansCache() {
   _cache = null
 }
 
-/** TRY fiyatları — MRR hesabı için */
+/** TRY fiyatları */
 export async function getPlanPricesTRY(): Promise<Record<string, number>> {
   const plans = await getPlans()
   return {
@@ -114,17 +107,7 @@ export async function getPlanPricesTRY(): Promise<Record<string, number>> {
   }
 }
 
-/** Multi-currency fiyatlar — ödeme işlemleri için */
-export async function getPlanPricesMulti(): Promise<Record<string, Record<string, number>>> {
-  const plans = await getPlans()
-  return {
-    BASLANGIC:   { TRY: plans.BASLANGIC.priceTRY,   EUR: plans.BASLANGIC.priceEUR,   USD: plans.BASLANGIC.priceUSD },
-    PROFESYONEL: { TRY: plans.PROFESYONEL.priceTRY, EUR: plans.PROFESYONEL.priceEUR, USD: plans.PROFESYONEL.priceUSD },
-    ISLETME:     { TRY: plans.ISLETME.priceTRY,     EUR: plans.ISLETME.priceEUR,     USD: plans.ISLETME.priceUSD },
-  }
-}
-
-/** SMS limitleri — worker ve API için */
+/** SMS limitleri */
 export async function getSmsLimits(): Promise<Record<string, number>> {
   const plans = await getPlans()
   return {

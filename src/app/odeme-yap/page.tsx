@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 const PLAN_CONFIG: Record<string, {
   label: string
   price: string
-  priceEur: string
   features: string[]
   color: string
   bg: string
@@ -17,10 +16,9 @@ const PLAN_CONFIG: Record<string, {
   BASLANGIC: {
     label: 'Başlangıç',
     price: '₺540',
-    priceEur: '€35',
     features: [
-      '100 SMS/ay',
-      '2 personel hesabı',
+      '200 SMS/ay',
+      '1 personel hesabı',
       'Randevu yönetimi',
       'Temel raporlar',
       'Müşteri CRM',
@@ -31,9 +29,8 @@ const PLAN_CONFIG: Record<string, {
   PROFESYONEL: {
     label: 'Profesyonel',
     price: '₺1.140',
-    priceEur: '€69',
     features: [
-      '600 WhatsApp mesajı/ay',
+      '600 SMS/ay',
       '3 personel hesabı',
       'Online randevu',
       'Gelişmiş raporlar',
@@ -46,9 +43,8 @@ const PLAN_CONFIG: Record<string, {
   ISLETME: {
     label: 'İşletme',
     price: '₺1.740',
-    priceEur: '€119',
     features: [
-      '1.500 WhatsApp mesajı/ay',
+      '1.500 SMS/ay',
       '10 personel hesabı',
       'Online randevu',
       'Tam analiz & raporlar',
@@ -65,7 +61,7 @@ function OdemeYapContent() {
   const searchParams = useSearchParams()
   const plan = searchParams.get('plan')?.toUpperCase() ?? ''
   const slug = searchParams.get('slug') ?? ''
-  const [loadingProvider, setLoadingProvider] = useState<'iyzico' | 'stripe' | null>(null)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const config = PLAN_CONFIG[plan]
@@ -81,8 +77,8 @@ function OdemeYapContent() {
     )
   }
 
-  async function handleIyzicoPayment() {
-    setLoadingProvider('iyzico')
+  async function handlePayment() {
+    setLoading(true)
     setError(null)
     try {
       const res = await fetch('/api/payments/iyzico/checkout', {
@@ -95,29 +91,9 @@ function OdemeYapContent() {
       window.location.href = json.paymentPageUrl
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Ödeme başlatılamadı')
-      setLoadingProvider(null)
+      setLoading(false)
     }
   }
-
-  async function handleStripePayment() {
-    setLoadingProvider('stripe')
-    setError(null)
-    try {
-      const res = await fetch('/api/payments/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan, tenantSlug: slug }),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Ödeme başlatılamadı')
-      window.location.href = json.url
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Ödeme başlatılamadı')
-      setLoadingProvider(null)
-    }
-  }
-
-  const isLoading = loadingProvider !== null
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900/20 to-slate-950 flex items-center justify-center p-4">
@@ -141,7 +117,6 @@ function OdemeYapContent() {
               <div className="flex items-end gap-1 mb-4">
                 <span className={`text-3xl font-extrabold ${config.color}`}>{config.price}</span>
                 <span className="text-gray-400 text-sm mb-1">/ay</span>
-                <span className="text-gray-400 text-xs mb-1 ml-1">veya {config.priceEur}/ay</span>
               </div>
               <ul className="space-y-2">
                 {config.features.map((f) => (
@@ -159,57 +134,24 @@ function OdemeYapContent() {
               </div>
             )}
 
-            <div className="space-y-3">
-              {/* iyzico — TRY */}
-              <Button
-                onClick={handleIyzicoPayment}
-                disabled={isLoading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-purple-200"
-              >
-                {loadingProvider === 'iyzico' ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Yönlendiriliyor...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Türk Lirası ile Öde · {config.price}/ay
-                  </>
-                )}
-              </Button>
-              <p className="text-center text-xs text-gray-400">iyzico · Güvenli ödeme</p>
-
-              <div className="relative my-2">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-100" />
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="bg-white px-3 text-xs text-gray-400">veya</span>
-                </div>
-              </div>
-
-              {/* Stripe — EUR */}
-              <Button
-                onClick={handleStripePayment}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full border-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50"
-              >
-                {loadingProvider === 'stripe' ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Yönlendiriliyor...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Euro ile Öde · {config.priceEur}/ay
-                  </>
-                )}
-              </Button>
-              <p className="text-center text-xs text-gray-400">Stripe · Uluslararası ödeme</p>
-            </div>
+            <Button
+              onClick={handlePayment}
+              disabled={loading}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-purple-200"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Yönlendiriliyor...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  {config.price}/ay · Güvenli Öde
+                </>
+              )}
+            </Button>
+            <p className="text-center text-xs text-gray-400 mt-2">iyzico · Güvenli ödeme</p>
 
             <div className="mt-5 pt-4 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400">

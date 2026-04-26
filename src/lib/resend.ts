@@ -162,7 +162,7 @@ export async function sendPaymentSuccessEmail(params: {
   currency: string
   slug: string
 }): Promise<void> {
-  const currencySymbol = params.currency === 'USD' ? '$' : params.currency === 'EUR' ? '€' : '₺'
+  const currencySymbol = '₺'
   const amountStr = `${currencySymbol}${params.amount.toLocaleString('tr-TR')}`
   const planLabel = PLAN_LABELS[params.plan] ?? params.plan
   const nextPaymentDate = format(addDays(new Date(), 30), 'd MMMM yyyy', { locale: tr })

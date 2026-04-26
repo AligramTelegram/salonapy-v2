@@ -15,8 +15,6 @@ function OdemeBasariliContent() {
   const searchParams = useSearchParams()
   const plan = searchParams.get('plan') ?? 'BASLANGIC'
   const slug = searchParams.get('slug') ?? ''
-  const provider = searchParams.get('provider') ?? 'iyzico'
-  const currency = provider === 'stripe' ? 'EUR' : 'TRY'
 
   const planLabel = PLAN_LABELS[plan] ?? plan
   const [planPrice, setPlanPrice] = useState<string>('—')
@@ -26,19 +24,15 @@ function OdemeBasariliContent() {
       .then((r) => r.json())
       .then((data) => {
         const p = data[plan]
-        if (!p) return
-        if (currency === 'EUR') setPlanPrice(`€${p.priceEur}`)
-        else setPlanPrice(`₺${p.price}`)
+        if (p?.price) setPlanPrice(`₺${p.price}`)
       })
       .catch(() => {/* keep default */})
-  }, [plan, currency])
+  }, [plan])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-emerald-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Success card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 text-center">
-          {/* Icon */}
           <div className="relative inline-flex items-center justify-center mb-6">
             <div className="h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center">
               <CheckCircle2 className="h-10 w-10 text-emerald-600" />
@@ -48,24 +42,17 @@ function OdemeBasariliContent() {
             </div>
           </div>
 
-          {/* Title */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Ödeme Başarılı! 🎉
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Ödeme Başarılı! 🎉</h1>
           <p className="text-gray-500 text-sm mb-6">
             {planLabel} planınız aktifleştirildi. Artık tüm özelliklere erişebilirsiniz.
           </p>
 
-          {/* Plan info */}
           <div className="bg-purple-50 rounded-2xl p-4 mb-6 border border-purple-100">
             <p className="text-xs font-semibold text-purple-500 uppercase tracking-wide mb-1">Aktif Plan</p>
             <p className="text-xl font-bold text-purple-700">{planLabel}</p>
-            <p className="text-sm text-purple-500 mt-0.5">
-              {planPrice}/ay
-            </p>
+            <p className="text-sm text-purple-500 mt-0.5">{planPrice}/ay</p>
           </div>
 
-          {/* CTA */}
           {slug ? (
             <Link
               href={`/b/${slug}?upgrade_success=true`}
@@ -85,7 +72,6 @@ function OdemeBasariliContent() {
           )}
         </div>
 
-        {/* Support note */}
         <p className="text-center text-xs text-gray-400 mt-4">
           Sorun mu yaşıyorsunuz?{' '}
           <a href="mailto:destek@hemensalon.com" className="text-purple-600 hover:underline">

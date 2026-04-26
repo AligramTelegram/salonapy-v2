@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   })
   if (!tenant) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 404 })
 
-  const { amount, currency } = getPlanPrice(plan, tenant.country)
+  const { amount, currency } = getPlanPrice(plan)
 
   const result = await createPayment({
     tenantId: tenant.id,
