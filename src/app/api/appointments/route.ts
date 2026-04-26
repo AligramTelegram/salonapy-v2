@@ -14,12 +14,14 @@ import { checkSmsLimit, incrementSms } from '@/lib/sms-limit'
 export const dynamic = 'force-dynamic'
 
 const CreateSchema = z.object({
-  customerId: z.string().min(1),
+  customerId: z.string().optional().nullable(),
+  guestName: z.string().max(100).optional().nullable(),
+  guestPhone: z.string().max(20).optional().nullable(),
   serviceId: z.string().min(1),
   staffId: z.string().min(1),
-  date: z.string().min(1),      // "2025-03-26"
-  startTime: z.string().min(1), // "14:30"
-  endTime: z.string().min(1),   // "15:30"
+  date: z.string().min(1),
+  startTime: z.string().min(1),
+  endTime: z.string().min(1),
   price: z.number().nonnegative(),
   notes: z.string().max(1000).optional(),
   customerPackageId: z.string().optional().nullable(),
@@ -89,7 +91,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const { customerId, serviceId, staffId, date, startTime, endTime, price, notes, customerPackageId } = parsed.data
+  const { customerId, guestName, guestPhone, serviceId, staffId, date, startTime, endTime, price, notes, customerPackageId } = parsed.data
+
+  // Kayıtsız randevu için en az isim gerekli
+  if (!customerId && !guestName?.trim()) {
+    return NextResponse.json({ error: 'Müşteri seçin veya misafir adı girin' }, { status: 422 })
+  }
 
   // ── Aylık randevu limiti kontrolü ──────────────────────────────────────────
   const tenant = await prisma.tenant.findUnique({
@@ -135,14 +142,13 @@ export async function POST(request: NextRequest) {
   const normalizedDate = parse(date, 'yyyy-MM-dd', new Date())
   normalizedDate.setHours(12, 0, 0, 0)
 
-  // Tenant izolasyonu: gelen ID'ler bu tenant'a ait mi?
   const [customer, service, staff] = await Promise.all([
-    prisma.customer.findFirst({ where: { id: customerId, tenantId } }),
+    customerId ? prisma.customer.findFirst({ where: { id: customerId, tenantId } }) : null,
     prisma.service.findFirst({ where: { id: serviceId, tenantId } }),
     prisma.staff.findFirst({ where: { id: staffId, tenantId } }),
   ])
 
-  if (!customer) return NextResponse.json({ error: 'Müşteri bulunamadı' }, { status: 404 })
+  if (customerId && !customer) return NextResponse.json({ error: 'Müşteri bulunamadı' }, { status: 404 })
   if (!service) return NextResponse.json({ error: 'Hizmet bulunamadı' }, { status: 404 })
   if (!staff) return NextResponse.json({ error: 'Personel bulunamadı' }, { status: 404 })
 
@@ -171,25 +177,26 @@ export async function POST(request: NextRequest) {
         { endTime: { gt: startTime } },
       ],
     },
-    select: { startTime: true, endTime: true, customer: { select: { name: true } } },
+    select: { startTime: true, endTime: true, customer: { select: { name: true } }, guestName: true },
   })
 
   if (conflict) {
+    const conflictName = conflict.customer?.name ?? conflict.guestName ?? 'Misafir'
     return NextResponse.json(
       {
-        error: `${staff.name} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer.name}).`,
+        error: `${staff.name} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflictName}).`,
         code: 'APPOINTMENT_CONFLICT',
       },
       { status: 409 }
     )
   }
-  // ──────────────────────────────────────────────────────────────────────────
 
-  // Create appointment (package session will be deducted only on status change)
   const appointment = await prisma.appointment.create({
     data: {
       tenantId,
-      customerId,
+      customerId: customerId ?? null,
+      guestName: !customerId ? (guestName ?? null) : null,
+      guestPhone: !customerId ? (guestPhone ?? null) : null,
       serviceId,
       staffId,
       date: normalizedDate,
@@ -215,15 +222,20 @@ export async function POST(request: NextRequest) {
     data: { appointmentsUsed: { increment: 1 } },
   })
 
-  // Send appointment confirmation email to customer (if email exists)
-  if (customer.email) {
+  // Bildirim için isim ve telefon — kayıtlı müşteri öncelikli, yoksa misafir bilgileri
+  const notifyName = customer?.name ?? guestName ?? 'Misafir'
+  const notifyPhone = customer?.phone ?? guestPhone ?? null
+  const notifyEmail = customer?.email ?? null
+
+  // Onay emaili (kayıtlı müşteride email varsa)
+  if (notifyEmail) {
     const tenantForEmail = await prisma.tenant.findUnique({
       where: { id: tenantId },
       select: { name: true, phone: true, email: true },
     })
     sendAppointmentConfirmation({
-      customerName: customer.name,
-      customerEmail: customer.email,
+      customerName: notifyName,
+      customerEmail: notifyEmail,
       serviceName: service.name,
       staffName: staff.name,
       date: normalizedDate,
@@ -235,8 +247,8 @@ export async function POST(request: NextRequest) {
     }).catch((err) => console.error('[appointments] Confirmation email failed:', err))
   }
 
-  // Randevu onay SMS'i gönder (awaited — Vercel'de fire-and-forget çalışmaz)
-  if (customer.phone) {
+  // Onay SMS — telefon varsa gönder (kayıtlı veya misafir)
+  if (notifyPhone) {
     try {
       const hasCredit = await checkSmsLimit(tenantId)
       if (hasCredit) {
@@ -244,39 +256,34 @@ export async function POST(request: NextRequest) {
           where: { id: tenantId },
           select: { name: true },
         })
-
         const dateStr = format(normalizedDate, 'd MMMM yyyy', { locale: tr })
         const msg =
-          `Merhaba ${customer.name}, ${tenantInfo?.name ?? ''} randevunuz olusturuldu. ` +
+          `Merhaba ${notifyName}, ${tenantInfo?.name ?? ''} randevunuz olusturuldu. ` +
           `Tarih: ${dateStr} Saat: ${startTime} Hizmet: ${service.name}`
 
-        const result = await sendSms({ phone: customer.phone, message: msg })
-        if (result.success) {
-          await incrementSms(tenantId)
-        }
+        const result = await sendSms({ phone: notifyPhone, message: msg })
+        if (result.success) await incrementSms(tenantId)
 
         await prisma.notification.create({
           data: {
             tenantId,
             appointmentId: appointment.id,
             channel: 'SMS',
-            to: customer.phone,
+            to: notifyPhone,
             message: 'Randevu onay SMS',
             status: result.success ? 'GONDERILDI' : 'BASARISIZ',
             sentAt: result.success ? new Date() : undefined,
             errorMessage: result.error,
           },
         })
-
-        console.log(`[appointments] SMS ${result.success ? '✓' : '✗'} → ${customer.phone}`)
+        console.log(`[appointments] SMS ${result.success ? '✓' : '✗'} → ${notifyPhone}`)
       }
     } catch (err) {
-      // SMS hatası randevu oluşturmayı engellemesin
       console.error('[appointments] SMS gönderme hatası:', err)
     }
   }
 
-  // Randevu zamanını hesapla ve hatırlatma job'larını kuyruğa ekle
+  // Hatırlatma job'ları — telefon yoksa kuyruğa ekleme
   const [apptHours, apptMinutes] = startTime.split(':').map(Number)
   const appointmentDateTime = new Date(normalizedDate)
   appointmentDateTime.setHours(apptHours, apptMinutes, 0, 0)
@@ -286,17 +293,10 @@ export async function POST(request: NextRequest) {
   const delay24h = apptTime - 24 * 60 * 60 * 1000 - now
   const delay1h = apptTime - 60 * 60 * 1000 - now
 
-  const jobData = {
-    appointmentId: appointment.id,
-    tenantId,
-    customerPhone: customer.phone,
-  }
-
-  if (delay24h > 0) {
-    await addReminderJob({ ...jobData, type: 'reminder-24h' }, delay24h)
-  }
-  if (delay1h > 0) {
-    await addReminderJob({ ...jobData, type: 'reminder-1h' }, delay1h)
+  if (notifyPhone) {
+    const jobData = { appointmentId: appointment.id, tenantId, customerPhone: notifyPhone }
+    if (delay24h > 0) await addReminderJob({ ...jobData, type: 'reminder-24h' }, delay24h)
+    if (delay1h > 0) await addReminderJob({ ...jobData, type: 'reminder-1h' }, delay1h)
   }
 
   return NextResponse.json(appointment, { status: 201 })
