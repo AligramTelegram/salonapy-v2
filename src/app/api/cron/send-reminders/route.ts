@@ -66,7 +66,6 @@ export async function GET(request: NextRequest) {
         appointmentId: apt.id,
         channel: 'SMS',
         status: 'GONDERILDI',
-        message: { contains: '24' },
       },
     })
 

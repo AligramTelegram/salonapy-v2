@@ -30,6 +30,7 @@ async function getUniqueSlug(base: string): Promise<string> {
   }
 }
 
+const VALID_PLANS = ['BASLANGIC', 'PROFESYONEL', 'ISLETME'] as const
 const PAID_PLANS = ['PROFESYONEL', 'ISLETME']
 
 export async function POST(request: Request) {
@@ -40,7 +41,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Eksik bilgi: supabaseId, email, name, businessName zorunlu' }, { status: 400 })
     }
 
-    const isPaidPlan = PAID_PLANS.includes(plan)
+    const normalizedPlan = typeof plan === 'string' && VALID_PLANS.includes(plan as typeof VALID_PLANS[number])
+      ? plan as typeof VALID_PLANS[number]
+      : 'BASLANGIC'
+    const isPaidPlan = PAID_PLANS.includes(normalizedPlan)
     const baseSlug = generateSlug(businessName)
     const slug = await getUniqueSlug(baseSlug)
 
@@ -52,7 +56,7 @@ export async function POST(request: Request) {
         phone: phone || null,
         // Ücretli planlar ödeme tamamlanana kadar inaktif başlar
         isActive: !isPaidPlan,
-        plan: isPaidPlan ? plan : 'BASLANGIC',
+        plan: isPaidPlan ? normalizedPlan : 'BASLANGIC',
         users: {
           create: {
             supabaseId,

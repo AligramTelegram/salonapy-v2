@@ -154,6 +154,7 @@ async function handleCallback(
           planEndsAt: endDate,
           smsUsed: 0,
           smsResetAt: now,
+          isActive: true,
         },
       }),
       prisma.subscription.upsert({
