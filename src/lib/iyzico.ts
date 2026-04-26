@@ -93,10 +93,7 @@ export async function createCheckoutForm(params: {
   const rawPhone = (params.ownerPhone || params.phone || '').replace(/\D/g, '')
   const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : '+905000000000'
 
-  const identityNumber = params.ownerIdNumber?.trim()
-  if (!identityNumber) {
-    return { status: 'failure', errorMessage: 'TC kimlik numarası eksik. Lütfen ayarlar sayfasından fatura bilgilerinizi doldurun.' }
-  }
+  const identityNumber = params.ownerIdNumber?.trim() || '11111111111'
 
   const billingAddress = params.ownerAddress?.trim() || 'Türkiye'
   const billingCity = params.ownerCity?.trim() || 'İstanbul'
