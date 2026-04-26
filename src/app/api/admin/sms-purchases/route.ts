@@ -5,7 +5,7 @@ import { verifyAdminSecret } from '@/lib/admin-auth'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
-  const authError = verifyAdminSecret(request)
+  const authError = await verifyAdminSecret(request)
   if (authError) return authError
   try {
     const purchases = await prisma.transaction.findMany({

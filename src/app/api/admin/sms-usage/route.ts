@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 // GET /api/admin/sms-usage
 export async function GET(request: NextRequest) {
-  const authError = verifyAdminSecret(request)
+  const authError = await verifyAdminSecret(request)
   if (authError) return authError
 
   const tenants = await prisma.tenant.findMany({

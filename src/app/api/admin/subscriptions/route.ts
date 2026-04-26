@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 // GET /api/admin/subscriptions
 export async function GET(request: NextRequest) {
-  const authError = verifyAdminSecret(request)
+  const authError = await verifyAdminSecret(request)
   if (authError) return authError
 
   try {
