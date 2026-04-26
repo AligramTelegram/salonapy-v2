@@ -37,8 +37,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import nextDynamic from 'next/dynamic'
 import { NewAppointmentModal } from '@/components/dashboard/NewAppointmentModal'
-import { AppointmentCalendar } from '@/components/dashboard/AppointmentCalendar'
+const AppointmentCalendar = nextDynamic(
+  () => import('@/components/dashboard/AppointmentCalendar').then((m) => m.AppointmentCalendar),
+  { ssr: false, loading: () => <div className="flex items-center justify-center h-[600px]"><Loader2 className="h-7 w-7 animate-spin text-purple-400" /></div> }
+)
 import {
   useAppointments,
   useUpdateAppointment,

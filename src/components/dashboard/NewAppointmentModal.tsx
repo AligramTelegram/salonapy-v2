@@ -50,7 +50,7 @@ const schema = z.object({
   staffId: z.string().min(1, 'Personel seçin'),
   date: z.string().min(1, 'Tarih girin'),
   startTime: z.string().regex(/^\d{2}:\d{2}$/, 'SS:DD formatı'),
-  price: z.number().positive('Geçerli fiyat girin'),
+  price: z.number().nonnegative('Geçerli fiyat girin'),
   notes: z.string().optional(),
 })
 
