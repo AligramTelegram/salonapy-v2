@@ -179,6 +179,37 @@ export async function sendPaymentSuccessEmail(params: {
   await sendEmail({ to: params.to, subject, html })
 }
 
+// ─── Admin: yeni işletme bildirimi ───────────────────────────────────────────
+
+export async function sendAdminNewTenantEmail(params: {
+  adminEmail: string
+  name: string
+  email: string
+  businessName: string
+  slug: string
+  plan: string
+}): Promise<void> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.hemensalon.com'
+  const planLabel = { BASLANGIC: 'Başlangıç (Deneme)', PROFESYONEL: 'Profesyonel', ISLETME: 'İşletme' }[params.plan] ?? params.plan
+  const html = `
+    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+      <h2 style="color:#7c3aed;margin-bottom:4px">🎉 Yeni İşletme Kaydı</h2>
+      <p style="color:#6b7280;font-size:13px;margin-top:0">hemensalon.com</p>
+      <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:14px">
+        <tr><td style="padding:8px 0;color:#9ca3af;width:140px">İşletme Adı</td><td style="padding:8px 0;font-weight:600;color:#111827">${params.businessName}</td></tr>
+        <tr><td style="padding:8px 0;color:#9ca3af">Yetkili Adı</td><td style="padding:8px 0;color:#111827">${params.name}</td></tr>
+        <tr><td style="padding:8px 0;color:#9ca3af">Email</td><td style="padding:8px 0;color:#111827">${params.email}</td></tr>
+        <tr><td style="padding:8px 0;color:#9ca3af">Plan</td><td style="padding:8px 0;color:#7c3aed;font-weight:600">${planLabel}</td></tr>
+        <tr><td style="padding:8px 0;color:#9ca3af">Panel</td><td style="padding:8px 0"><a href="${appUrl}/b/${params.slug}" style="color:#7c3aed">/b/${params.slug}</a></td></tr>
+      </table>
+      <div style="margin-top:20px">
+        <a href="${appUrl}/admin/isletmeler" style="display:inline-block;background:#7c3aed;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">Admin Panelinde Görüntüle</a>
+      </div>
+    </div>
+  `
+  await sendEmail({ to: params.adminEmail, subject: `Yeni kayıt: ${params.businessName}`, html })
+}
+
 // ─── Payment failed email ─────────────────────────────────────────────────────
 
 export async function sendPaymentFailedEmail(params: {

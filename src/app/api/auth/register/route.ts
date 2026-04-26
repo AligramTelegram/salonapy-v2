@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { addDays } from 'date-fns'
-import { sendWelcomeEmail } from '@/lib/resend'
+import { sendWelcomeEmail, sendAdminNewTenantEmail } from '@/lib/resend'
 
 function generateSlug(text: string): string {
   return text
@@ -91,6 +91,13 @@ export async function POST(request: Request) {
       slug,
       isTrial: !isPaidPlan,
     }).catch((err) => console.error('[register] Welcome email failed:', err))
+
+    // Admin bildirim maili
+    const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || process.env.ADMIN_EMAILS?.split(',')[0]?.trim()
+    if (adminEmail) {
+      sendAdminNewTenantEmail({ adminEmail, name, email, businessName, slug, plan: isPaidPlan ? plan : 'BASLANGIC' })
+        .catch((err) => console.error('[register] Admin notify email failed:', err))
+    }
 
     return NextResponse.json({ tenantSlug: slug })
   } catch (err) {
