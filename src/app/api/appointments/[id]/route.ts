@@ -86,7 +86,7 @@ export async function PUT(
       const staffRecord = await prisma.staff.findUnique({ where: { id: finalStaffId }, select: { name: true } })
       return NextResponse.json(
         {
-          error: `${staffRecord?.name ?? 'Personel'} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer.name}).`,
+          error: `${staffRecord?.name ?? 'Personel'} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer?.name ?? conflict.guestName ?? 'Misafir'}).`,
           code: 'APPOINTMENT_CONFLICT',
         },
         { status: 409 }
