@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from 'react'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { tr } from 'date-fns/locale'
