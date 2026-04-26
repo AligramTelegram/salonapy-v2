@@ -266,28 +266,6 @@ function KayitContent() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700 text-sm">
-                          Telefon <span className="text-gray-400">(opsiyonel)</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="tel"
-                            placeholder="0555 123 45 67"
-                            autoComplete="tel"
-                            className="border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600 text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={form.control}

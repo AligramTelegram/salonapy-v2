@@ -91,11 +91,7 @@ export async function createCheckoutForm(params: {
 
   const buyerEmail = params.ownerEmail?.trim() || params.email || `tenant-${params.tenantId}@hemensalon.com`
   const rawPhone = (params.ownerPhone || params.phone || '').replace(/\D/g, '')
-  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : null
-
-  if (!formattedPhone) {
-    return { status: 'failure', errorMessage: 'Telefon numarası eksik. Lütfen ayarlar sayfasından iletişim bilgilerinizi doldurun.' }
-  }
+  const formattedPhone = rawPhone.startsWith('0') ? '+90' + rawPhone.slice(1) : rawPhone ? '+' + rawPhone : '+905000000000'
 
   const identityNumber = params.ownerIdNumber?.trim()
   if (!identityNumber) {
