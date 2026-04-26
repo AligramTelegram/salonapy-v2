@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { addDays } from 'date-fns'
 import { sendWelcomeEmail, sendAdminNewTenantEmail } from '@/lib/resend'
+import { sendSms } from '@/lib/netgsm'
 
 function generateSlug(text: string): string {
   return text
@@ -91,6 +92,14 @@ export async function POST(request: Request) {
       slug,
       isTrial: !isPaidPlan,
     }).catch((err) => console.error('[register] Welcome email failed:', err))
+
+    // Hoş geldin SMS (telefon girdiyse)
+    if (phone) {
+      sendSms({
+        phone,
+        message: `Merhaba ${name}, ${businessName} işletmeniz Hemensalon'a kaydedildi! Paneliniz: hemensalon.com/b/${slug}`,
+      }).catch((err) => console.error('[register] Welcome SMS failed:', err))
+    }
 
     // Admin bildirim maili
     const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || process.env.ADMIN_EMAILS?.split(',')[0]?.trim()
