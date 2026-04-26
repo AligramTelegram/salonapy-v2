@@ -79,7 +79,7 @@ export async function PUT(
           { endTime: { gt: finalStartTime } },
         ],
       },
-      select: { startTime: true, endTime: true, customer: { select: { name: true } } },
+      select: { startTime: true, endTime: true, guestName: true, customer: { select: { name: true } } },
     })
 
     if (conflict) {
