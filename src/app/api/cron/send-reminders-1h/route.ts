@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   const now = new Date()
 
   // 1 saat sonraki pencere: şu andan +30dk ile +90dk arası
-  // Cron tam saatte çalıştığı için geniş pencere gerekli
+  // cron-job.org saatte bir çalışır, tüm yarım saatleri yakalamak için geniş pencere
   const windowStart = new Date(now.getTime() + 30 * 60 * 1000)
   const windowEnd = new Date(now.getTime() + 90 * 60 * 1000)
 
@@ -68,7 +68,6 @@ export async function GET(request: NextRequest) {
         appointmentId: apt.id,
         channel: 'SMS',
         status: 'GONDERILDI',
-        message: { contains: '1 saat' },
       },
     })
     if (alreadySent) { skipped++; continue }
@@ -92,7 +91,7 @@ export async function GET(request: NextRequest) {
 
     const dateStr = format(new Date(apt.date), 'd MMMM yyyy', { locale: tr })
     const msg =
-      `Hatirlatma: 1 saat sonra ${apt.startTime} ${apt.service.name} randevunuz var. ` +
+      `Hatirlatma: Bugun saat ${apt.startTime} ${apt.service.name} randevunuz var. ` +
       `${apt.tenant.name} - ${dateStr}`
 
     try {
