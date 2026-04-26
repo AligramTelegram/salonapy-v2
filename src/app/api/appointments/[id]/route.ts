@@ -142,7 +142,7 @@ export async function PUT(
         type: 'GELIR',
         amount: updated.price,
         category: 'Randevu',
-        description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
+        description: `Randevu ${updated.customer?.name ?? existing.guestName ?? 'Misafir'} - ${updated.service.name}`,
         date: new Date(),
       },
     })
