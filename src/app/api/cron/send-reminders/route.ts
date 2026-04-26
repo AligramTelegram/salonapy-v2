@@ -55,8 +55,7 @@ export async function GET(request: NextRequest) {
   let errors = 0
 
   for (const apt of appointments) {
-    const phone = apt.customer?.phone ?? apt.guestPhone
-    if (!phone) {
+    if (!apt.customer.phone) {
       skipped++
       continue
     }
@@ -83,7 +82,7 @@ export async function GET(request: NextRequest) {
           tenantId: apt.tenantId,
           appointmentId: apt.id,
           channel: 'SMS',
-          to: phone,
+          to: apt.customer.phone,
           message: '24 saat öncesi SMS hatırlatma — limit aşıldı',
           status: 'BASARISIZ',
           errorMessage: 'SMS limiti ve kredisi tükendi',
@@ -99,7 +98,7 @@ export async function GET(request: NextRequest) {
       `${apt.tenant.name} - ${dateStr}`
 
     try {
-      const result = await sendSms({ phone, message: msg })
+      const result = await sendSms({ phone: apt.customer.phone, message: msg })
 
       if (result.success) {
         await incrementSms(apt.tenantId)
@@ -113,7 +112,7 @@ export async function GET(request: NextRequest) {
           tenantId: apt.tenantId,
           appointmentId: apt.id,
           channel: 'SMS',
-          to: phone,
+          to: apt.customer.phone,
           message: '24 saat öncesi SMS hatırlatma',
           status: result.success ? 'GONDERILDI' : 'BASARISIZ',
           sentAt: result.success ? new Date() : undefined,

@@ -155,7 +155,7 @@ export default async function IsletmeDashboardPage({
           : type === 'RANDEVU_TAMAMLANDI'
           ? 'Randevu tamamlandı'
           : 'Randevu iptal edildi',
-      description: `${apt.customer?.name ?? apt.guestName ?? 'Misafir'} — ${apt.service.name}, ${apt.startTime}`,
+      description: `${apt.customer.name} — ${apt.service.name}, ${apt.startTime}`,
       time: relativeTime,
     }
   })

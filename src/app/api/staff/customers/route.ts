@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     if (grouped.length === 0) return NextResponse.json([])
 
-    const customerIds = grouped.map((g) => g.customerId).filter((id): id is string => id !== null)
+    const customerIds = grouped.map((g) => g.customerId)
 
     const customers = await prisma.customer.findMany({
       where: {

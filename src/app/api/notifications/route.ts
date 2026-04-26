@@ -40,7 +40,7 @@ export async function GET() {
 
     const notifications = appointments.map((a) => ({
       id: a.id,
-      customerName: a.customer?.name ?? a.guestName ?? 'Misafir',
+      customerName: a.customer.name,
       serviceName: a.service.name,
       status: a.status,
       statusLabel: STATUS_LABELS[a.status] ?? a.status,

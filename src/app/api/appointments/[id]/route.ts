@@ -79,14 +79,14 @@ export async function PUT(
           { endTime: { gt: finalStartTime } },
         ],
       },
-      select: { startTime: true, endTime: true, guestName: true, customer: { select: { name: true } } },
+      select: { startTime: true, endTime: true, customer: { select: { name: true } } },
     })
 
     if (conflict) {
       const staffRecord = await prisma.staff.findUnique({ where: { id: finalStaffId }, select: { name: true } })
       return NextResponse.json(
         {
-          error: `${staffRecord?.name ?? 'Personel'} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer?.name ?? conflict.guestName ?? 'Misafir'}).`,
+          error: `${staffRecord?.name ?? 'Personel'} adlı personelin ${conflict.startTime}–${conflict.endTime} saatleri arasında zaten bir randevusu var (${conflict.customer.name}).`,
           code: 'APPOINTMENT_CONFLICT',
         },
         { status: 409 }
@@ -142,22 +142,20 @@ export async function PUT(
         type: 'GELIR',
         amount: updated.price,
         category: 'Randevu',
-        description: `Randevu ${updated.customer?.name ?? existing.guestName ?? 'Misafir'} - ${updated.service.name}`,
+        description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
         date: new Date(),
       },
     })
 
-    // Müşterinin toplam ziyaret ve harcama bilgilerini güncelle (kayıtsız randevularda atla)
-    if (updated.customerId) {
-      await prisma.customer.update({
-        where: { id: updated.customerId },
-        data: {
-          totalVisits: { increment: 1 },
-          totalSpent: { increment: updated.price },
-          lastVisitAt: new Date(),
-        },
-      })
-    }
+    // Müşterinin toplam ziyaret ve harcama bilgilerini güncelle
+    await prisma.customer.update({
+      where: { id: updated.customerId },
+      data: {
+        totalVisits: { increment: 1 },
+        totalSpent: { increment: updated.price },
+        lastVisitAt: new Date(),
+      },
+    })
 
   }
 

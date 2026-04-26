@@ -41,7 +41,7 @@ function buildEvents(appointments: AppointmentFull[]): CalendarEvent[] {
 
     return {
       id: apt.id,
-      title: `${apt.customer?.name ?? apt.guestName ?? 'Misafir'} — ${apt.service.name}`,
+      title: `${apt.customer.name} — ${apt.service.name}`,
       start,
       end,
       resource: apt,

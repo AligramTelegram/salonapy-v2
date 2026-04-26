@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState, useEffect } from 'react'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -37,12 +35,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import nextDynamic from 'next/dynamic'
 import { NewAppointmentModal } from '@/components/dashboard/NewAppointmentModal'
-const AppointmentCalendar = nextDynamic(
-  () => import('@/components/dashboard/AppointmentCalendar').then((m) => m.AppointmentCalendar),
-  { ssr: false, loading: () => <div className="flex items-center justify-center h-[600px]"><Loader2 className="h-7 w-7 animate-spin text-purple-400" /></div> }
-)
+import { AppointmentCalendar } from '@/components/dashboard/AppointmentCalendar'
 import {
   useAppointments,
   useUpdateAppointment,
@@ -315,7 +309,7 @@ function ListeView({
 
             {/* Bilgi */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{apt.customer?.name ?? apt.guestName ?? 'Misafir'}</p>
+              <p className="text-sm font-semibold text-gray-900 truncate">{apt.customer.name}</p>
               <p className="text-xs text-gray-500 truncate">
                 {apt.service.name} · {apt.staff?.name}
               </p>
@@ -366,7 +360,7 @@ function DetailModal({
 
         {/* Özet */}
         <div className="space-y-3 py-1">
-          <Row icon={<User className="h-4 w-4" />} label="Müşteri" value={`${apt.customer?.name ?? apt.guestName ?? 'Misafir'} — ${apt.customer?.phone ?? apt.guestPhone ?? '—'}`} />
+          <Row icon={<User className="h-4 w-4" />} label="Müşteri" value={`${apt.customer.name} — ${apt.customer.phone}`} />
           <Row icon={<Scissors className="h-4 w-4" />} label="Hizmet" value={`${apt.service.name} (${apt.service.duration} dk)`} />
           <Row
             icon={<div className="h-3 w-3 rounded-full" style={{ backgroundColor: apt.staff?.color }} />}
