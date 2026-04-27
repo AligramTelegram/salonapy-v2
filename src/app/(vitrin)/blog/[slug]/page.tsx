@@ -7,10 +7,24 @@ import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { CalendarDays, User, Tag, ArrowLeft } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hemensalon.com'
+
+export const revalidate = 3600 // Saatte bir yeniden oluştur
 
 interface PageProps {
   params: { slug: string }
+}
+
+export async function generateStaticParams() {
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+    return posts.map((p) => ({ slug: p.slug }))
+  } catch {
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -19,10 +33,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     select: { title: true, excerpt: true, coverImage: true },
   })
   if (!post) return {}
+  const url = `${BASE_URL}/blog/${params.slug}`
   return {
     title: `${post.title} - Hemensalon Blog`,
     description: post.excerpt,
+    alternates: { canonical: url },
     openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url,
+      type: 'article',
+      siteName: 'Hemensalon',
+      ...(post.coverImage ? { images: [{ url: post.coverImage }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
       ...(post.coverImage ? { images: [post.coverImage] } : {}),
@@ -37,7 +62,35 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
   if (!post) notFound()
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    author: { '@type': 'Organization', name: post.author },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Hemensalon',
+      url: BASE_URL,
+    },
+    url: `${BASE_URL}/blog/${post.slug}`,
+    datePublished: post.publishedAt?.toISOString() ?? post.createdAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    ...(post.coverImage ? { image: post.coverImage } : {}),
+    keywords: post.tags.join(', '),
+    inLanguage: 'tr-TR',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${BASE_URL}/blog/${post.slug}`,
+    },
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="min-h-screen pt-24 pb-20">
       {/* Back link */}
       <div className="container mx-auto px-4 max-w-3xl mb-8">
@@ -119,5 +172,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
         </div>
       </article>
     </div>
+    </>
   )
 }
