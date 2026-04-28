@@ -62,6 +62,18 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
   if (!post) notFound()
 
+  // İlgili yazılar: aynı tag'lardan en fazla 3 farklı yazı
+  const relatedPosts = await prisma.blogPost.findMany({
+    where: {
+      published: true,
+      slug: { not: params.slug },
+      tags: { hasSome: post.tags },
+    },
+    select: { slug: true, title: true, excerpt: true, tags: true, publishedAt: true },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+  })
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -170,6 +182,34 @@ export default async function BlogDetailPage({ params }: PageProps) {
             Ücretsiz Dene
           </Link>
         </div>
+
+        {/* İlgili Yazılar */}
+        {relatedPosts.length > 0 && (
+          <div className="mt-14 pt-8 border-t border-gray-100">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">İlgili Yazılar</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedPosts.map((related) => (
+                <Link
+                  key={related.slug}
+                  href={`/blog/${related.slug}`}
+                  className="group block rounded-2xl border border-gray-100 bg-gray-50 hover:border-purple-200 hover:bg-purple-50 p-5 transition-colors"
+                >
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {related.tags.slice(0, 2).map((tag) => (
+                      <span key={tag} className="text-xs font-medium bg-white text-purple-600 border border-purple-100 px-2 py-0.5 rounded-full">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900 group-hover:text-purple-700 transition-colors line-clamp-2 mb-2">
+                    {related.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 line-clamp-2">{related.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </article>
     </div>
     </>
