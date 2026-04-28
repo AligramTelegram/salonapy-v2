@@ -65,6 +65,13 @@ export async function POST(
     const bytes = new Uint8Array(buffer)
 
     const adminClient = createAdminClient()
+
+    // Bucket yoksa oluştur
+    const { data: buckets } = await adminClient.storage.listBuckets()
+    if (!buckets?.find(b => b.name === 'logos')) {
+      await adminClient.storage.createBucket('logos', { public: true, fileSizeLimit: 2097152 })
+    }
+
     const { error: uploadError } = await adminClient.storage
       .from('logos')
       .upload(filename, bytes, {
