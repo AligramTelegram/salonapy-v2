@@ -55,29 +55,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       )}
 
-      {/* Google Analytics 4 — GTM yoksa doğrudan */}
-      {gaId && !gtmId && (
+      {/* Google Analytics 4 — her zaman yüklenir (GTM varsa da) */}
+      {gaId && (
         <>
           {/* eslint-disable-next-line @next/next/no-sync-scripts */}
           <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
           <script
             id="ga4-init"
             dangerouslySetInnerHTML={{
-              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}',{anonymize_ip:true});`,
+              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');gtag('config','AW-17862980295');`,
             }}
           />
         </>
       )}
-
-      {/* Google Ads — afterInteractive ile LCP'yi bloklamaz */}
-      <Script id="google-ads" strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=AW-17862980295" />
-      <Script
-        id="google-ads-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-17862980295');`,
-        }}
-      />
     </>
   )
 }
