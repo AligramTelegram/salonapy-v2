@@ -19,13 +19,13 @@ export async function getTrackingIds() {
       if (row.value?.trim()) map[row.key] = row.value.trim()
     }
     return {
-      gaId: map['ga_id'] || process.env.NEXT_PUBLIC_GA_ID || null,
+      gaId: map['ga_id'] || process.env.NEXT_PUBLIC_GA_ID || 'G-WNQ9FZ63DD',
       gtmId: map['gtm_id'] || null,
       fbPixelId: map['fb_pixel_id'] || null,
     }
   } catch {
     return {
-      gaId: process.env.NEXT_PUBLIC_GA_ID || null,
+      gaId: process.env.NEXT_PUBLIC_GA_ID || 'G-WNQ9FZ63DD',
       gtmId: null,
       fbPixelId: null,
     }
