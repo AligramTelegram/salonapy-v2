@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { Calendar, TrendingUp, TrendingDown, DollarSign, Plus, ChevronRight, CheckCircle2, Circle } from 'lucide-react'
 import { startOfMonth, endOfMonth, formatDistanceToNow } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -101,6 +102,10 @@ export default async function IsletmeDashboardPage({
   const data = await getDashboardData(params.slug)
   if (!data) {
     notFound()
+  }
+
+  if (!data.tenant.onboardingCompleted) {
+    redirect(`/b/${params.slug}/onboarding`)
   }
 
   const {

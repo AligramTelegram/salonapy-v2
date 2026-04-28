@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
@@ -56,17 +55,6 @@ export default async function IsletmePaneliLayout({
     redirect('/giris?error=tenant-inactive')
   }
 
-  const pathname = headers().get('x-pathname') ?? ''
-  const isOnboarding = pathname.endsWith('/onboarding')
-
-  if (!dbUser.tenant.onboardingCompleted && !isOnboarding) {
-    redirect(`/b/${params.slug}/onboarding`)
-  }
-
-  // Onboarding sayfası için sidebar/header olmayan sade layout
-  if (isOnboarding) {
-    return <>{children}</>
-  }
 
   // smsLimit: plans cache'den al (5dk TTL, DB hit yok)
   const plans = await getPlans()
