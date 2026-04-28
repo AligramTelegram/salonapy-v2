@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Calendar, TrendingUp, TrendingDown, DollarSign, Plus, ChevronRight } from 'lucide-react'
+import { Calendar, TrendingUp, TrendingDown, DollarSign, Plus, ChevronRight, CheckCircle2, Circle } from 'lucide-react'
 import { startOfMonth, endOfMonth, formatDistanceToNow } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { prisma } from '@/lib/prisma'
@@ -28,7 +28,7 @@ async function getDashboardData(slug: string) {
   const monthStart = startOfMonth(today)
   const monthEnd = endOfMonth(today)
 
-  const [todayAppointments, monthCount, monthRevenue, monthExpense, recentAppointments, customersCount] = await Promise.all([
+  const [todayAppointments, monthCount, monthRevenue, monthExpense, recentAppointments, customersCount, servicesCount, staffCount] = await Promise.all([
     prisma.appointment.findMany({
       where: {
         tenantId: tenant.id,
@@ -75,6 +75,8 @@ async function getDashboardData(slug: string) {
       take: 6,
     }),
     prisma.customer.count({ where: { tenantId: tenant.id } }),
+    prisma.service.count({ where: { tenantId: tenant.id } }),
+    prisma.staff.count({ where: { tenantId: tenant.id } }),
   ])
 
   return {
@@ -85,6 +87,8 @@ async function getDashboardData(slug: string) {
     monthExpense: monthExpense._sum.amount ?? 0,
     recentAppointments,
     customersCount,
+    servicesCount,
+    staffCount,
     today,
   }
 }
@@ -107,7 +111,19 @@ export default async function IsletmeDashboardPage({
     monthExpense,
     recentAppointments,
     customersCount,
+    servicesCount,
+    staffCount,
+    tenant,
   } = data
+
+  const setupSteps = [
+    { label: 'Hizmet ekle', done: servicesCount > 0, href: `/b/${params.slug}/hizmetler` },
+    { label: 'Personel ekle', done: staffCount > 0, href: `/b/${params.slug}/calisanlar` },
+    { label: 'Logo yükle', done: !!tenant.logo, href: `/b/${params.slug}/ayarlar` },
+    { label: 'İlk randevunu al', done: customersCount > 0, href: `/b/${params.slug}/randevular` },
+  ]
+  const setupDone = setupSteps.filter(s => s.done).length
+  const showSetupCard = setupDone < setupSteps.length
 
   const todayLabel = today.toLocaleDateString('tr-TR', {
     weekday: 'long',
@@ -166,6 +182,43 @@ export default async function IsletmeDashboardPage({
       <Suspense>
         <UpgradeSuccessToast />
       </Suspense>
+
+      {/* Kurulum ilerleme kartı */}
+      {showSetupCard && (
+        <div className="rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50 p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="font-bold text-gray-900 text-sm">Kurulumu tamamlayın</h2>
+              <p className="text-xs text-gray-500 mt-0.5">{setupDone}/{setupSteps.length} adım tamamlandı</p>
+            </div>
+            <span className="text-xs font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-full">
+              %{Math.round((setupDone / setupSteps.length) * 100)}
+            </span>
+          </div>
+          <div className="w-full bg-purple-100 rounded-full h-1.5 mb-4">
+            <div
+              className="bg-purple-600 h-1.5 rounded-full transition-all"
+              style={{ width: `${(setupDone / setupSteps.length) * 100}%` }}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {setupSteps.map(step => (
+              <Link
+                key={step.label}
+                href={step.href}
+                className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors
+                  ${step.done ? 'bg-green-50 text-green-700 pointer-events-none' : 'bg-white hover:bg-purple-50 text-gray-700 border border-gray-100'}`}
+              >
+                {step.done
+                  ? <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  : <Circle className="w-4 h-4 text-gray-300 shrink-0" />}
+                {step.label}
+                {!step.done && <ChevronRight className="w-3.5 h-3.5 ml-auto text-gray-400" />}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Başlık */}
       <div className="flex items-start justify-between gap-4">

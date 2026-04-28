@@ -36,6 +36,7 @@ const UpdateSchema = z.object({
   ownerCity: z.string().optional().nullable(),
   taxNumber: z.string().optional().nullable(),
   taxOffice: z.string().optional().nullable(),
+  onboardingCompleted: z.boolean().optional(),
 })
 
 // PATCH /api/tenants/[slug]/update
