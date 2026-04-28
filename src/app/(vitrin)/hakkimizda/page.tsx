@@ -7,10 +7,17 @@ export const metadata: Metadata = {
   description: 'Hemensalon, Türkiye\'deki kuaför, berber ve güzellik salonlarının dijitalleşmesi için kuruldu. Hikayemiz, misyonumuz ve vizyonumuz.',
   robots: { index: true, follow: true },
   alternates: { canonical: 'https://hemensalon.com/hakkimizda' },
+  keywords: 'hemensalon hakkında, salon yazılımı şirketi, türkiye kuaför programı ekibi, hemensalon misyon',
   openGraph: {
     title: 'Hakkımızda | Türkiye\'nin Lider Salon Yazılımı – Hemensalon',
     description: 'Türkiye\'nin güzellik sektörünü dijitalleştiren Hemensalon\'un hikayesi ve misyonu.',
     url: 'https://hemensalon.com/hakkimizda',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Hakkımızda – Hemensalon',
+    description: 'Türkiye\'nin güzellik sektörünü dijitalleştiren Hemensalon\'un hikayesi ve misyonu.',
   },
 }
 

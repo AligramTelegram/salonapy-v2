@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Sora } from 'next/font/google'
 import { TrackingHeadScripts, TrackingBodyScripts } from '@/components/TrackingScripts'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
@@ -24,6 +24,13 @@ const sora = Sora({
 })
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hemensalon.com'
+
+export const viewport: Viewport = {
+  themeColor: '#7c3aed',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   let ogImage = '/og-image.png'

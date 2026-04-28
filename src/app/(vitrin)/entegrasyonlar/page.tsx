@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     title: 'Entegrasyonlar | SMS, WhatsApp, iyzico – Hemensalon',
     description: 'SMS, WhatsApp, iyzico ve Google Takvim entegrasyonları ile salon yönetimini kolaylaştırın.',
     url: 'https://hemensalon.com/entegrasyonlar',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Entegrasyonlar | SMS, WhatsApp, iyzico – Hemensalon',
+    description: 'SMS, WhatsApp, iyzico ve Google Takvim entegrasyonları ile salon yönetimini kolaylaştırın.',
   },
 }
 

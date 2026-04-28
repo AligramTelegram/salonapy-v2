@@ -1,8 +1,29 @@
+import type { Metadata } from 'next'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { IletisimForm } from './IletisimForm'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'İletişim | Hemensalon Destek & Müşteri Hizmetleri',
+  description:
+    'Hemensalon destek ekibine ulaşın. Salon yazılımı hakkında sorularınız için e-posta, telefon veya iletişim formu ile bize yazın. Ortalama yanıt süresi 2 saat.',
+  keywords: 'hemensalon iletişim, salon yazılımı destek, kuaför programı yardım, online randevu destek',
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://hemensalon.com/iletisim' },
+  openGraph: {
+    title: 'İletişim – Hemensalon Destek',
+    description: 'Sorularınız için bizimle iletişime geçin. Hızlı yanıt garantisi.',
+    url: 'https://hemensalon.com/iletisim',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'İletişim – Hemensalon Destek',
+    description: 'Sorularınız için bizimle iletişime geçin.',
+  },
+}
 
 async function getContactSettings() {
   const keys = [
@@ -18,6 +39,25 @@ async function getContactSettings() {
   const map: Record<string, string> = {}
   for (const row of rows) map[row.key] = row.value
   return map
+}
+
+const localBusinessJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Hemensalon',
+  url: 'https://hemensalon.com',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    availableLanguage: 'Turkish',
+    email: 'destek@hemensalon.com',
+  },
+  sameAs: [
+    'https://instagram.com/hemensalon',
+    'https://twitter.com/hemensalon',
+  ],
 }
 
 export default async function IletisimPage() {
@@ -69,6 +109,8 @@ export default async function IletisimPage() {
   ].filter(Boolean) as { href: string; label: string; svg: React.ReactNode }[]
 
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} />
     <div className="min-h-screen pt-24">
       {/* Header */}
       <section className="pb-8 pt-12 text-center">
@@ -165,5 +207,6 @@ export default async function IletisimPage() {
         </div>
       </section>
     </div>
+    </>
   )
 }

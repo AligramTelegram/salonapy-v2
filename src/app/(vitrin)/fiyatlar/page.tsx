@@ -15,6 +15,12 @@ export const metadata: Metadata = {
     title: 'Salon Yazılımı Fiyatları | Online Randevu Sistemi – Hemensalon',
     description: 'Kuaför ve güzellik salonu için uygun fiyatlı randevu yazılımı. 3 gün ücretsiz deneyin. Kredi kartı gerekmez.',
     url: 'https://hemensalon.com/fiyatlar',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Salon Yazılımı Fiyatları – Hemensalon',
+    description: 'Kuaför ve güzellik salonu için uygun fiyatlı randevu yazılımı. 3 gün ücretsiz deneyin.',
   },
 }
 
@@ -41,8 +47,20 @@ const FAQ = [
   },
 ]
 
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+}
+
 export default function FiyatlarPage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
     <div className="min-h-screen pt-24">
       {/* Header */}
       <section className="pb-4 pt-12 text-center">
@@ -103,5 +121,6 @@ export default function FiyatlarPage() {
       {/* Testimonials */}
       <Testimonials />
     </div>
+    </>
   )
 }

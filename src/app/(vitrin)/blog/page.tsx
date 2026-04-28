@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { CalendarDays, User, Tag } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 1800
 
 export const metadata: Metadata = {
   title: 'Salon Yönetimi Rehberleri & İpuçları | Kuaför Blog – Hemensalon',
@@ -19,6 +19,11 @@ export const metadata: Metadata = {
     description: 'Kuaför ve güzellik salonu sahipleri için pratik rehberler ve sektör haberleri.',
     url: 'https://hemensalon.com/blog',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Salon Yönetimi Rehberleri & İpuçları – Hemensalon Blog',
+    description: 'Kuaför ve güzellik salonu sahipleri için pratik rehberler ve sektör haberleri.',
   },
 }
 

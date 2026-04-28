@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     title: 'Kuaför & Salon Yazılımı Özellikleri – Hemensalon',
     description: 'Online randevu sistemi, SMS hatırlatmaları, müşteri CRM ve finansal raporlar tek platformda.',
     url: 'https://hemensalon.com/ozellikler',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Kuaför & Salon Yazılımı Özellikleri – Hemensalon',
+    description: 'Online randevu sistemi, SMS hatırlatmaları, müşteri CRM ve finansal raporlar tek platformda.',
   },
 }
 
