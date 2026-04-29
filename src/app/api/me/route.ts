@@ -17,18 +17,20 @@ function getAuthHeader(request: NextRequest): string | null {
   return null
 }
 
-async function getUserFromToken(token: string): Promise<{ id: string; email: string } | null> {
-  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    },
-  })
-  const body = await res.json()
-  console.log('Supabase auth response:', res.status, JSON.stringify(body).slice(0, 200))
-  if (!res.ok) return null
-  return body?.id ? { id: body.id, email: body.email } : null
+function decodeJwt(token: string): { sub: string; email: string; exp: number } | null {
+  try {
+    const payload = token.split('.')[1]
+    const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'))
+    return decoded
+  } catch { return null }
+}
+
+function getUserFromToken(token: string): { id: string; email: string } | null {
+  const payload = decodeJwt(token)
+  if (!payload?.sub) return null
+  // Check expiry
+  if (payload.exp < Math.floor(Date.now() / 1000)) return null
+  return { id: payload.sub, email: payload.email }
 }
 
 export async function GET(request: NextRequest) {

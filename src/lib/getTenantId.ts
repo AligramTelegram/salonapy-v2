@@ -34,16 +34,13 @@ async function userToTenantId(userId: string): Promise<string | null> {
   return staff?.tenantId ?? null
 }
 
-async function resolveUserFromToken(token: string): Promise<{ id: string } | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    },
-  })
-  if (!res.ok) return null
-  const data = await res.json()
-  return data?.id ? { id: data.id } : null
+function resolveUserFromToken(token: string): { id: string } | null {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'))
+    if (!payload?.sub) return null
+    if (payload.exp < Math.floor(Date.now() / 1000)) return null
+    return { id: payload.sub }
+  } catch { return null }
 }
 
 /** Cookie-based auth — also checks Authorization header (mobile Bearer token) */
@@ -52,7 +49,7 @@ export async function getTenantId(): Promise<string | null> {
     const headersList = headers()
     const authHeader = headersList.get('authorization')
     if (authHeader?.startsWith('Bearer ')) {
-      const user = await resolveUserFromToken(authHeader.slice(7))
+      const user = resolveUserFromToken(authHeader.slice(7))
       if (user) return userToTenantId(user.id)
     }
   } catch { /* outside request context */ }
@@ -68,7 +65,7 @@ export async function getTenantIdFromRequest(request: NextRequest): Promise<stri
   const authHeader = getAuthHeaderFromRequest(request)
   const token = extractBearerToken(authHeader)
   if (token) {
-    const user = await resolveUserFromToken(token)
+    const user = resolveUserFromToken(token)
     if (user) return userToTenantId(user.id)
   }
 
