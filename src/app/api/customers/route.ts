@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { getTenantIdFromRequest } from '@/lib/getTenantId'
+import { getTenantId, getTenantIdFromRequest } from '@/lib/getTenantId'
 import { checkSubscription } from '@/lib/checkSubscription'
 
 export const dynamic = 'force-dynamic'
