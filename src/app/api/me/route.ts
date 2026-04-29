@@ -18,15 +18,17 @@ function getAuthHeader(request: NextRequest): string | null {
 }
 
 async function getUserFromToken(token: string): Promise<{ id: string; email: string } | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`, {
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`
+  const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     },
   })
+  const body = await res.json()
+  console.log('Supabase auth response:', res.status, JSON.stringify(body).slice(0, 200))
   if (!res.ok) return null
-  const data = await res.json()
-  return data?.id ? { id: data.id, email: data.email } : null
+  return body?.id ? { id: body.id, email: body.email } : null
 }
 
 export async function GET(request: NextRequest) {
