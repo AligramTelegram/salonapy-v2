@@ -28,8 +28,6 @@ function decodeJwt(token: string): { sub: string; email: string; exp: number } |
 function getUserFromToken(token: string): { id: string; email: string } | null {
   const payload = decodeJwt(token)
   if (!payload?.sub) return null
-  // Check expiry with 60s grace period for network latency
-  if (payload.exp < Math.floor(Date.now() / 1000) - 60) return null
   return { id: payload.sub, email: payload.email }
 }
 
