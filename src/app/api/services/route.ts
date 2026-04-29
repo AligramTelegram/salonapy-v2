@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/services
 export async function POST(request: NextRequest) {
-  const tenantId = await getTenantId()
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   try {
