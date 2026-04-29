@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { getTenantId } from '@/lib/getTenantId'
+import { getTenantIdFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,8 +16,8 @@ const CreatePackageSchema = z.object({
 })
 
 // GET /api/packages
-export async function GET() {
-  const tenantId = await getTenantId()
+export async function GET(request: NextRequest) {
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const packages = await prisma.package.findMany({

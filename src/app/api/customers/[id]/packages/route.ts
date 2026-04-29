@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getTenantId } from '@/lib/getTenantId'
+import { getTenantIdFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
 
 // GET /api/customers/[id]/packages
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const tenantId = await getTenantId()
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const customer = await prisma.customer.findFirst({ where: { id: params.id, tenantId } })
