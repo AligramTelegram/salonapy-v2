@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { getTenantId } from '@/lib/getTenantId'
+import { getTenantIdFromRequest } from '@/lib/getTenantId'
 import { checkSubscription } from '@/lib/checkSubscription'
 
 export const dynamic = 'force-dynamic'
@@ -15,7 +15,7 @@ const CreateCustomerSchema = z.object({
 
 // GET /api/customers?q=xxx
 export async function GET(request: NextRequest) {
-  const tenantId = await getTenantId()
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const { searchParams } = request.nextUrl

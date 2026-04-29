@@ -5,7 +5,7 @@ import { startOfDay, endOfDay, parseISO, parse, startOfMonth, addMonths, format 
 import { tr } from 'date-fns/locale'
 import { addReminderJob } from '@/lib/queue'
 import { sendAppointmentConfirmation } from '@/lib/resend'
-import { getTenantId } from '@/lib/getTenantId'
+import { getTenantIdFromRequest } from '@/lib/getTenantId'
 import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
 import { sendSms } from '@/lib/netgsm'
@@ -27,7 +27,7 @@ const CreateSchema = z.object({
 
 // GET /api/appointments?date=2025-03-26&status=BEKLIYOR
 export async function GET(request: NextRequest) {
-  const tenantId = await getTenantId()
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const { searchParams } = request.nextUrl
