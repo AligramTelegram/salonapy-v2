@@ -16,9 +16,13 @@ async function getUserFromToken(token: string): Promise<{ id: string; email: str
 }
 
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
+  const allHeaders: Record<string, string> = {}
+  request.headers.forEach((v, k) => { allHeaders[k] = v.slice(0, 20) })
+  console.log('HEADERS:', JSON.stringify(allHeaders))
+
+  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization')
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-  if (!token) return NextResponse.json({ error: 'Token eksik' }, { status: 401 })
+  if (!token) return NextResponse.json({ error: 'Token eksik', headers: allHeaders }, { status: 401 })
 
   const supaUser = await getUserFromToken(token)
   if (!supaUser) return NextResponse.json({ error: 'Geçersiz token' }, { status: 401 })
