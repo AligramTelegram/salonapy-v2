@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
   const { data, error } = await supabase.auth.getUser(token)
-  if (error || !data.user) return NextResponse.json({ error: error?.message || 'Yetkisiz' }, { status: 401 })
+  console.log('getUser result:', JSON.stringify({ userId: data.user?.id, error: error?.message }))
+  if (error || !data.user) return NextResponse.json({ error: error?.message || 'user null' }, { status: 401 })
 
   const dbUser = await prisma.user.findUnique({
     where: { supabaseId: data.user.id },
