@@ -12,10 +12,10 @@ export async function GET(request: NextRequest) {
 
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
-  const { data } = await supabase.auth.getUser(token)
-  if (!data.user) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+  const { data, error } = await supabase.auth.getUser(token)
+  if (error || !data.user) return NextResponse.json({ error: error?.message || 'Yetkisiz' }, { status: 401 })
 
   const dbUser = await prisma.user.findUnique({
     where: { supabaseId: data.user.id },

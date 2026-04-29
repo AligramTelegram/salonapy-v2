@@ -21,7 +21,7 @@ async function userToTenantId(userId: string): Promise<string | null> {
 async function resolveUserFromToken(token: string): Promise<{ id: string } | null> {
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
   const { data } = await supabase.auth.getUser(token)
   return data.user
