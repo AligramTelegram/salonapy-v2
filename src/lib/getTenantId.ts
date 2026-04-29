@@ -3,30 +3,20 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest } from 'next/server'
 import { headers } from 'next/headers'
 
-function extractBearerToken(authHeader: string | null): string | null {
-  return authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-}
-
-function getAuthHeaderFromRequest(request: NextRequest): string | null {
-  const direct = request.headers.get('authorization')
-  if (direct) return direct
+function decodeJwtSub(token: string): string | null {
   try {
-    const sc = request.headers.get('x-vercel-sc-headers')
-    if (sc) {
-      const parsed = JSON.parse(sc)
-      return parsed['Authorization'] || parsed['authorization'] || null
-    }
-  } catch { /* ignore */ }
-  return null
+    const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const payload = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'))
+    return payload?.sub ?? null
+  } catch { return null }
 }
 
-async function userToTenantId(userId: string): Promise<string | null> {
+async function tenantIdFromUserId(userId: string): Promise<string | null> {
   const dbUser = await prisma.user.findUnique({
     where: { supabaseId: userId },
     select: { tenantId: true },
   })
   if (dbUser) return dbUser.tenantId
-
   const staff = await prisma.staff.findUnique({
     where: { supabaseId: userId },
     select: { tenantId: true },
@@ -34,42 +24,32 @@ async function userToTenantId(userId: string): Promise<string | null> {
   return staff?.tenantId ?? null
 }
 
-function resolveUserFromToken(token: string): { id: string } | null {
-  try {
-    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'))
-    if (!payload?.sub) return null
-    return { id: payload.sub }
-  } catch { return null }
-}
-
-/** Cookie-based auth — also checks Authorization header (mobile Bearer token) */
+/** Cookie-based (web) + x-mobile-token header (mobile) */
 export async function getTenantId(): Promise<string | null> {
   try {
-    const headersList = headers()
-    const authHeader = headersList.get('authorization')
-    if (authHeader?.startsWith('Bearer ')) {
-      const user = resolveUserFromToken(authHeader.slice(7))
-      if (user) return userToTenantId(user.id)
+    const h = headers()
+    const token = h.get('x-mobile-token')
+    if (token) {
+      const sub = decodeJwtSub(token)
+      if (sub) return tenantIdFromUserId(sub)
     }
   } catch { /* outside request context */ }
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
-  return userToTenantId(user.id)
+  return tenantIdFromUserId(user.id)
 }
 
-/** Request-based auth — preferred in API route handlers */
+/** Preferred in API route handlers */
 export async function getTenantIdFromRequest(request: NextRequest): Promise<string | null> {
-  const authHeader = getAuthHeaderFromRequest(request)
-  const token = extractBearerToken(authHeader)
+  const token = request.headers.get('x-mobile-token')
   if (token) {
-    const user = resolveUserFromToken(token)
-    if (user) return userToTenantId(user.id)
+    const sub = decodeJwtSub(token)
+    if (sub) return tenantIdFromUserId(sub)
   }
-
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
-  return userToTenantId(user.id)
+  return tenantIdFromUserId(user.id)
 }
