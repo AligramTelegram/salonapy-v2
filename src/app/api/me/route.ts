@@ -3,6 +3,20 @@ import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
+// Vercel moves Authorization to x-vercel-sc-headers for its cache system
+function getAuthHeader(request: NextRequest): string | null {
+  const direct = request.headers.get('authorization')
+  if (direct) return direct
+  try {
+    const scHeaders = request.headers.get('x-vercel-sc-headers')
+    if (scHeaders) {
+      const parsed = JSON.parse(scHeaders)
+      return parsed['Authorization'] || parsed['authorization'] || null
+    }
+  } catch { /* ignore */ }
+  return null
+}
+
 async function getUserFromToken(token: string): Promise<{ id: string; email: string } | null> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -16,13 +30,9 @@ async function getUserFromToken(token: string): Promise<{ id: string; email: str
 }
 
 export async function GET(request: NextRequest) {
-  const allHeaders: Record<string, string> = {}
-  request.headers.forEach((v, k) => { allHeaders[k] = v.slice(0, 20) })
-  console.log('HEADERS:', JSON.stringify(allHeaders))
-
-  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization')
+  const authHeader = getAuthHeader(request)
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-  if (!token) return NextResponse.json({ error: 'Token eksik', headers: allHeaders }, { status: 401 })
+  if (!token) return NextResponse.json({ error: 'Token eksik' }, { status: 401 })
 
   const supaUser = await getUserFromToken(token)
   if (!supaUser) return NextResponse.json({ error: 'Geçersiz token' }, { status: 401 })

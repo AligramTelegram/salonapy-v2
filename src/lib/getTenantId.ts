@@ -3,6 +3,23 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest } from 'next/server'
 import { headers } from 'next/headers'
 
+function extractBearerToken(authHeader: string | null): string | null {
+  return authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+}
+
+function getAuthHeaderFromRequest(request: NextRequest): string | null {
+  const direct = request.headers.get('authorization')
+  if (direct) return direct
+  try {
+    const sc = request.headers.get('x-vercel-sc-headers')
+    if (sc) {
+      const parsed = JSON.parse(sc)
+      return parsed['Authorization'] || parsed['authorization'] || null
+    }
+  } catch { /* ignore */ }
+  return null
+}
+
 async function userToTenantId(userId: string): Promise<string | null> {
   const dbUser = await prisma.user.findUnique({
     where: { supabaseId: userId },
@@ -48,9 +65,10 @@ export async function getTenantId(): Promise<string | null> {
 
 /** Request-based auth — preferred in API route handlers */
 export async function getTenantIdFromRequest(request: NextRequest): Promise<string | null> {
-  const authHeader = request.headers.get('authorization')
-  if (authHeader?.startsWith('Bearer ')) {
-    const user = await resolveUserFromToken(authHeader.slice(7))
+  const authHeader = getAuthHeaderFromRequest(request)
+  const token = extractBearerToken(authHeader)
+  if (token) {
+    const user = await resolveUserFromToken(token)
     if (user) return userToTenantId(user.id)
   }
 
