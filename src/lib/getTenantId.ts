@@ -2,21 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { prisma } from '@/lib/prisma'
 import { NextRequest } from 'next/server'
-
-async function resolveUser(token: string | null): Promise<{ id: string } | null> {
-  if (token) {
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    )
-    const { data } = await supabase.auth.getUser(token)
-    if (data.user) return data.user
-  }
-  // Fall back to cookie-based auth
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
-}
+import { headers } from 'next/headers'
 
 async function userToTenantId(userId: string): Promise<string | null> {
   const dbUser = await prisma.user.findUnique({
@@ -32,19 +18,49 @@ async function userToTenantId(userId: string): Promise<string | null> {
   return staff?.tenantId ?? null
 }
 
-/** Cookie-based auth (web panels) */
+async function resolveUserFromToken(token: string): Promise<{ id: string } | null> {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+  const { data } = await supabase.auth.getUser(token)
+  return data.user
+}
+
+/** Cookie-based auth — also checks Authorization header via next/headers (works in all route handlers) */
 export async function getTenantId(): Promise<string | null> {
+  // Check Authorization header (mobile Bearer token)
+  try {
+    const headersList = headers()
+    const authHeader = headersList.get('authorization')
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7)
+      const user = await resolveUserFromToken(token)
+      if (user) return userToTenantId(user.id)
+    }
+  } catch {
+    // headers() may throw outside request context — fall through
+  }
+
+  // Fall back to cookie-based auth (web)
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   return userToTenantId(user.id)
 }
 
-/** Bearer token or cookie auth — use in API routes that serve both web and mobile */
+/** Explicit request-based auth — preferred when request object is available */
 export async function getTenantIdFromRequest(request: NextRequest): Promise<string | null> {
   const authHeader = request.headers.get('authorization')
-  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-  const user = await resolveUser(token)
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.slice(7)
+    const user = await resolveUserFromToken(token)
+    if (user) return userToTenantId(user.id)
+  }
+
+  // Fall back to cookie-based auth
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   return userToTenantId(user.id)
 }
