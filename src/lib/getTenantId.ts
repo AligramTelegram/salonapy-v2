@@ -38,7 +38,7 @@ function resolveUserFromToken(token: string): { id: string } | null {
   try {
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'))
     if (!payload?.sub) return null
-    if (payload.exp < Math.floor(Date.now() / 1000)) return null
+    if (payload.exp < Math.floor(Date.now() / 1000) - 60) return null
     return { id: payload.sub }
   } catch { return null }
 }

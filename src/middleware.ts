@@ -23,11 +23,6 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // API routes with Bearer token — skip cookie auth, just pass through
-  if (pathname.startsWith('/api/') && request.headers.get('authorization')?.startsWith('Bearer ')) {
-    return NextResponse.next()
-  }
-
   // Logout sonrası kalan Supabase cookie'lerini temizle
   if (pathname === '/logout') {
     const redirectResponse = NextResponse.redirect(new URL('/giris', request.url))
