@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { startOfDay, endOfDay, parseISO, parse, startOfMonth, addMonths, format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { sendPushToTenant } from '@/lib/pushNotification'
 import { addReminderJob } from '@/lib/queue'
 import { sendAppointmentConfirmation } from '@/lib/resend'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
@@ -298,6 +299,14 @@ export async function POST(request: NextRequest) {
   if (delay1h > 0) {
     await addReminderJob({ ...jobData, type: 'reminder-1h' }, delay1h)
   }
+
+  // Fire-and-forget push notification to salon owner
+  sendPushToTenant(
+    tenantId,
+    '📅 Yeni Randevu',
+    `${customer.name} • ${appointment.date.toString().split('T')[0]} ${appointment.startTime}`,
+    { appointmentId: appointment.id }
+  ).catch(() => {})
 
   return NextResponse.json(appointment, { status: 201 })
 }

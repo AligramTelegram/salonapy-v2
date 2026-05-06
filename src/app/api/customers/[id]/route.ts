@@ -10,6 +10,7 @@ const UpdateCustomerSchema = z.object({
   phone: z.string().min(1).optional(),
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
+  birthday: z.string().optional().nullable(),
 })
 
 // GET /api/customers/[id]  — includes last 10 appointments
@@ -69,9 +70,8 @@ export async function PUT(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const { email, ...rest } = parsed.data
+  const { email, birthday, ...rest } = parsed.data
 
-  // If phone is changing, check uniqueness
   if (rest.phone && rest.phone !== existing.phone) {
     const conflict = await prisma.customer.findUnique({
       where: { tenantId_phone: { tenantId, phone: rest.phone } },
@@ -86,6 +86,7 @@ export async function PUT(
     data: {
       ...rest,
       ...(email !== undefined ? { email: email || null } : {}),
+      ...(birthday !== undefined ? { birthday: birthday ? new Date(birthday) : null } : {}),
     },
   })
 

@@ -11,6 +11,7 @@ const CreateCustomerSchema = z.object({
   phone: z.string().min(1, 'Telefon zorunlu'),
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
+  birthday: z.string().optional().nullable(),
 })
 
 // GET /api/customers?q=xxx
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
       phone: true,
       email: true,
       notes: true,
+      birthday: true,
       totalVisits: true,
       totalSpent: true,
       lastVisitAt: true,
@@ -78,17 +80,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const { email, ...rest } = parsed.data
+  const { email, birthday, ...rest } = parsed.data
 
-  // Unique phone check within tenant
   const existing = await prisma.customer.findUnique({
     where: { tenantId_phone: { tenantId, phone: rest.phone } },
   })
   if (existing) {
-    return NextResponse.json(
-      { error: 'Bu telefon numarası zaten kayıtlı' },
-      { status: 409 }
-    )
+    return NextResponse.json({ error: 'Bu telefon numarası zaten kayıtlı' }, { status: 409 })
   }
 
   const customer = await prisma.customer.create({
@@ -96,6 +94,7 @@ export async function POST(request: NextRequest) {
       tenantId,
       ...rest,
       email: email || null,
+      birthday: birthday ? new Date(birthday) : null,
     },
   })
 

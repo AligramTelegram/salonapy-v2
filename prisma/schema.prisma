@@ -127,6 +127,7 @@ model User {
   name       String
   role       UserRole @default(OWNER)
   avatarUrl  String?
+  pushToken  String?
   createdAt  DateTime @default(now())
 
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -199,6 +200,7 @@ model Customer {
   phone       String
   email       String?
   notes       String?
+  birthday    DateTime?
   totalVisits Int       @default(0)
   totalSpent  Float     @default(0)
   lastVisitAt DateTime?
