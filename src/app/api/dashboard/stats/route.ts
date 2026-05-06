@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       prisma.customer.count({ where: { tenantId } }),
       prisma.tenant.findUnique({
         where: { id: tenantId },
-        select: { waUsed: true, plan: true },
+        select: { smsUsed: true, smsCredits: true, plan: true },
       }),
       prisma.appointment.findMany({
         where: { tenantId },
@@ -82,10 +82,6 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
-    const WA_LIMITS: Record<string, number> = {
-      BASLANGIC: 200, PROFESYONEL: 600, ISLETME: 1500,
-    }
-    const waLimit = WA_LIMITS[tenant?.plan ?? 'BASLANGIC'] ?? 200
     const revenue = monthRevenue._sum.amount ?? 0
     const expense = monthExpense._sum.amount ?? 0
 
@@ -96,8 +92,8 @@ export async function GET(request: NextRequest) {
       expense,
       netProfit: revenue - expense,
       customersCount,
-      waUsed: tenant?.waUsed ?? 0,
-      waLimit,
+      smsUsed: tenant?.smsUsed ?? 0,
+      smsCredits: tenant?.smsCredits ?? 0,
       recentAppointments: recentAppointments.map(apt => ({
         id: apt.id,
         status: apt.status,
