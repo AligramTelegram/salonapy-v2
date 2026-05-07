@@ -103,6 +103,7 @@ model Tenant {
   subscription     Subscription?
   packages         Package[]
   customerPackages CustomerPackage[]
+  products         Product[]
   announcementDismissals AnnouncementDismissal[]
   supportTickets         SupportTicket[]
   invoices               Invoice[]
@@ -263,6 +264,40 @@ model Package {
   customerPackages CustomerPackage[]
 
   @@map("packages")
+}
+
+model Product {
+  id           String          @id @default(cuid())
+  tenantId     String
+  name         String
+  category     String?
+  unit         String          @default("adet")
+  quantity     Float           @default(0)
+  minQuantity  Float           @default(5)
+  costPrice    Float?
+  sellPrice    Float?
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  tenant       Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  movements    StockMovement[]
+
+  @@map("products")
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  productId   String
+  tenantId    String
+  type        String   // GIRIS | CIKIS
+  quantity    Float
+  note        String?
+  createdAt   DateTime @default(now())
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("stock_movements")
 }
 
 model CustomerPackage {
