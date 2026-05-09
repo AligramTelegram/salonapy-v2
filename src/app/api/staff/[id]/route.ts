@@ -38,10 +38,12 @@ async function getOwnerTenantId(): Promise<string | null> {
 
 // GET /api/staff/[id]
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const tenantId = await getOwnerTenantId()
+  // support both web (cookie) and mobile (x-mobile-token) auth
+  const { getTenantIdFromRequest } = await import('@/lib/getTenantId')
+  const tenantId = await getTenantIdFromRequest(request) ?? await getOwnerTenantId()
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const staff = await prisma.staff.findFirst({
@@ -53,7 +55,37 @@ export async function GET(
   })
 
   if (!staff) return NextResponse.json({ error: 'Bulunamadı' }, { status: 404 })
-  return NextResponse.json(staff)
+
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  const [appointments, monthAppointments] = await Promise.all([
+    prisma.appointment.findMany({
+      where: { staffId: params.id, tenantId },
+      select: {
+        id: true, date: true, startTime: true, endTime: true,
+        status: true, price: true, paid: true, notes: true,
+        customer: { select: { id: true, name: true, phone: true } },
+        service: { select: { id: true, name: true, color: true, duration: true } },
+      },
+      orderBy: { date: 'desc' },
+      take: 50,
+    }),
+    prisma.appointment.findMany({
+      where: { staffId: params.id, tenantId, date: { gte: monthStart } },
+      select: { price: true, status: true },
+    }),
+  ])
+
+  const monthStats = {
+    count: monthAppointments.length,
+    completedCount: monthAppointments.filter((a) => a.status === 'TAMAMLANDI').length,
+    revenue: monthAppointments
+      .filter((a) => a.status === 'TAMAMLANDI')
+      .reduce((sum, a) => sum + a.price, 0),
+  }
+
+  return NextResponse.json({ ...staff, appointments, monthStats })
 }
 
 // PUT /api/staff/[id]

@@ -110,6 +110,12 @@ model Tenant {
   integrations           Integration[]
   aiSettings             AISettings?
   conversations          Conversation[]
+  waitingList      WaitingList[]
+  promotions       Promotion[]
+  campaigns        Campaign[]
+  workingHours     TenantWorkingHours[]
+  customerNotes    CustomerNote[]
+  leaves           Leave[]
 
   @@map("tenants")
 }
@@ -137,25 +143,27 @@ model User {
 }
 
 model Staff {
-  id           String   @id @default(cuid())
-  tenantId     String
-  supabaseId   String?  @unique
-  name         String
-  phone        String?
-  email        String   @unique
-  avatarUrl    String?
-  slug         String   @unique
-  title        String?
-  bio          String?
-  color        String   @default("#7c3aed")
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(cuid())
+  tenantId       String
+  supabaseId     String?  @unique
+  name           String
+  phone          String?
+  email          String   @unique
+  avatarUrl      String?
+  slug           String   @unique
+  title          String?
+  bio            String?
+  color          String   @default("#7c3aed")
+  isActive       Boolean  @default(true)
+  commissionRate Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   services     Service[]
   appointments Appointment[]
   workHours    StaffWorkHours[]
+  leaves       Leave[]
 
   @@map("staff")
 }
@@ -212,6 +220,7 @@ model Customer {
   appointments  Appointment[]
   packages      CustomerPackage[]
   conversations Conversation[]
+  customerNotes CustomerNote[]
 
   @@unique([tenantId, phone])
   @@map("customers")
@@ -323,16 +332,18 @@ model CustomerPackage {
 }
 
 model Transaction {
-  id          String          @id @default(cuid())
-  tenantId    String
-  type        TransactionType
-  amount      Float
-  category    String
-  description String?
-  date        DateTime        @default(now())
-  createdAt   DateTime        @default(now())
+  id            String          @id @default(cuid())
+  tenantId      String
+  type          TransactionType
+  amount        Float
+  category      String
+  description   String?
+  date          DateTime        @default(now())
+  createdAt     DateTime        @default(now())
+  paymentMethod String?
+  isDebt        Boolean         @default(false)
 
-  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("transactions")
 }
@@ -562,4 +573,102 @@ model Message {
   @@index([conversationId])
   @@index([createdAt])
   @@map("messages")
+}
+
+model WaitingList {
+  id            String   @id @default(cuid())
+  tenantId      String
+  customerName  String
+  customerPhone String
+  serviceId     String?
+  preferredDate String?
+  preferredTime String?
+  notes         String?
+  status        String   @default("BEKLIYOR")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("waiting_list")
+}
+
+model CustomerNote {
+  id         String   @id @default(cuid())
+  tenantId   String
+  customerId String
+  content    String
+  category   String   @default("GENEL")
+  createdAt  DateTime @default(now())
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("customer_notes")
+}
+
+model Leave {
+  id        String   @id @default(cuid())
+  tenantId  String
+  staffId   String
+  type      String
+  startDate String
+  endDate   String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  staff  Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("leaves")
+}
+
+model Promotion {
+  id            String    @id @default(cuid())
+  tenantId      String
+  code          String
+  discountType  String
+  discountValue Float
+  maxUses       Int?
+  usedCount     Int       @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean   @default(true)
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, code])
+  @@map("promotions")
+}
+
+model Campaign {
+  id             String   @id @default(cuid())
+  tenantId       String
+  subject        String
+  body           String   @db.Text
+  segment        String
+  status         String   @default("QUEUED")
+  recipientCount Int      @default(0)
+  sentAt         DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("campaigns")
+}
+
+model TenantWorkingHours {
+  id        String  @id @default(cuid())
+  tenantId  String
+  dayOfWeek Int
+  isOpen    Boolean @default(true)
+  openTime  String  @default("09:00")
+  closeTime String  @default("18:00")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, dayOfWeek])
+  @@map("tenant_working_hours")
 }

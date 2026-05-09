@@ -11,6 +11,8 @@ const CreateTransactionSchema = z.object({
   category: z.string().min(1, 'Kategori zorunlu'),
   description: z.string().optional(),
   date: z.string(), // ISO date string
+  paymentMethod: z.enum(['NAKIT', 'KART', 'ONLINE']).optional(),
+  isDebt: z.boolean().optional(),
 })
 
 // GET /api/transactions?period=month|quarter|year
@@ -69,6 +71,8 @@ export async function POST(request: NextRequest) {
       category: parsed.data.category,
       description: parsed.data.description,
       date: new Date(parsed.data.date),
+      paymentMethod: parsed.data.paymentMethod,
+      isDebt: parsed.data.isDebt ?? false,
     },
   })
 
