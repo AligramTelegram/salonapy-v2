@@ -75,10 +75,10 @@ export async function GET(request: NextRequest) {
         select: { smsUsed: true, smsCredits: true, plan: true },
       }),
       prisma.appointment.findMany({
-        where: { tenantId },
+        where: { tenantId, date: { gte: todayStart, lte: todayEnd }, status: { not: 'IPTAL' } },
         include: { customer: true, service: true, staff: true },
-        orderBy: { updatedAt: 'desc' },
-        take: 6,
+        orderBy: { startTime: 'asc' },
+        take: 10,
       }),
     ])
 
