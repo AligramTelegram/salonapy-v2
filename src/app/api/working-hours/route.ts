@@ -4,6 +4,7 @@ import { getTenantIdFromRequest } from '@/lib/getTenantId'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 const WorkingHourSchema = z.object({
   dayOfWeek: z.number().int().min(0).max(6),

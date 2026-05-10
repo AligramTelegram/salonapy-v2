@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 const CreateSchema = z.object({
   name: z.string().min(1),
