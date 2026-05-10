@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
@@ -25,25 +24,13 @@ const UpdateStaffSchema = z.object({
     .optional(),
 })
 
-async function getOwnerTenantId(): Promise<string | null> {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
-  const dbUser = await prisma.user.findUnique({
-    where: { supabaseId: user.id },
-    select: { tenantId: true },
-  })
-  return dbUser?.tenantId ?? null
-}
-
 // GET /api/staff/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  // support both web (cookie) and mobile (x-mobile-token) auth
   const { getTenantIdFromRequest } = await import('@/lib/getTenantId')
-  const tenantId = await getTenantIdFromRequest(request) ?? await getOwnerTenantId()
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const staff = await prisma.staff.findFirst({
@@ -93,7 +80,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const tenantId = await getOwnerTenantId()
+  const { getTenantIdFromRequest } = await import('@/lib/getTenantId')
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const existing = await prisma.staff.findFirst({ where: { id: params.id, tenantId } })
@@ -145,10 +133,11 @@ export async function PUT(
 
 // DELETE /api/staff/[id]
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const tenantId = await getOwnerTenantId()
+  const { getTenantIdFromRequest } = await import('@/lib/getTenantId')
+  const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const existing = await prisma.staff.findFirst({ where: { id: params.id, tenantId } })
