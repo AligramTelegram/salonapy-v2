@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 // GET /api/customers/[id]/packages
 export async function GET(

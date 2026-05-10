@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/utils/generateSlug'
@@ -7,8 +6,10 @@ import { z } from 'zod'
 import { sendStaffWelcomeEmail } from '@/lib/resend'
 import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
+import { getTenantIdFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 const CreateStaffSchema = z.object({
   name: z.string().min(2, 'Ad Soyad zorunlu'),
@@ -30,21 +31,14 @@ const CreateStaffSchema = z.object({
     .optional(),
 })
 
-async function getOwnerTenant(): Promise<{ id: string; name: string; slug: string; plan: string } | null> {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
-  const dbUser = await prisma.user.findUnique({
-    where: { supabaseId: user.id },
-    select: { tenant: { select: { id: true, name: true, slug: true, plan: true } } },
-  })
-  return dbUser?.tenant ?? null
-}
-
 export async function POST(request: NextRequest) {
-  const tenant = await getOwnerTenant()
+  const tenantId = await getTenantIdFromRequest(request)
+  if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { id: true, name: true, slug: true, plan: true },
+  })
   if (!tenant) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-  const tenantId = tenant.id
 
   try {
     await checkSubscription(tenantId)
