@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // iyzipay uses dynamic requires internally; mark as external to avoid webpack warning
-  serverExternalPackages: ['iyzipay'],
+  experimental: {
+    // iyzipay uses dynamic requires internally; mark as external to avoid bundling
+    serverComponentsExternalPackages: ['iyzipay'],
+  },
   async headers() {
     return [
       {
