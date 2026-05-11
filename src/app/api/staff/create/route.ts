@@ -14,7 +14,7 @@ export const runtime = 'nodejs'
 const CreateStaffSchema = z.object({
   name: z.string().min(2, 'Ad Soyad zorunlu'),
   email: z.string().email('Geçerli email girin'),
-  password: z.string().min(6, 'Şifre en az 6 karakter'),
+  password: z.string().min(6, 'Şifre en az 6 karakter').optional(),
   phone: z.string().optional(),
   title: z.string().optional(),
   color: z.string().default('#7c3aed'),
@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const { name, email, password, phone, title, color, serviceIds, workHours } = parsed.data
+  const { name, email, phone, title, color, serviceIds, workHours } = parsed.data
+  const password = parsed.data.password ?? Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '!'
 
   // Plan limiti kontrolü
   const maxStaff = getLimit(tenant.plan, 'maxStaff')
