@@ -88,32 +88,29 @@ export async function PUT(
       parsed.data.status === 'TAMAMLANDI' &&
       existing.status !== 'TAMAMLANDI'
 
-    if (isCompletionTransition && updated.price > 0) {
-      const alreadyRecorded = await prisma.transaction.findFirst({
-        where: { appointmentId: params.id },
-        select: { id: true },
+    if (isCompletionTransition && updated.price > 0 && !existing.hasBeenCompleted) {
+      await prisma.transaction.create({
+        data: {
+          tenantId: staff.tenantId,
+          type: 'GELIR',
+          amount: updated.price,
+          category: 'Randevu',
+          description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
+          date: new Date(),
+        },
       })
-      if (!alreadyRecorded) {
-        await prisma.transaction.create({
-          data: {
-            tenantId: staff.tenantId,
-            type: 'GELIR',
-            amount: updated.price,
-            category: 'Randevu',
-            description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
-            date: new Date(),
-            appointmentId: params.id,
-          },
-        })
-        await prisma.customer.update({
-          where: { id: updated.customerId },
-          data: {
-            totalVisits: { increment: 1 },
-            totalSpent: { increment: updated.price },
-            lastVisitAt: new Date(),
-          },
-        })
-      }
+      await prisma.customer.update({
+        where: { id: updated.customerId },
+        data: {
+          totalVisits: { increment: 1 },
+          totalSpent: { increment: updated.price },
+          lastVisitAt: new Date(),
+        },
+      })
+      await prisma.appointment.update({
+        where: { id: params.id },
+        data: { hasBeenCompleted: true },
+      })
     }
 
     return NextResponse.json(updated)
