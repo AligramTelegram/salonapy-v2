@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/utils/generateSlug'
 import { z } from 'zod'
 import { sendStaffWelcomeEmail } from '@/lib/resend'
+import { sendSms } from '@/lib/netgsm'
 import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
@@ -143,6 +144,14 @@ export async function POST(request: NextRequest) {
         workHours: true,
       },
     })
+
+    // Giriş bilgilerini SMS ile gönder
+    if (phone) {
+      sendSms({
+        phone,
+        message: `Hemensalon personel girisi: E-posta: ${email} Sifre: ${password} Uygulama: hemensalon.com`,
+      }).catch((err) => console.error('[staff/create] SMS failed:', err))
+    }
 
     // Send staff welcome email (fire-and-forget)
     sendStaffWelcomeEmail({
