@@ -1,17 +1,22 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const IyzipayLib = require('iyzipay')
-
 const isSandbox = process.env.IYZICO_SANDBOX === 'true'
 const apiKey = isSandbox ? process.env.IYZICO_SANDBOX_API_KEY : process.env.IYZICO_API_KEY
 const secretKey = isSandbox ? process.env.IYZICO_SANDBOX_SECRET_KEY : process.env.IYZICO_SECRET_KEY
 const baseUrl = isSandbox ? 'https://sandbox.iyzipay.com' : (process.env.IYZICO_BASE_URL || 'https://api.iyzipay.com')
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iyzipay: any = apiKey && secretKey
-  ? new IyzipayLib({ apiKey, secretKey, uri: baseUrl })
-  : null
-
 export const isIyzicoSandbox = isSandbox
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _iyzipay: any = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getIyzipay(): any {
+  if (!apiKey || !secretKey) return null
+  if (!_iyzipay) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const IyzipayLib = require('iyzipay')
+    _iyzipay = new IyzipayLib({ apiKey, secretKey, uri: baseUrl })
+  }
+  return _iyzipay
+}
 
 export type IyzicoCheckoutResult = {
   status: 'success' | 'failure'
@@ -73,6 +78,7 @@ export async function createCheckoutForm(params: {
   const conversationId = buildConversationId(params.tenantId, params.plan)
   const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/iyzico/callback`
 
+  const iyzipay = getIyzipay()
   // Mock mode
   if (!iyzipay) {
     const mockToken = `mock-${Date.now()}`
@@ -172,6 +178,7 @@ export async function createCheckoutForm(params: {
  * Falls back to mock success if not configured.
  */
 export async function retrieveCheckoutForm(token: string, conversationId?: string): Promise<IyzicoPaymentResult> {
+  const iyzipay = getIyzipay()
   if (!iyzipay) {
     return { status: 'success', paymentStatus: 'SUCCESS' }
   }
@@ -199,6 +206,7 @@ export async function retrieveCheckoutForm(token: string, conversationId?: strin
 export async function cancelIyzicoSubscription(
   subscriptionReferenceCode: string
 ): Promise<{ success: boolean; error?: string }> {
+  const iyzipay = getIyzipay()
   if (!iyzipay) {
     console.log(`[IYZICO MOCK] Abonelik iptal: ${subscriptionReferenceCode}`)
     return { success: true }
@@ -220,3 +228,4 @@ export async function cancelIyzicoSubscription(
 }
 
 export const isIyzicoConfigured = !!(apiKey && secretKey)
+
