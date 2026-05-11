@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
 
+const SMS_PLAN_LIMITS: Record<string, number> = {
+  BASLANGIC: 200,
+  PROFESYONEL: 600,
+  ISLETME: 1500,
+}
+
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
@@ -35,6 +41,7 @@ export async function GET(request: NextRequest) {
     trialEndsAt: trialSub?.endDate?.toISOString(),
     smsUsed: tenant.smsUsed,
     smsCredits: tenant.smsCredits,
+    smsMonthlyLimit: SMS_PLAN_LIMITS[tenant.plan] ?? 0,
   })
 }
 

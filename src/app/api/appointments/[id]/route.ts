@@ -136,27 +136,31 @@ export async function PUT(
     existing.status !== 'TAMAMLANDI'
 
   if (isCompletionTransition && updated.price > 0) {
-    await prisma.transaction.create({
-      data: {
-        tenantId,
-        type: 'GELIR',
-        amount: updated.price,
-        category: 'Randevu',
-        description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
-        date: new Date(),
-      },
+    const alreadyRecorded = await prisma.transaction.findFirst({
+      where: { appointmentId: params.id },
+      select: { id: true },
     })
-
-    // Müşterinin toplam ziyaret ve harcama bilgilerini güncelle
-    await prisma.customer.update({
-      where: { id: updated.customerId },
-      data: {
-        totalVisits: { increment: 1 },
-        totalSpent: { increment: updated.price },
-        lastVisitAt: new Date(),
-      },
-    })
-
+    if (!alreadyRecorded) {
+      await prisma.transaction.create({
+        data: {
+          tenantId,
+          type: 'GELIR',
+          amount: updated.price,
+          category: 'Randevu',
+          description: `Randevu ${updated.customer.name} - ${updated.service.name}`,
+          date: new Date(),
+          appointmentId: params.id,
+        },
+      })
+      await prisma.customer.update({
+        where: { id: updated.customerId },
+        data: {
+          totalVisits: { increment: 1 },
+          totalSpent: { increment: updated.price },
+          lastVisitAt: new Date(),
+        },
+      })
+    }
   }
 
   return NextResponse.json(updated)
