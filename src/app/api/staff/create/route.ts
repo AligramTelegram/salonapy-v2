@@ -5,6 +5,7 @@ import { generateSlug } from '@/lib/utils/generateSlug'
 import { z } from 'zod'
 import { sendStaffWelcomeEmail } from '@/lib/resend'
 import { sendSms } from '@/lib/netgsm'
+import { isTurkishPhone } from '@/lib/country-detect'
 import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
@@ -145,8 +146,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Giriş bilgilerini SMS ile gönder
-    if (phone) {
+    // Giriş bilgilerini SMS ile gönder — sadece Türkiye numarası için
+    if (phone && isTurkishPhone(phone)) {
       sendSms({
         phone,
         message: `Hemensalon personel girisi: E-posta: ${email} Sifre: ${password} Uygulama: hemensalon.com`,

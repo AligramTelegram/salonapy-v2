@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { sendTrialEndingEmail } from '@/lib/resend'
+import { sendSms } from '@/lib/netgsm'
+import { isTurkishPhone } from '@/lib/country-detect'
 import { addDays, differenceInDays } from 'date-fns'
 
 const REMINDER_DAYS = 3 // Send warning when <= 3 days left
@@ -29,6 +31,7 @@ export async function runTrialReminders(): Promise<{ sent: number; skipped: numb
           slug: true,
           name: true,
           email: true,
+          phone: true,
           users: {
             where: { role: 'OWNER' },
             select: { name: true, email: true },
@@ -62,6 +65,15 @@ export async function runTrialReminders(): Promise<{ sent: number; skipped: numb
         daysLeft: Math.max(daysLeft, 1),
         slug: sub.tenant.slug,
       })
+
+      // Türkiye numarası varsa SMS de gönder
+      if (isTurkishPhone(sub.tenant.phone)) {
+        const daysLeftDisplay = Math.max(daysLeft, 1)
+        sendSms({
+          phone: sub.tenant.phone!,
+          message: `Hemensalon: ${sub.tenant.name} isletmenizin deneme suresi ${daysLeftDisplay} gun sonra bitiyor. Devam etmek icin: hemensalon.com/b/${sub.tenant.slug}`,
+        }).catch((err) => console.error(`[trialReminders] SMS failed for ${sub.tenantId}:`, err))
+      }
 
       // Mark notification sent so we don't re-send on next cron run
       await prisma.notification.create({

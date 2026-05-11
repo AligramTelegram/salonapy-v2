@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
+import { isTurkishPhone } from '@/lib/country-detect'
 
 const SMS_PLAN_LIMITS: Record<string, number> = {
   BASLANGIC: 200,
@@ -42,6 +43,7 @@ export async function GET(request: NextRequest) {
     smsUsed: tenant.smsUsed,
     smsCredits: tenant.smsCredits,
     smsMonthlyLimit: SMS_PLAN_LIMITS[tenant.plan] ?? 0,
+    isTurkish: isTurkishPhone(tenant.phone),
   })
 }
 

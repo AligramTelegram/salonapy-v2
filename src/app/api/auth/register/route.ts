@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { addDays } from 'date-fns'
 import { sendWelcomeEmail, sendAdminNewTenantEmail } from '@/lib/resend'
 import { sendSms } from '@/lib/netgsm'
+import { isTurkishPhone } from '@/lib/country-detect'
 
 function generateSlug(text: string): string {
   return text
@@ -97,8 +98,8 @@ export async function POST(request: Request) {
       isTrial: !isPaidPlan,
     }).catch((err) => console.error('[register] Welcome email failed:', err))
 
-    // Hoş geldin SMS (telefon girdiyse)
-    if (phone) {
+    // Hoş geldin SMS — sadece Türkiye numarası için
+    if (phone && isTurkishPhone(phone)) {
       sendSms({
         phone,
         message: `Merhaba ${name}, ${businessName} işletmeniz Hemensalon'a kaydedildi! Paneliniz: hemensalon.com/b/${slug}`,
