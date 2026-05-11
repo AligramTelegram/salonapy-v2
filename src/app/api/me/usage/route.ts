@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   const maxServices = limits.maxServices === Infinity ? null : limits.maxServices
 
   return NextResponse.json({
-    plan,
+    plan: tenant.plan,
     appointmentsThisMonth,
     maxAppointmentsPerMonth: maxAppts,
     staffCount,
