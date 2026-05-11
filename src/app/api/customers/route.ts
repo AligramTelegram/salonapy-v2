@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { getTenantId, getTenantIdFromRequest } from '@/lib/getTenantId'
 import { checkSubscription } from '@/lib/checkSubscription'
+import { getLimit } from '@/lib/plan-features'
 
 export const dynamic = 'force-dynamic'
 
@@ -66,6 +67,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Paket yükseltmesi gerekli' }, { status: 402 })
     }
     throw e
+  }
+
+  // Müşteri limiti kontrolü (deneme süresinde ISLETME limitleri geçerli)
+  const tenantForLimit = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { plan: true, subscription: { select: { status: true } } },
+  })
+  if (tenantForLimit) {
+    const subStatus = tenantForLimit.subscription?.status ?? null
+    const maxCustomers = getLimit(tenantForLimit.plan, 'maxCustomers', subStatus)
+    const currentCount = await prisma.customer.count({ where: { tenantId } })
+    if (currentCount >= maxCustomers) {
+      return NextResponse.json(
+        { error: `Mevcut paketinizde en fazla ${maxCustomers} müşteri ekleyebilirsiniz. Daha fazlası için paketinizi yükseltin.` },
+        { status: 403 }
+      )
+    }
   }
 
   let body: unknown

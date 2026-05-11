@@ -95,12 +95,16 @@ export async function POST(request: NextRequest) {
   // ── Aylık randevu limiti kontrolü ──────────────────────────────────────────
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
-    select: { plan: true, appointmentsUsed: true, appointmentsResetAt: true },
+    select: {
+      plan: true, appointmentsUsed: true, appointmentsResetAt: true,
+      subscription: { select: { status: true } },
+    },
   })
 
   if (tenant) {
     const now = new Date()
-    const maxAppointments = getLimit(tenant.plan, 'maxAppointmentsPerMonth')
+    const subStatus = tenant.subscription?.status ?? null
+    const maxAppointments = getLimit(tenant.plan, 'maxAppointmentsPerMonth', subStatus)
 
     // Ay geçtiyse sıfırla (lazy reset)
     let appointmentsUsed = tenant.appointmentsUsed

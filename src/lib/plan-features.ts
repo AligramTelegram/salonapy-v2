@@ -41,8 +41,15 @@ export function hasFeature(plan: string, feature: FeatureKey): boolean {
   return planData.features[feature]
 }
 
-export function getLimit(plan: string, limitKey: LimitKey): number {
-  const planData = PLAN_FEATURES[plan as PlanKey]
+/** Deneme süresindeyken ISLETME limitleri uygulanır. */
+export function getEffectivePlan(plan: string, subscriptionStatus?: string | null): PlanKey {
+  if (subscriptionStatus === 'TRIAL') return 'ISLETME'
+  return (plan as PlanKey) in PLAN_FEATURES ? (plan as PlanKey) : 'BASLANGIC'
+}
+
+export function getLimit(plan: string, limitKey: LimitKey, subscriptionStatus?: string | null): number {
+  const effectivePlan = getEffectivePlan(plan, subscriptionStatus)
+  const planData = PLAN_FEATURES[effectivePlan]
   if (!planData) return 0
   const val = planData[limitKey]
   return val === Infinity ? Number.MAX_SAFE_INTEGER : val

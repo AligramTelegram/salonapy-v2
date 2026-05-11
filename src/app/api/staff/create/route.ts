@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
-    select: { id: true, name: true, slug: true, plan: true },
+    select: { id: true, name: true, slug: true, plan: true, subscription: { select: { status: true } } },
   })
   if (!tenant) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
@@ -67,8 +67,9 @@ export async function POST(request: NextRequest) {
   const { name, email, phone, title, color, serviceIds, workHours } = parsed.data
   const password = parsed.data.password ?? Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '!'
 
-  // Plan limiti kontrolü
-  const maxStaff = getLimit(tenant.plan, 'maxStaff')
+  // Plan limiti kontrolü (deneme süresinde ISLETME limitleri geçerli)
+  const subStatus = tenant.subscription?.status ?? null
+  const maxStaff = getLimit(tenant.plan, 'maxStaff', subStatus)
   const currentStaffCount = await prisma.staff.count({ where: { tenantId, isActive: true } })
   if (currentStaffCount >= maxStaff) {
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
-import { PLAN_FEATURES } from '@/lib/plan-features'
+import { PLAN_FEATURES, getEffectivePlan } from '@/lib/plan-features'
 import { startOfMonth } from 'date-fns'
 
 export const dynamic = 'force-dynamic'
@@ -12,12 +12,12 @@ export async function GET(request: NextRequest) {
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
-    select: { plan: true },
+    select: { plan: true, subscription: { select: { status: true } } },
   })
   if (!tenant) return NextResponse.json({ error: 'Bulunamadı' }, { status: 404 })
 
-  const plan = tenant.plan as keyof typeof PLAN_FEATURES
-  const limits = PLAN_FEATURES[plan] ?? PLAN_FEATURES.BASLANGIC
+  const effectivePlan = getEffectivePlan(tenant.plan, tenant.subscription?.status)
+  const limits = PLAN_FEATURES[effectivePlan]
 
   const monthStart = startOfMonth(new Date())
 
