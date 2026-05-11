@@ -4,9 +4,9 @@ import { getTenantIdFromRequest } from '@/lib/getTenantId'
 import { isTurkishPhone } from '@/lib/country-detect'
 
 const SMS_PLAN_LIMITS: Record<string, number> = {
-  BASLANGIC: 200,
-  PROFESYONEL: 600,
-  ISLETME: 1500,
+  BASLANGIC: 100,
+  PROFESYONEL: 250,
+  ISLETME: 600,
 }
 
 export const dynamic = 'force-dynamic'

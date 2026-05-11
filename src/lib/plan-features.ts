@@ -2,7 +2,7 @@ export const PLAN_FEATURES = {
   BASLANGIC: {
     maxStaff: 1,
     maxServices: 10,
-    maxCustomers: 100,
+    maxCustomers: 25,
     maxAppointmentsPerMonth: 200,
     features: {
       reports: false,
@@ -12,7 +12,7 @@ export const PLAN_FEATURES = {
   PROFESYONEL: {
     maxStaff: 3,
     maxServices: 50,
-    maxCustomers: 500,
+    maxCustomers: 150,
     maxAppointmentsPerMonth: 1000,
     features: {
       reports: true,
