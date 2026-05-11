@@ -29,5 +29,11 @@ export async function PATCH(
     },
   })
 
-  return NextResponse.json(updated)
+  return NextResponse.json({
+    ...updated,
+    sessionsLeft: updated.remainingSessions,
+    sessionsTotal: updated.totalSessions,
+    purchasedAt: updated.createdAt,
+    expiresAt: updated.expiryDate,
+  })
 }

@@ -31,7 +31,13 @@ export async function GET(
     orderBy: { createdAt: 'desc' },
   })
 
-  return NextResponse.json(packages)
+  return NextResponse.json(packages.map(p => ({
+    ...p,
+    sessionsLeft: p.remainingSessions,
+    sessionsTotal: p.totalSessions,
+    purchasedAt: p.createdAt,
+    expiresAt: p.expiryDate,
+  })))
 }
 
 // POST /api/customers/[id]/packages — purchase a package for this customer
@@ -94,5 +100,11 @@ export async function POST(
     }),
   ])
 
-  return NextResponse.json(customerPackage, { status: 201 })
+  return NextResponse.json({
+    ...customerPackage,
+    sessionsLeft: customerPackage.remainingSessions,
+    sessionsTotal: customerPackage.totalSessions,
+    purchasedAt: customerPackage.createdAt,
+    expiresAt: customerPackage.expiryDate,
+  }, { status: 201 })
 }
