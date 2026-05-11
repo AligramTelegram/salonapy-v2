@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'
-import { sendTrialEndingEmail } from '@/lib/resend'
 import { sendSms } from '@/lib/netgsm'
-import { isTurkishPhone } from '@/lib/country-detect'
+import { isTurkishPhone, detectLanguageFromPhone } from '@/lib/country-detect'
+import { getTrialEndingEmailContent } from '@/lib/email-i18n'
 import { addDays, differenceInDays } from 'date-fns'
+import { Resend } from 'resend'
 
 const REMINDER_DAYS = 3 // Send warning when <= 3 days left
 
@@ -58,13 +59,18 @@ export async function runTrialReminders(): Promise<{ sent: number; skipped: numb
     const daysLeft = differenceInDays(sub.endDate, now)
 
     try {
-      await sendTrialEndingEmail({
-        to: tenantEmail,
+      const lang = detectLanguageFromPhone(sub.tenant.phone)
+      const { subject, html } = getTrialEndingEmailContent(lang, {
         ownerName: owner.name,
         tenantName: sub.tenant.name,
-        daysLeft: Math.max(daysLeft, 1),
         slug: sub.tenant.slug,
+        daysLeft: Math.max(daysLeft, 1),
       })
+
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        await resend.emails.send({ from: 'Hemensalon <noreply@hemensalon.com>', to: tenantEmail, subject, html })
+      }
 
       // Türkiye numarası varsa SMS de gönder
       if (isTurkishPhone(sub.tenant.phone)) {

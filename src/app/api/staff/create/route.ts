@@ -3,9 +3,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/utils/generateSlug'
 import { z } from 'zod'
-import { sendStaffWelcomeEmail } from '@/lib/resend'
 import { sendSms } from '@/lib/netgsm'
-import { isTurkishPhone } from '@/lib/country-detect'
+import { isTurkishPhone, detectLanguageFromPhone } from '@/lib/country-detect'
+import { getStaffWelcomeEmailContent } from '@/lib/email-i18n'
+import { Resend } from 'resend'
 import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
@@ -154,15 +155,20 @@ export async function POST(request: NextRequest) {
       }).catch((err) => console.error('[staff/create] SMS failed:', err))
     }
 
-    // Send staff welcome email (fire-and-forget)
-    sendStaffWelcomeEmail({
-      to: email,
-      staffName: name,
-      tenantName: tenant.name,
-      slug: tenant.slug,
-      email,
-      password,
-    }).catch((err) => console.error('[staff/create] Welcome email failed:', err))
+    // Personel hoşgeldin e-postası — dile göre içerik
+    const lang = detectLanguageFromPhone(phone)
+    if (process.env.RESEND_API_KEY) {
+      const { subject, html } = getStaffWelcomeEmailContent(lang, {
+        staffName: name,
+        tenantName: tenant.name,
+        slug: tenant.slug,
+        email,
+        password,
+      })
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      resend.emails.send({ from: 'Hemensalon <noreply@hemensalon.com>', to: email, subject, html })
+        .catch((err: unknown) => console.error('[staff/create] Welcome email failed:', err))
+    }
 
     return NextResponse.json(staff, { status: 201 })
   } catch (err) {

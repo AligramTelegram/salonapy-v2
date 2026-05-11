@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { addDays } from 'date-fns'
-import { sendWelcomeEmail, sendAdminNewTenantEmail } from '@/lib/resend'
+import { sendAdminNewTenantEmail } from '@/lib/resend'
 import { sendSms } from '@/lib/netgsm'
-import { isTurkishPhone } from '@/lib/country-detect'
+import { isTurkishPhone, detectLanguageFromPhone } from '@/lib/country-detect'
+import { getWelcomeEmailContent } from '@/lib/email-i18n'
+import { Resend } from 'resend'
 
 function generateSlug(text: string): string {
   return text
@@ -89,14 +91,21 @@ export async function POST(request: Request) {
     }
     // PROFESYONEL/İŞLETME: abonelik yok, ödeme sonrası oluşturulacak
 
-    // Send welcome email (fire-and-forget — don't block registration on email failure)
-    sendWelcomeEmail({
-      to: email,
+    // Dil tespiti — telefon numarasına göre
+    const lang = detectLanguageFromPhone(phone)
+    const { subject, html } = getWelcomeEmailContent(lang, {
       ownerName: name,
       tenantName: businessName,
       slug,
       isTrial: !isPaidPlan,
-    }).catch((err) => console.error('[register] Welcome email failed:', err))
+    })
+
+    // Hoşgeldin e-postası — dile göre içerik
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      resend.emails.send({ from: 'Hemensalon <noreply@hemensalon.com>', to: email, subject, html })
+        .catch((err: unknown) => console.error('[register] Welcome email failed:', err))
+    }
 
     // Hoş geldin SMS — sadece Türkiye numarası için
     if (phone && isTurkishPhone(phone)) {
