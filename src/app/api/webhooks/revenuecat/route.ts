@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
   if (!app_user_id || !product_id) return NextResponse.json({ ok: true })
 
   // Kullanıcıyı bul (supabaseId üzerinden)
-  const user = await prisma.tenantUser.findFirst({
+  const user = await prisma.user.findFirst({
     where: { supabaseId: app_user_id },
     select: { tenantId: true },
   })
