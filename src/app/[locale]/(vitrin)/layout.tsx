@@ -1,19 +1,15 @@
-import { NextIntlClientProvider } from 'next-intl'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CookieBanner } from '@/components/vitrin/CookieBanner'
 import { MotionProvider } from '@/components/vitrin/MotionProvider'
-import trMessages from '../../../messages/tr.json'
 
 export default function VitrinLayout({ children }: { children: React.ReactNode }) {
   return (
-    <NextIntlClientProvider locale="tr" messages={trMessages}>
-      <MotionProvider>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <CookieBanner />
-      </MotionProvider>
-    </NextIntlClientProvider>
+    <MotionProvider>
+      <Navbar />
+      <main>{children}</main>
+      <Footer />
+      <CookieBanner />
+    </MotionProvider>
   )
 }

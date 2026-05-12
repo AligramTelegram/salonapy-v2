@@ -1,19 +1,12 @@
 'use client'
 
-import Link from 'next/link'
 import { useRef } from 'react'
 import { m, useScroll, useTransform } from 'framer-motion'
 import { Calendar, TrendingUp, Users, CheckCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 const APP_STORE_URL = process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'
 const PLAY_STORE_URL = process.env.NEXT_PUBLIC_PLAY_STORE_URL ?? '#'
-
-const STATS = [
-  { value: '7.870+', label: 'İşletme' },
-  { value: '50.341+', label: 'Randevu' },
-  { value: '%98', label: 'Memnuniyet' },
-]
 
 const MOCK_APPOINTMENTS = [
   { name: 'Ayşe Kaya', service: 'Saç Kesim', time: '10:00', color: 'bg-purple-500' },
@@ -22,7 +15,6 @@ const MOCK_APPOINTMENTS = [
   { name: 'Can Arslan', service: 'Saç Boyama', time: '14:30', color: 'bg-amber-500' },
 ]
 
-// LCP için: opacity 1 başlıyor (SSR'da görünür), sadece Y hareketi var
 function slideUp(delay = 0) {
   return {
     initial: { opacity: 1, y: 20 },
@@ -32,11 +24,18 @@ function slideUp(delay = 0) {
 }
 
 export function Hero() {
+  const t = useTranslations('hero')
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] })
   const rotateX = useTransform(scrollYProgress, [0, 0.35], [18, 0])
   const scale = useTransform(scrollYProgress, [0, 0.35], [0.88, 1])
   const translateY = useTransform(scrollYProgress, [0, 0.35], [60, 0])
+
+  const STATS = [
+    { value: '7.870+', label: t('stat_business') },
+    { value: '50.341+', label: t('stat_appointments') },
+    { value: '%98', label: t('stat_satisfaction') },
+  ]
 
   return (
     <div ref={containerRef} className="relative">
@@ -49,62 +48,56 @@ export function Hero() {
         </div>
 
         <div className="container-custom text-center">
-          {/* Badge — opacity 1, sadece y hareketi */}
           <m.div
             {...slideUp(0)}
             className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700"
           >
             <span className="flex h-2 w-2 rounded-full bg-purple-500" aria-hidden="true" />
-            iOS &amp; Android · 3 gün ücretsiz deneme
+            {t('badge')}
           </m.div>
 
-          {/* H1 — LCP element: opacity:1 anında görünür */}
           <h1 className="mx-auto mb-5 max-w-3xl font-display text-4xl font-extrabold leading-tight text-gray-900 md:text-5xl lg:text-[3.5rem]">
-            Kuaför &amp; Güzellik Salonu için{' '}
+            {t('h1_1')}{' '}
             <span className="relative text-purple-600">
-              Online Randevu
+              {t('h1_highlight')}
               <svg className="absolute -bottom-1 left-0 w-full" viewBox="0 0 300 10" fill="none" aria-hidden="true">
                 <path d="M1 7C50 3 100 1 150 1C200 1 250 3 299 7" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" opacity="0.4" />
               </svg>
             </span>
-            {' '}Sistemi
+            {t('h1_2') ? ` ${t('h1_2')}` : ''}
           </h1>
 
-          {/* Alt başlık — opacity:1, kısa gecikme */}
           <m.p
             {...slideUp(0.1)}
             className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-500"
           >
-            Kuaför, berber, güzellik merkezi ve klinikler için akıllı randevu yönetim yazılımı.
-            SMS &amp; WhatsApp hatırlatmaları, personel yönetimi ve finansal raporlar — tek platformda.
+            {t('subtitle')}
           </m.p>
 
           {/* CTA */}
           <m.div {...slideUp(0.15)} className="mb-10 flex flex-wrap justify-center gap-3">
-            {/* App Store */}
-            <Link href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" title="App Store'dan İndir">
+            <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" title={t('appStoreDownload')}>
               <button className="flex items-center gap-3 rounded-xl bg-black px-5 py-3 text-white transition hover:bg-gray-900 shadow-lg">
                 <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                 </svg>
                 <div className="text-left">
-                  <div className="text-[10px] leading-none opacity-80">App Store'dan İndir</div>
-                  <div className="text-sm font-semibold leading-tight">iPhone &amp; iPad</div>
+                  <div className="text-[10px] leading-none opacity-80">{t('appStoreDownload')}</div>
+                  <div className="text-sm font-semibold leading-tight">{t('appStoreLabel')}</div>
                 </div>
               </button>
-            </Link>
-            {/* Google Play */}
-            <Link href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" title="Google Play'den İndir">
+            </a>
+            <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" title={t('playStoreDownload')}>
               <button className="flex items-center gap-3 rounded-xl bg-black px-5 py-3 text-white transition hover:bg-gray-900 shadow-lg">
                 <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M3.18 23.76c.37.21.8.22 1.2.03l12.15-6.87-2.7-2.73-10.65 9.57zm-1.15-19.7A1.83 1.83 0 0 0 1.77 5.5v13c0 .54.22 1.02.58 1.36l.08.07 7.28-7.28v-.17L2.03 4.06zm18.04 8.47-2.6-1.47-2.99 3 2.99 2.99 2.62-1.49a1.84 1.84 0 0 0 0-3.03zM4.38.27L16.53 7.1l-2.7 2.7L3.18.27C3.59.07 4.02.08 4.38.27z"/>
                 </svg>
                 <div className="text-left">
-                  <div className="text-[10px] leading-none opacity-80">Google Play'den İndir</div>
-                  <div className="text-sm font-semibold leading-tight">Android</div>
+                  <div className="text-[10px] leading-none opacity-80">{t('playStoreDownload')}</div>
+                  <div className="text-sm font-semibold leading-tight">{t('playStoreLabel')}</div>
                 </div>
               </button>
-            </Link>
+            </a>
           </m.div>
 
           {/* Stats */}
@@ -135,7 +128,7 @@ export function Hero() {
                 <CheckCircle className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <div className="text-xs font-bold text-gray-900">Randevu Onaylandı</div>
+                <div className="text-xs font-bold text-gray-900">{t('badge_confirmed')}</div>
                 <div className="text-[12px] text-gray-500">Ayşe Kaya · 10:00</div>
               </div>
             </m.div>
@@ -152,30 +145,28 @@ export function Hero() {
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-bold text-gray-900">SMS gönderildi</div>
-                <div className="text-[12px] text-gray-500">Hatırlatma · 2 dk önce</div>
+                <div className="text-xs font-bold text-gray-900">{t('badge_sms')}</div>
+                <div className="text-[12px] text-gray-500">{t('badge_reminder')}</div>
               </div>
             </m.div>
 
             {/* Dashboard kartı */}
             <div className="glass-card overflow-hidden rounded-2xl border border-white/40 shadow-2xl">
-              {/* Titlebar */}
               <div className="flex items-center justify-between border-b border-purple-100/40 bg-gradient-to-r from-white/90 to-white/70 px-6 py-4">
                 <div className="flex items-center gap-2" aria-hidden="true">
                   <div className="h-3 w-3 rounded-full bg-red-400 shadow-sm" />
                   <div className="h-3 w-3 rounded-full bg-yellow-400 shadow-sm" />
                   <div className="h-3 w-3 rounded-full bg-green-400 shadow-sm" />
                 </div>
-                <span className="text-xs font-semibold text-gray-600">Hemensalon Panel</span>
+                <span className="text-xs font-semibold text-gray-600">{t('dashboard_title')}</span>
                 <div className="h-5 w-5" aria-hidden="true" />
               </div>
 
-              {/* Stats row */}
               <div className="grid grid-cols-3 gap-px bg-gradient-to-b from-purple-50/60 to-transparent border-b border-purple-100/40">
                 {[
-                  { icon: Calendar, label: 'Bugün', value: '12', color: 'text-purple-600', bg: 'from-purple-50 to-purple-50/50', lightBg: 'bg-purple-100/60' },
-                  { icon: TrendingUp, label: 'Gelir', value: '₺2.840', color: 'text-emerald-600', bg: 'from-emerald-50 to-emerald-50/50', lightBg: 'bg-emerald-100/60' },
-                  { icon: Users, label: 'Müşteri', value: '8', color: 'text-blue-600', bg: 'from-blue-50 to-blue-50/50', lightBg: 'bg-blue-100/60' },
+                  { icon: Calendar, label: t('dashboard_today'), value: '12', color: 'text-purple-600', bg: 'from-purple-50 to-purple-50/50', lightBg: 'bg-purple-100/60' },
+                  { icon: TrendingUp, label: t('dashboard_revenue'), value: '₺2.840', color: 'text-emerald-600', bg: 'from-emerald-50 to-emerald-50/50', lightBg: 'bg-emerald-100/60' },
+                  { icon: Users, label: t('dashboard_customers'), value: '8', color: 'text-blue-600', bg: 'from-blue-50 to-blue-50/50', lightBg: 'bg-blue-100/60' },
                 ].map((s) => (
                   <div key={s.label} className={`bg-gradient-to-br ${s.bg} px-5 py-4 backdrop-blur-sm`}>
                     <div className={`mb-2 inline-flex rounded-lg p-2 ${s.lightBg}`}>
@@ -187,13 +178,12 @@ export function Hero() {
                 ))}
               </div>
 
-              {/* Appointment list */}
               <div className="bg-gradient-to-b from-white/90 to-white/70 p-5">
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="text-sm font-bold text-gray-900">Bugünkü Randevular</span>
+                  <span className="text-sm font-bold text-gray-900">{t('dashboard_appointments_title')}</span>
                   <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1 text-[11px] font-semibold text-purple-700">
                     <span className="font-display">{MOCK_APPOINTMENTS.length}</span>
-                    <span>randevu</span>
+                    <span>{t('dashboard_appointments_unit')}</span>
                   </span>
                 </div>
                 <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -221,7 +211,6 @@ export function Hero() {
           </m.div>
         </div>
 
-        {/* Alt gradient geçiş */}
         <div className="h-32 bg-gradient-to-b from-transparent to-white" aria-hidden="true" />
       </section>
     </div>
