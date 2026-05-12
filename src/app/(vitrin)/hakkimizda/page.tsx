@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { ArrowRight, Target, Heart, Zap, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -152,13 +151,15 @@ export default function HakkimizdaPage() {
             <p className="mb-8 text-purple-100">
               3 gün ücretsiz deneyin. Kredi kartı gerekmez.
             </p>
-            <Link
-              href="/kayit"
+            <a
+              href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-sm font-bold text-purple-700 shadow-lg transition-colors hover:bg-purple-50"
             >
-              Ücretsiz Başla
+              Uygulamayı İndir
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </a>
           </div>
         </div>
       </section>

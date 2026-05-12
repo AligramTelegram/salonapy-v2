@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Zap, Star, MessageCircle, Sparkles, Bot } from 'lucide-react'
@@ -165,11 +164,11 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link href="/kayit">
+              <a href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300">
-                  Başla
+                  Uygulamayı İndir
                 </Button>
-              </Link>
+              </a>
             </motion.div>
 
             {/* Instagram */}
@@ -203,11 +202,11 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link href="/kayit">
+              <a href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full border-pink-200 text-pink-700 hover:bg-pink-50 hover:border-pink-300">
-                  Başla
+                  Uygulamayı İndir
                 </Button>
-              </Link>
+              </a>
             </motion.div>
 
             {/* Combo */}
@@ -244,11 +243,11 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link href="/kayit">
+              <a href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'} target="_blank" rel="noopener noreferrer">
                 <Button className="w-full bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-200/60">
-                  Combo Al
+                  Uygulamayı İndir
                 </Button>
-              </Link>
+              </a>
             </motion.div>
           </div>
 
@@ -302,8 +301,10 @@ function PricingCard({
         <p className="mb-3 text-xs text-gray-500">*KDV dahildir</p>
         <p className="mb-6 text-sm leading-relaxed text-gray-500">{plan.description}</p>
 
-        <Link
-          href={plan.trial ? '/kayit' : `/kayit?plan=${planKey}`}
+        <a
+          href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'}
+          target="_blank"
+          rel="noopener noreferrer"
           title={plan.trial ? `${plan.name} Paketi - 3 Gün Ücretsiz` : `${plan.name} Paketi`}
           className="block"
         >
@@ -316,7 +317,7 @@ function PricingCard({
           >
             {plan.trial ? '3 Gün Ücretsiz Dene' : 'Hemen Başla'}
           </Button>
-        </Link>
+        </a>
         <p className="mb-3 -mt-3 text-center text-xs text-gray-400">
           {plan.trial ? 'Kredi kartı gerekmez' : 'Aylık ödeme'}
         </p>

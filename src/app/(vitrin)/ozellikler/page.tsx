@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Features } from '@/components/vitrin/Features'
 import { ArrowRight } from 'lucide-react'
-import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Kuaför & Salon Yazılımı Özellikleri | Online Randevu, SMS, CRM – Hemensalon',
@@ -42,28 +41,24 @@ export default function OzelliklerPage() {
             kadar kuaför ve güzellik salonunuzu büyütecek tüm araçlar.
           </p>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
-            <Link
-              href="/kayit"
+            <a
+              href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-gray-900"
+            >
+              App Store&apos;dan İndir
+            </a>
+            <a
+              href={process.env.NEXT_PUBLIC_PLAY_STORE_URL ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition-colors hover:bg-purple-700"
             >
-              3 Gün Ücretsiz Dene
+              Google Play&apos;den İndir
               <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/fiyatlar"
-              className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-6 py-3 text-sm font-semibold text-purple-700 transition-colors hover:bg-purple-50"
-            >
-              Fiyat Planlarını Gör
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            </a>
           </div>
-          <Link
-            href="/kayit"
-            className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition-colors hover:bg-purple-700"
-          >
-            3 Gün Ücretsiz Dene
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
 
@@ -81,20 +76,24 @@ export default function OzelliklerPage() {
               3 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link
-                href="/kayit"
+              <a
+                href={process.env.NEXT_PUBLIC_APP_STORE_URL ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-sm font-bold text-purple-700 shadow-lg transition-colors hover:bg-purple-50"
               >
-                Ücretsiz Başla
+                App Store&apos;dan İndir
                 <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/blog"
+              </a>
+              <a
+                href={process.env.NEXT_PUBLIC_PLAY_STORE_URL ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-white/20"
               >
-                Rehberleri Oku
+                Google Play&apos;den İndir
                 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </a>
             </div>
           </div>
         </div>
