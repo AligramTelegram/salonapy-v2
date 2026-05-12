@@ -14,12 +14,30 @@ const STATUS_LABELS: Record<string, string> = {
   GELMEDI: 'Gelmedi',
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    let user: { id: string } | null = null
+
+    // Bearer token (mobil) kontrolü
+    const authHeader = req.headers.get('authorization')
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7)
+      const { createClient: createServiceClient } = await import('@supabase/supabase-js')
+      const admin = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      )
+      const { data } = await admin.auth.getUser(token)
+      user = data.user
+    }
+
+    // Cookie (web) kontrolü
+    if (!user) {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      user = data.user
+    }
+
     if (!user) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
     const dbUser = await prisma.user.findUnique({
