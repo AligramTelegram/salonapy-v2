@@ -1,13 +1,16 @@
 import { Resend } from 'resend'
-import { getEmailFrom, getEmailSubject } from '@/lib/emails/templates'
+import { getEmailFrom, getEmailSubject, type EmailLocale } from '@/lib/emails/templates'
 import { renderWelcomeEmail } from '@/emails/WelcomeEmail'
 import { renderStaffWelcomeEmail } from '@/emails/StaffWelcomeEmail'
 import { renderAppointmentConfirmation } from '@/emails/AppointmentConfirmation'
+import { renderAppointmentReminder, type ReminderType } from '@/emails/AppointmentReminder'
 import { renderTrialEndingEmail } from '@/emails/TrialEndingEmail'
 import { renderPaymentSuccessEmail } from '@/emails/PaymentSuccessEmail'
 import { renderPaymentFailedEmail } from '@/emails/PaymentFailedEmail'
 import { addDays, format } from 'date-fns'
-import { tr } from 'date-fns/locale'
+import { tr, enUS, de, ar, type Locale } from 'date-fns/locale'
+
+const DATE_FNS_LOCALES: Record<EmailLocale, Locale> = { tr, en: enUS, de, ar }
 
 // ─── Client ───────────────────────────────────────────────────────────────────
 
@@ -107,10 +110,13 @@ export interface AppointmentEmailData {
   tenantName: string
   tenantPhone?: string
   tenantEmail?: string
+  locale?: EmailLocale
 }
 
 export async function sendAppointmentConfirmation(data: AppointmentEmailData): Promise<void> {
-  const dateStr = format(data.date, 'd MMMM yyyy', { locale: tr })
+  const locale = data.locale ?? 'tr'
+  const dateFnsLocale = DATE_FNS_LOCALES[locale]
+  const dateStr = format(data.date, 'd MMMM yyyy', { locale: dateFnsLocale })
   const html = renderAppointmentConfirmation({
     customerName: data.customerName,
     serviceName: data.serviceName,
@@ -121,8 +127,40 @@ export async function sendAppointmentConfirmation(data: AppointmentEmailData): P
     tenantName: data.tenantName,
     tenantPhone: data.tenantPhone,
     tenantEmail: data.tenantEmail,
+    locale,
   })
-  const subject = getEmailSubject('appointment-confirmation', { date: dateStr })
+  const subject = getEmailSubject('appointment-confirmation', { date: dateStr }, locale)
+  await sendEmail({ to: data.customerEmail, subject, html })
+}
+
+// ─── Appointment reminder email ───────────────────────────────────────────────
+
+export interface AppointmentReminderEmailData extends AppointmentEmailData {
+  reminderType: ReminderType
+}
+
+export async function sendAppointmentReminder(data: AppointmentReminderEmailData): Promise<void> {
+  const locale = data.locale ?? 'tr'
+  const dateFnsLocale = DATE_FNS_LOCALES[locale]
+  const dateStr = format(data.date, 'd MMMM yyyy', { locale: dateFnsLocale })
+  const subjectPrefix: Record<ReminderType, Record<EmailLocale, string>> = {
+    '24h': { tr: 'Yarın randevunuz var', en: 'Appointment tomorrow', de: 'Termin morgen', ar: 'موعدك غداً' },
+    '1h':  { tr: '1 saat sonra randevunuz var', en: 'Appointment in 1 hour', de: 'Termin in 1 Stunde', ar: 'موعدك بعد ساعة' },
+  }
+  const subject = `${subjectPrefix[data.reminderType][locale]} — ${dateStr} ${data.startTime}`
+  const html = renderAppointmentReminder({
+    customerName: data.customerName,
+    serviceName: data.serviceName,
+    staffName: data.staffName,
+    date: dateStr,
+    startTime: data.startTime,
+    endTime: data.endTime,
+    tenantName: data.tenantName,
+    tenantPhone: data.tenantPhone,
+    tenantEmail: data.tenantEmail,
+    locale,
+    reminderType: data.reminderType,
+  })
   await sendEmail({ to: data.customerEmail, subject, html })
 }
 

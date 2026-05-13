@@ -11,6 +11,7 @@ import { getLimit } from '@/lib/plan-features'
 import { checkSubscription } from '@/lib/checkSubscription'
 import { sendSms } from '@/lib/netgsm'
 import { checkSmsLimit, incrementSms } from '@/lib/sms-limit'
+import { isTurkishPhone } from '@/lib/country-detect'
 
 export const dynamic = 'force-dynamic'
 
@@ -237,6 +238,7 @@ export async function POST(request: NextRequest) {
       tenantName: tenantForEmail?.name ?? '',
       tenantPhone: tenantForEmail?.phone ?? undefined,
       tenantEmail: tenantForEmail?.email ?? undefined,
+      locale: isTurkishPhone(tenantForEmail?.phone) ? 'tr' : 'en',
     }).catch((err) => console.error('[appointments] Confirmation email failed:', err))
   }
 
