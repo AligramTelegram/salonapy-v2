@@ -77,18 +77,18 @@ export async function GET(request: NextRequest) {
     const dateFnsLocale = locale === 'tr' ? tr : enUS
     const dateStr = format(new Date(apt.date), 'd MMMM yyyy', { locale: dateFnsLocale })
 
-    const notif = await prisma.notification.create({
-      data: {
-        tenantId: apt.tenantId,
-        appointmentId: apt.id,
-        channel: 'EMAIL',
-        to: apt.customer.email,
-        message: `REMINDER_24H: 24 saat öncesi email hatırlatma — ${dateStr} ${apt.startTime}`,
-        status: 'BASARISIZ',
-      },
-    })
-
     try {
+      const notif = await prisma.notification.create({
+        data: {
+          tenantId: apt.tenantId,
+          appointmentId: apt.id,
+          channel: 'EMAIL',
+          to: apt.customer.email,
+          message: `REMINDER_24H: 24 saat öncesi email hatırlatma — ${dateStr} ${apt.startTime}`,
+          status: 'BASARISIZ',
+        },
+      })
+
       await sendAppointmentReminder({
         customerName: apt.customer.name,
         customerEmail: apt.customer.email,
@@ -112,10 +112,6 @@ export async function GET(request: NextRequest) {
       sent++
     } catch (err) {
       console.error(`[send-reminders-email] Hata - appointment ${apt.id}:`, err)
-      await prisma.notification.update({
-        where: { id: notif.id },
-        data: { errorMessage: String(err) },
-      })
       errors++
     }
   }

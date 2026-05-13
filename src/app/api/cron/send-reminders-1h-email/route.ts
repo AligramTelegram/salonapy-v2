@@ -75,19 +75,18 @@ export async function GET(request: NextRequest) {
 
     const locale: EmailLocale = isTurkishPhone(apt.tenant.phone) ? 'tr' : 'en'
 
-    // Önce notification'ı kaydet (idempotency lock — DB write başarısız olsa email tekrar gönderilmez)
-    const notif = await prisma.notification.create({
-      data: {
-        tenantId: apt.tenantId,
-        appointmentId: apt.id,
-        channel: 'EMAIL',
-        to: apt.customer.email,
-        message: `REMINDER_1H: 1 saat öncesi email hatırlatma — ${apt.startTime}`,
-        status: 'BASARISIZ',
-      },
-    })
-
     try {
+      const notif = await prisma.notification.create({
+        data: {
+          tenantId: apt.tenantId,
+          appointmentId: apt.id,
+          channel: 'EMAIL',
+          to: apt.customer.email,
+          message: `REMINDER_1H: 1 saat öncesi email hatırlatma — ${apt.startTime}`,
+          status: 'BASARISIZ',
+        },
+      })
+
       await sendAppointmentReminder({
         customerName: apt.customer.name,
         customerEmail: apt.customer.email,
@@ -111,10 +110,6 @@ export async function GET(request: NextRequest) {
       sent++
     } catch (err) {
       console.error(`[send-reminders-1h-email] Hata - appointment ${apt.id}:`, err)
-      await prisma.notification.update({
-        where: { id: notif.id },
-        data: { errorMessage: String(err) },
-      })
       errors++
     }
   }
