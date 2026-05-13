@@ -100,9 +100,9 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: 'any' },
-        { url: '/icons/favicon.svg', type: 'image/svg+xml' },
+        { url: '/icons/favicon.png', type: 'image/png' },
       ],
-      apple: '/icons/favicon.svg',
+      apple: '/apple-touch-icon.png',
     },
     alternates: {
       canonical: APP_URL,
