@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { startOfDay, endOfDay, parseISO } from 'date-fns'
 import { z } from 'zod'
+import { getAuthenticatedStaffFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
-
-async function getAuthenticatedStaff(userId: string) {
-  return prisma.staff.findUnique({
-    where: { supabaseId: userId },
-    select: { id: true, tenantId: true },
-  })
-}
 
 const CreateSchema = z.object({
   customerId: z.string().min(1),
@@ -28,15 +21,8 @@ const CreateSchema = z.object({
 // GET /api/staff/appointments?customerId=xxx
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return NextResponse.json({ error: 'Oturum yok' }, { status: 401 })
-
-    const staff = await getAuthenticatedStaff(user.id)
-    if (!staff) return NextResponse.json({ error: 'Personel bulunamadı' }, { status: 404 })
+    const staff = await getAuthenticatedStaffFromRequest(request)
+    if (!staff) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
     const { searchParams } = request.nextUrl
     const dateParam = searchParams.get('date')
@@ -79,15 +65,8 @@ export async function GET(request: NextRequest) {
 // POST /api/staff/appointments — staff creates appointment for themselves
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return NextResponse.json({ error: 'Oturum yok' }, { status: 401 })
-
-    const staff = await getAuthenticatedStaff(user.id)
-    if (!staff) return NextResponse.json({ error: 'Personel bulunamadı' }, { status: 404 })
+    const staff = await getAuthenticatedStaffFromRequest(request)
+    if (!staff) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
     let body: unknown
     try {

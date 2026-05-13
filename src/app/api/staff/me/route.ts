@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { getAuthenticatedStaffFromRequest } from '@/lib/getTenantId'
 
 export const dynamic = 'force-dynamic'
 
-async function getStaffBySupabaseId(userId: string) {
+async function getStaffBySupabaseId_byId(staffId: string) {
   return prisma.staff.findUnique({
-    where: { supabaseId: userId },
+    where: { id: staffId },
     select: {
       id: true,
       name: true,
@@ -27,16 +27,12 @@ async function getStaffBySupabaseId(userId: string) {
   })
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const authStaff = await getAuthenticatedStaffFromRequest(request)
+    if (!authStaff) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
-    if (!user) return NextResponse.json({ error: 'Oturum yok' }, { status: 401 })
-
-    const staff = await getStaffBySupabaseId(user.id)
+    const staff = await getStaffBySupabaseId_byId(authStaff.id)
     if (!staff) return NextResponse.json({ error: 'Personel bulunamadı' }, { status: 404 })
 
     return NextResponse.json(staff)
@@ -52,18 +48,8 @@ const PatchSchema = z.object({
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return NextResponse.json({ error: 'Oturum yok' }, { status: 401 })
-
-    const staff = await prisma.staff.findUnique({
-      where: { supabaseId: user.id },
-      select: { id: true },
-    })
-    if (!staff) return NextResponse.json({ error: 'Personel bulunamadı' }, { status: 404 })
+    const staff = await getAuthenticatedStaffFromRequest(request)
+    if (!staff) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
     let body: unknown
     try {

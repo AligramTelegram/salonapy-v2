@@ -53,3 +53,28 @@ export async function getTenantIdFromRequest(request: NextRequest): Promise<stri
   if (!user) return null
   return tenantIdFromUserId(user.id)
 }
+
+/** For staff-specific routes: resolves authenticated staff from x-mobile-token header or cookie */
+export async function getAuthenticatedStaffFromRequest(
+  request: NextRequest
+): Promise<{ id: string; tenantId: string } | null> {
+  let userId: string | null = null
+
+  const token = request.headers.get('x-mobile-token')
+  if (token) {
+    userId = decodeJwtSub(token)
+  }
+
+  if (!userId) {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    userId = user?.id ?? null
+  }
+
+  if (!userId) return null
+
+  return prisma.staff.findUnique({
+    where: { supabaseId: userId },
+    select: { id: true, tenantId: true },
+  })
+}

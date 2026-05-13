@@ -11,6 +11,7 @@ const UpdateStaffSchema = z.object({
   title: z.string().optional(),
   color: z.string().optional(),
   isActive: z.boolean().optional(),
+  password: z.string().min(6).optional(),
   serviceIds: z.array(z.string()).optional(),
   workHours: z
     .array(
@@ -99,7 +100,27 @@ export async function PUT(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const { serviceIds, workHours, ...fields } = parsed.data
+  const { serviceIds, workHours, password, ...fields } = parsed.data
+
+  // Supabase user yönetimi
+  if (password) {
+    const adminSupabase = createAdminClient()
+    if (existing.supabaseId) {
+      // Mevcut kullanıcının şifresini güncelle
+      await adminSupabase.auth.admin.updateUserById(existing.supabaseId, { password })
+    } else if (existing.email) {
+      // supabaseId yoksa yeni Supabase user oluştur, supabaseId'yi kaydet
+      const { data: authData, error: authError } = await adminSupabase.auth.admin.createUser({
+        email: existing.email,
+        password,
+        email_confirm: true,
+        user_metadata: { role: 'STAFF', name: existing.name },
+      })
+      if (!authError && authData.user) {
+        await prisma.staff.update({ where: { id: params.id }, data: { supabaseId: authData.user.id } })
+      }
+    }
+  }
 
   const staff = await prisma.staff.update({
     where: { id: params.id },
