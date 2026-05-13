@@ -10,12 +10,10 @@ export const dynamic = 'force-dynamic'
 /**
  * GET /api/cron/send-reminders
  *
- * Yarın randevusu olan müşterilere 24s öncesi SMS hatırlatması gönderir.
- * Her gün saat 18:00'de çalışır (vercel.json).
- * Güvenlik: Authorization: Bearer CRON_SECRET header'ı zorunludur.
+ * Saatte bir çalışır. Tam 24 saat sonra randevusu olan müşterilere SMS gönderir.
+ * Pencere: şu andan +23.5s ile +24.5s arası (±30dk tolerans).
  *
- * Vercel Cron örneği (vercel.json):
- *   { "path": "/api/cron/send-reminders", "schedule": "0 18 * * *" }
+ * vercel.json: { "path": "/api/cron/send-reminders", "schedule": "0 * * * *" }
  */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -27,18 +25,19 @@ export async function GET(request: NextRequest) {
 
   const now = new Date()
 
-  // Yarının 00:00 - 23:59 aralığı
-  const tomorrow = new Date(now)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  tomorrow.setHours(0, 0, 0, 0)
+  // 24 saat sonrasına ±30 dakika pencere
+  const windowStart = new Date(now.getTime() + 23.5 * 60 * 60 * 1000)
+  const windowEnd   = new Date(now.getTime() + 24.5 * 60 * 60 * 1000)
 
-  const tomorrowEnd = new Date(tomorrow)
-  tomorrowEnd.setHours(23, 59, 59, 999)
+  // Pencerenin kapsadığı tarihleri belirle (gün kesişimi için)
+  const dateStart = new Date(windowStart)
+  dateStart.setHours(0, 0, 0, 0)
+  const dateEnd = new Date(windowEnd)
+  dateEnd.setHours(23, 59, 59, 999)
 
-  // Yarın randevusu olan, iptal/tamamlanmamış, sms24hReminder açık tenant'lara ait randevular
   const appointments = await prisma.appointment.findMany({
     where: {
-      date: { gte: tomorrow, lte: tomorrowEnd },
+      date: { gte: dateStart, lte: dateEnd },
       status: { in: ['BEKLIYOR', 'ONAYLANDI'] },
       tenant: { sms24hReminder: true, isActive: true },
     },
@@ -50,17 +49,21 @@ export async function GET(request: NextRequest) {
     },
   })
 
+  // startTime ile pencereyi karşılaştır — tam 24 saat öncesini yakala
+  const toSend = appointments.filter((apt) => {
+    const [h, m] = apt.startTime.split(':').map(Number)
+    const aptTime = new Date(apt.date)
+    aptTime.setHours(h, m, 0, 0)
+    return aptTime >= windowStart && aptTime <= windowEnd
+  })
+
   let sent = 0
   let skipped = 0
   let errors = 0
 
-  for (const apt of appointments) {
-    if (!apt.customer.phone) {
-      skipped++
-      continue
-    }
+  for (const apt of toSend) {
+    if (!apt.customer.phone) { skipped++; continue }
 
-    // Bu randevu için 24s SMS daha önce gönderildi mi?
     const alreadySent = await prisma.notification.findFirst({
       where: {
         appointmentId: apt.id,
@@ -68,13 +71,8 @@ export async function GET(request: NextRequest) {
         status: 'GONDERILDI',
       },
     })
+    if (alreadySent) { skipped++; continue }
 
-    if (alreadySent) {
-      skipped++
-      continue
-    }
-
-    // SMS limiti kontrolü
     const hasCredit = await checkSmsLimit(apt.tenantId)
     if (!hasCredit) {
       await prisma.notification.create({
@@ -129,7 +127,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    total: appointments.length,
+    total: toSend.length,
     sent,
     skipped,
     errors,
