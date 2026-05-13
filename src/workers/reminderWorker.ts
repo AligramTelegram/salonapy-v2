@@ -76,6 +76,16 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
     return
   }
 
+  // Dedup: bu tip için daha önce başarıyla gönderilmiş mi?
+  const msgPrefix = type === 'reminder-24h' ? 'WORKER_24H_SMS:' : 'WORKER_1H_SMS:'
+  const alreadySent = await prisma.notification.findFirst({
+    where: { appointmentId, channel: 'SMS', message: { startsWith: msgPrefix }, status: 'GONDERILDI' },
+  })
+  if (alreadySent) {
+    console.log(`[Worker] Zaten gönderildi, atlanıyor: ${type} | ${appointmentId}`)
+    return
+  }
+
   const smsLimits = await getSmsLimits()
   const limit = smsLimits[tenant.plan] ?? 200
   const hasMonthlyQuota = tenant.smsUsed < limit
@@ -89,7 +99,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
         appointmentId,
         channel: 'SMS',
         to: appointment.customer.phone,
-        message: `${type} hatırlatma: limit aşıldı`,
+        message: `${type === 'reminder-24h' ? 'WORKER_24H_SMS' : 'WORKER_1H_SMS'}: limit aşıldı`,
         status: 'BASARISIZ',
         errorMessage: `SMS limiti aşıldı (${tenant.smsUsed}/${limit}), ek kredi yok`,
       },
@@ -132,7 +142,7 @@ async function processReminder(job: Job<ReminderJobData>): Promise<void> {
       appointmentId,
       channel: 'SMS',
       to: appointment.customer.phone,
-      message: type === 'reminder-1h' ? '1 saat öncesi SMS hatırlatma' : '24 saat öncesi SMS hatırlatma',
+      message: type === 'reminder-1h' ? 'WORKER_1H_SMS: hatırlatma' : 'WORKER_24H_SMS: hatırlatma',
       status: result.success ? 'GONDERILDI' : 'BASARISIZ',
       sentAt: result.success ? new Date() : undefined,
       errorMessage: result.error,
