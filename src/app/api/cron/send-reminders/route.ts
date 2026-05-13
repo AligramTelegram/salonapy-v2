@@ -64,14 +64,17 @@ export async function GET(request: NextRequest) {
   for (const apt of toSend) {
     if (!apt.customer.phone) { skipped++; continue }
 
-    const alreadySent = await prisma.notification.findFirst({
+    // Sadece 24h SMS için dedup — 1h ile karışmasın
+    const existing = await prisma.notification.findMany({
       where: {
         appointmentId: apt.id,
         channel: 'SMS',
-        status: 'GONDERILDI',
+        message: { startsWith: 'REMINDER_24H_SMS:' },
       },
+      select: { status: true },
     })
-    if (alreadySent) { skipped++; continue }
+    if (existing.some(n => n.status === 'GONDERILDI')) { skipped++; continue }
+    if (existing.filter(n => n.status === 'BASARISIZ').length >= 3) { skipped++; continue }
 
     const hasCredit = await checkSmsLimit(apt.tenantId)
     if (!hasCredit) {
@@ -81,7 +84,7 @@ export async function GET(request: NextRequest) {
           appointmentId: apt.id,
           channel: 'SMS',
           to: apt.customer.phone,
-          message: '24 saat öncesi SMS hatırlatma — limit aşıldı',
+          message: 'REMINDER_24H_SMS: limit aşıldı',
           status: 'BASARISIZ',
           errorMessage: 'SMS limiti ve kredisi tükendi',
         },
@@ -95,30 +98,41 @@ export async function GET(request: NextRequest) {
       `Hatirlatma: Yarin ${apt.startTime} ${apt.service.name} randevunuz var. ` +
       `${apt.tenant.name} - ${dateStr}`
 
+    // İdempotency lock — önce BASARISIZ kayıt oluştur
+    const notif = await prisma.notification.create({
+      data: {
+        tenantId: apt.tenantId,
+        appointmentId: apt.id,
+        channel: 'SMS',
+        to: apt.customer.phone,
+        message: `REMINDER_24H_SMS: ${apt.startTime}`,
+        status: 'BASARISIZ',
+      },
+    })
+
     try {
       const result = await sendSms({ phone: apt.customer.phone, message: msg })
 
       if (result.success) {
         await incrementSms(apt.tenantId)
+        await prisma.notification.update({
+          where: { id: notif.id },
+          data: { status: 'GONDERILDI', sentAt: new Date() },
+        })
         sent++
       } else {
+        await prisma.notification.update({
+          where: { id: notif.id },
+          data: { errorMessage: result.error },
+        })
         errors++
       }
-
-      await prisma.notification.create({
-        data: {
-          tenantId: apt.tenantId,
-          appointmentId: apt.id,
-          channel: 'SMS',
-          to: apt.customer.phone,
-          message: '24 saat öncesi SMS hatırlatma',
-          status: result.success ? 'GONDERILDI' : 'BASARISIZ',
-          sentAt: result.success ? new Date() : undefined,
-          errorMessage: result.error,
-        },
-      })
     } catch (err) {
       console.error(`[send-reminders] Hata - appointment ${apt.id}:`, err)
+      await prisma.notification.update({
+        where: { id: notif.id },
+        data: { errorMessage: String(err) },
+      })
       errors++
     }
   }
