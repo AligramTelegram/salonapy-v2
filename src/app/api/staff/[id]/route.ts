@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { getLimit } from '@/lib/plan-features'
 
 export const dynamic = 'force-dynamic'
 
@@ -85,7 +86,10 @@ export async function PUT(
   const tenantId = await getTenantIdFromRequest(request)
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
-  const existing = await prisma.staff.findFirst({ where: { id: params.id, tenantId } })
+  const existing = await prisma.staff.findFirst({
+    where: { id: params.id, tenantId },
+    include: { tenant: { include: { subscription: true } } },
+  })
   if (!existing) return NextResponse.json({ error: 'Bulunamadı' }, { status: 404 })
 
   let body: unknown
@@ -101,6 +105,20 @@ export async function PUT(
   }
 
   const { serviceIds, workHours, password, ...fields } = parsed.data
+
+  // Pasif çalışanı aktife alırken plan limiti kontrolü
+  if (fields.isActive === true && existing.isActive === false) {
+    const subStatus = existing.tenant.subscription?.status ?? null
+    const maxStaff = getLimit(existing.tenant.plan, 'maxStaff', subStatus)
+    const currentActiveCount = await prisma.staff.count({ where: { tenantId, isActive: true } })
+    if (currentActiveCount >= maxStaff) {
+      const planLabel = existing.tenant.plan === 'BASLANGIC' ? 'Başlangıç' : existing.tenant.plan === 'PROFESYONEL' ? 'Profesyonel' : 'İşletme'
+      return NextResponse.json(
+        { error: `${planLabel} paketinde en fazla ${maxStaff} aktif çalışan olabilir. Paketi yükseltin veya başka bir çalışanı pasife alın.` },
+        { status: 403 }
+      )
+    }
+  }
 
   // Supabase user yönetimi
   if (password) {
