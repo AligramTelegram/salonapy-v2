@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendSms } from '@/lib/netgsm'
 import { checkSmsLimit, incrementSms } from '@/lib/sms-limit'
+import { isTurkishPhone } from '@/lib/country-detect'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
       customer: { select: { name: true, phone: true } },
       service: { select: { name: true } },
       staff: { select: { name: true } },
-      tenant: { select: { id: true, name: true, plan: true } },
+      tenant: { select: { id: true, name: true, phone: true, plan: true } },
     },
   })
 
@@ -62,6 +63,7 @@ export async function GET(request: NextRequest) {
 
   for (const apt of toSend) {
     if (!apt.customer.phone) { skipped++; continue }
+    if (!isTurkishPhone(apt.tenant.phone)) { skipped++; continue }
 
     // Sadece 1h SMS için dedup — 24h ile karışmasın
     const existing = await prisma.notification.findMany({
