@@ -9,7 +9,7 @@ const PROTECTED_PREFIXES = ['/p/', '/b/']
 const AUTH_ROUTES = ['/giris', '/kayit', '/sifremi-unuttum']
 
 // Bu prefix'ler locale routing'e tabi DEĞİL
-const BYPASS_LOCALE = ['/p/', '/b/', '/api/', '/admin/', '/_next/', '/favicon', '/icons/', '/images/', '/manifest']
+const BYPASS_LOCALE = ['/p/', '/b/', '/api/', '/admin/', '/_next/', '/favicon', '/icons/', '/images/', '/manifest', '/account-deletion']
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
   .split(',')
