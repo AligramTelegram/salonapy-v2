@@ -3,8 +3,8 @@
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useRef, useEffect } from 'react'
-import { motion, useInView, useMotionValue, useSpring } from 'framer-motion'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion, useInView, useMotionValue, useMotionTemplate, useSpring } from 'framer-motion'
 
 /* ─── constants ─── */
 const LOCALES = [
@@ -14,13 +14,17 @@ const LOCALES = [
   { code: 'ar', label: 'العربية', flag: '🇸🇦' },
 ]
 
-const MARQUEE_ITEMS = [
-  '📅 Randevu Yönetimi', '👥 Müşteri CRM', '📊 Finans Raporları',
-  '📦 Stok Takibi', '👤 Personel Yönetimi', '🔔 Bildirimler',
-  '💳 Ödeme Takibi', '📱 iOS & Android', '🌍 4 Dil Desteği',
-]
+const FEATURES = [
+  { key: 'feat1', icon: '📅', color: ['#7c3aed', '#6d28d9'], size: 'large', img: '/images/screenshots/2.jpeg' },
+  { key: 'feat2', icon: '👥', color: ['#2563eb', '#1d4ed8'], size: 'small' },
+  { key: 'feat3', icon: '📊', color: ['#059669', '#047857'], size: 'small' },
+  { key: 'feat5', icon: '👤', color: ['#db2777', '#be185d'], size: 'tall', img: '/images/screenshots/5.jpeg' },
+  { key: 'feat4', icon: '📦', color: ['#d97706', '#b45309'], size: 'small' },
+  { key: 'feat6', icon: '🔔', color: ['#dc2626', '#b91c1c'], size: 'small' },
+  { key: 'feat3', icon: '💹', color: ['#0891b2', '#0e7490'], size: 'wide', img: '/images/screenshots/6.jpeg' },
+] as const
 
-/* ─── main ─── */
+/* ─────── MAIN ─────── */
 export function MobileAppLanding() {
   const t = useTranslations('landing')
   const locale = useLocale()
@@ -28,284 +32,329 @@ export function MobileAppLanding() {
   const isRtl = locale === 'ar'
 
   return (
-    <div dir={isRtl ? 'rtl' : 'ltr'} className="min-h-screen bg-[#050508] text-white font-sans overflow-x-hidden">
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="min-h-screen bg-[#02020a] text-white font-sans overflow-x-hidden selection:bg-violet-500/30">
 
       {/* ── Navbar ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-6xl mx-auto px-5 mt-3">
-          <div className="flex items-center justify-between h-12 px-5 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-xl shadow-black/20">
-            <div className="flex items-center gap-2.5">
-              <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="rounded-none" />
-              <span className="font-black text-white text-base tracking-tight">Hemensalon</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <button onClick={() => setMenuOpen(!menuOpen)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/8 hover:bg-white/15 text-white/80 text-xs font-semibold transition">
-                  {LOCALES.find(l => l.code === locale)?.flag}
-                  <span className="hidden sm:inline">{LOCALES.find(l => l.code === locale)?.label}</span>
-                  <svg className="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                {menuOpen && (
-                  <div className="absolute top-full mt-2 right-0 bg-[#111118] rounded-2xl shadow-2xl border border-white/10 overflow-hidden z-50 min-w-[150px]">
-                    {LOCALES.map(l => (
-                      <Link key={l.code} href={`/${l.code}`} onClick={() => setMenuOpen(false)}
-                        className={`flex items-center gap-2.5 px-4 py-3 text-sm hover:bg-white/8 transition ${l.code === locale ? 'text-violet-400 font-bold bg-violet-500/10' : 'text-white/70'}`}>
-                        <span className="text-base">{l.flag}</span><span>{l.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <a href="#download"
-                className="px-4 py-1.5 text-xs font-black rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white transition shadow-lg shadow-violet-900/40">
-                {t('nav_download')}
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar locale={locale} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      {/* ── HERO ── */}
+      {/* ── Hero ── */}
       <HeroSection t={t} />
 
-      {/* ── MARQUEE ── */}
-      <MarqueeBand />
+      {/* ── Logos / trust band ── */}
+      <TrustBand t={t} />
 
-      {/* ── BENTO GRID ── */}
-      <BentoSection t={t} locale={locale} />
+      {/* ── Bento Features ── */}
+      <BentoFeatures t={t} />
 
-      {/* ── STATS ── */}
+      {/* ── Phone showcase ── */}
+      <ShowcaseSection t={t} />
+
+      {/* ── Stats ── */}
       <StatsSection t={t} />
 
       {/* ── CTA ── */}
       <CtaSection t={t} />
 
-      {/* ── FOOTER ── */}
+      {/* ── Footer ── */}
       <FooterSection t={t} locale={locale} />
     </div>
   )
 }
 
-/* ─────────────────── HERO ─────────────────── */
-function HeroSection({ t }: { t: any }) {
+/* ─────── NAVBAR ─────── */
+function Navbar({ locale, menuOpen, setMenuOpen }: any) {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', fn)
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-5 pt-24 pb-16 overflow-hidden">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
+      <div className="max-w-6xl mx-auto px-4">
+        <div className={`flex items-center justify-between px-5 h-12 rounded-2xl transition-all duration-300 ${scrolled ? 'bg-black/60 backdrop-blur-2xl border border-white/8 shadow-2xl shadow-black/40' : 'bg-transparent'}`}>
+          <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-violet-500/40 blur-md rounded-lg group-hover:bg-violet-500/60 transition" />
+              <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="relative rounded-none" />
+            </div>
+            <span className="font-black text-white text-base tracking-tight">Hemensalon</span>
+          </Link>
 
-      {/* Animated dot grid */}
-      <div className="absolute inset-0 opacity-[0.15]"
-        style={{
-          backgroundImage: 'radial-gradient(circle, #a78bfa 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }} />
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <button onClick={() => setMenuOpen(!menuOpen)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/6 hover:bg-white/12 text-white/70 text-xs font-semibold transition border border-white/8">
+                <span className="text-sm">{LOCALES.find(l => l.code === locale)?.flag}</span>
+                <span className="hidden sm:inline">{LOCALES.find(l => l.code === locale)?.label}</span>
+                <svg className="w-3 h-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              {menuOpen && (
+                <div className="absolute top-full mt-2 right-0 bg-[#0d0d18] rounded-2xl shadow-2xl border border-white/8 overflow-hidden z-50 min-w-[152px]">
+                  {LOCALES.map(l => (
+                    <Link key={l.code} href={`/${l.code}`} onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-white/6 transition ${l.code === locale ? 'text-violet-400 font-bold bg-violet-500/8' : 'text-white/60'}`}>
+                      <span>{l.flag}</span><span>{l.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
 
-      {/* Glow orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] pointer-events-none">
-        <div className="absolute inset-0 rounded-full bg-violet-600/20 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
+            {/* Animated gradient border CTA */}
+            <a href="#download" className="relative group px-4 py-1.5 rounded-xl text-xs font-black text-white overflow-hidden"
+              style={{ background: 'linear-gradient(#0d0d18, #0d0d18) padding-box, linear-gradient(135deg, #7c3aed, #a855f7, #7c3aed) border-box', border: '1px solid transparent' }}>
+              <span className="relative z-10">Download</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition" />
+            </a>
+          </div>
+        </div>
       </div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Noise overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")" }} />
-
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
-        {/* Badge */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <span className="inline-flex items-center gap-2 text-xs font-bold text-violet-300 px-4 py-2 rounded-full border border-violet-500/30 bg-violet-500/10 backdrop-blur mb-8">
-            <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-pulse" />
-            {t('hero_badge')}
-          </span>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.1 }}
-          className="text-6xl sm:text-7xl md:text-8xl font-black leading-[0.95] tracking-tighter mb-6"
-        >
-          <span className="text-white">{t('hero_title').split(' ').slice(0, 2).join(' ')}</span>
-          <br />
-          <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-            {t('hero_title').split(' ').slice(2).join(' ')}
-          </span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-          className="text-white/45 text-lg max-w-lg mx-auto mb-10 leading-relaxed"
-        >
-          {t('hero_subtitle')}
-        </motion.p>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
-          id="download"
-          className="flex flex-col sm:flex-row gap-3 justify-center mb-5"
-        >
-          <StoreBtn store="apple" />
-          <StoreBtn store="google" />
-        </motion.div>
-
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="text-white/30 text-sm">✨ {t('hero_free')}</motion.p>
-      </div>
-
-      {/* Floating phones */}
-      <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.5, type: 'spring', stiffness: 50 }}
-        className="relative z-10 mt-16 flex justify-center items-end gap-4 pointer-events-none select-none"
-      >
-        {/* Left phone */}
-        <div className="hidden sm:block translate-y-8 opacity-50 scale-[0.82]">
-          <PhoneFrame img="/images/screenshots/2.jpeg" glow={false} />
-        </div>
-        {/* Center main phone */}
-        <div className="relative">
-          <div className="absolute -inset-6 bg-violet-500/20 rounded-full blur-3xl" />
-          <PhoneFrame img="/images/screenshots/1.jpeg" glow />
-        </div>
-        {/* Right phone */}
-        <div className="hidden md:block translate-y-8 opacity-50 scale-[0.82]">
-          <PhoneFrame img="/images/screenshots/4.jpeg" glow={false} />
-        </div>
-      </motion.div>
-    </section>
+    </nav>
   )
 }
 
-/* ─────────────────── MARQUEE ─────────────────── */
-function MarqueeBand() {
-  const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS]
+/* ─────── HERO ─────── */
+function HeroSection({ t }: { t: any }) {
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 })
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 })
+  const background = useMotionTemplate`radial-gradient(600px circle at ${springX}px ${springY}px, rgba(124,58,237,0.12), transparent 60%)`
+
+  const handleMouse = useCallback((e: React.MouseEvent) => {
+    mouseX.set(e.clientX)
+    mouseY.set(e.clientY)
+  }, [mouseX, mouseY])
+
   return (
-    <div className="relative py-5 border-y border-white/5 overflow-hidden bg-white/[0.02]">
-      <div className="flex gap-6 animate-marquee whitespace-nowrap"
-        style={{ animation: 'marquee 30s linear infinite' }}>
-        {items.map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-2 text-sm font-semibold text-white/40 px-4 py-1.5 rounded-full border border-white/8 bg-white/3 flex-shrink-0">
+    <motion.section
+      onMouseMove={handleMouse}
+      className="relative min-h-screen flex flex-col items-center justify-center px-5 pt-28 pb-0 overflow-hidden"
+    >
+      {/* Mouse-follow radial glow */}
+      <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background }} />
+
+      {/* Retro grid */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute inset-0 [perspective:200px]">
+          <div className="absolute inset-0 origin-top"
+            style={{ transform: 'rotateX(65deg)', transformOrigin: '50% 0%' }}>
+            <div className="animate-retrogrid absolute inset-0 opacity-[0.18]"
+              style={{
+                backgroundImage: 'linear-gradient(rgba(124,58,237,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.4) 1px, transparent 1px)',
+                backgroundSize: '60px 60px',
+                width: '600vw', height: '300vh',
+                marginLeft: '-250vw',
+              }} />
+          </div>
+        </div>
+        {/* Fade bottom of grid */}
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#02020a] to-transparent" />
+      </div>
+
+      {/* Orbs */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-violet-700/15 rounded-full blur-[80px]" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-purple-600/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-10 w-60 h-60 bg-indigo-700/8 rounded-full blur-3xl" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-5xl mx-auto text-center">
+
+        {/* Animated gradient badge */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <span className="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full mb-8 border border-violet-500/25 text-violet-300"
+            style={{ background: 'linear-gradient(#02020a, #02020a) padding-box, linear-gradient(135deg, rgba(124,58,237,0.5), rgba(168,85,247,0.5)) border-box', border: '1px solid transparent' }}>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500" />
+            </span>
+            iOS & Android · {t('hero_badge')}
+          </span>
+        </motion.div>
+
+        {/* Main heading */}
+        <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+          <h1 className="text-6xl sm:text-7xl md:text-[90px] font-black leading-[0.92] tracking-[-0.04em] mb-6">
+            <span className="block text-white">{t('hero_title').split(' ').slice(0, 2).join(' ')}</span>
+            <span className="block" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundImage: 'linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #a78bfa 100%)', backgroundSize: '200% auto', animation: 'textshine 4s linear infinite' }}>
+              {t('hero_title').split(' ').slice(2).join(' ')}
+            </span>
+          </h1>
+        </motion.div>
+
+        <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
+          className="text-white/40 text-lg sm:text-xl max-w-xl mx-auto mb-10 leading-relaxed font-light">
+          {t('hero_subtitle')}
+        </motion.p>
+
+        {/* CTA row */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}
+          className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-4" id="download">
+          <StoreBtnPremium store="apple" />
+          <StoreBtnPremium store="google" ghost />
+        </motion.div>
+
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="text-white/25 text-sm mb-20">✦ {t('hero_free')} · No credit card required</motion.p>
+      </div>
+
+      {/* Hero phones — cinematic 3-phone spread */}
+      <motion.div
+        initial={{ opacity: 0, y: 80 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.1, delay: 0.55, type: 'spring', stiffness: 45, damping: 20 }}
+        className="relative z-10 w-full max-w-4xl mx-auto flex justify-center items-end gap-3 sm:gap-6 select-none pointer-events-none"
+      >
+        {/* Left — rotated */}
+        <motion.div className="hidden sm:block flex-shrink-0"
+          style={{ transform: 'rotate(-8deg) translateY(30px)', transformOrigin: 'bottom center' }}>
+          <div className="opacity-50 scale-[0.75] origin-bottom">
+            <PremiumPhone img="/images/screenshots/4.jpeg" />
+          </div>
+        </motion.div>
+
+        {/* Center — hero */}
+        <div className="relative flex-shrink-0 z-10">
+          <div className="absolute -inset-6 bg-violet-600/20 rounded-full blur-3xl" />
+          <div className="absolute -inset-2 rounded-[3rem] opacity-60"
+            style={{ background: 'conic-gradient(from 0deg, #7c3aed, #a855f7, #ec4899, #7c3aed)', filter: 'blur(20px)', animation: 'spin 6s linear infinite' }} />
+          <PremiumPhone img="/images/screenshots/1.jpeg" featured />
+        </div>
+
+        {/* Right — rotated */}
+        <motion.div className="hidden sm:block flex-shrink-0"
+          style={{ transform: 'rotate(8deg) translateY(30px)', transformOrigin: 'bottom center' }}>
+          <div className="opacity-50 scale-[0.75] origin-bottom">
+            <PremiumPhone img="/images/screenshots/2.jpeg" />
+          </div>
+        </motion.div>
+      </motion.div>
+
+      <style>{`
+        @keyframes textshine { to { background-position: 200% center; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes retrogrid { 0% { transform: translateY(-50%); } 100% { transform: translateY(0); } }
+        .animate-retrogrid { animation: retrogrid 15s linear infinite; }
+      `}</style>
+    </motion.section>
+  )
+}
+
+/* ─────── TRUST BAND ─────── */
+function TrustBand({ t }: { t: any }) {
+  const items = [
+    '📅 Randevu Yönetimi', '⭐ 4.9 Rating', '🏪 500+ İşletme',
+    '📱 iOS & Android', '🔒 KVKK Uyumlu', '💳 Ücretsiz Başla',
+    '🌍 4 Dil', '⚡ Anında Kurulum', '📊 Detaylı Raporlar',
+  ]
+  const doubled = [...items, ...items]
+  return (
+    <div className="relative border-y border-white/5 py-4 overflow-hidden">
+      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#02020a] to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#02020a] to-transparent z-10" />
+      <div className="flex gap-5 whitespace-nowrap" style={{ animation: 'marquee 25s linear infinite' }}>
+        {doubled.map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-2 text-xs font-semibold text-white/30 flex-shrink-0 px-3 py-1 rounded-full border border-white/6">
             {item}
           </span>
         ))}
       </div>
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
+      <style>{`@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }`}</style>
     </div>
   )
 }
 
-/* ─────────────────── BENTO ─────────────────── */
-function BentoSection({ t, locale }: { t: any; locale: string }) {
+/* ─────── BENTO FEATURES ─────── */
+function BentoFeatures({ t }: { t: any }) {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="py-28 px-5">
+    <section ref={ref} className="py-32 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          className="text-center mb-16"
-        >
-          <span className="inline-block text-xs font-black uppercase tracking-[0.2em] text-violet-400 mb-4">Platform</span>
-          <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-4">
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+          className="text-center mb-16">
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-violet-400/80 mb-4">Platform Features</p>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-5">
             <span className="text-white">{t('feat_title')}</span>
           </h2>
-          <p className="text-white/40 text-lg max-w-md mx-auto">{t('feat_subtitle')}</p>
+          <p className="text-white/35 text-lg max-w-md mx-auto font-light">{t('feat_subtitle')}</p>
         </motion.div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-auto">
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 
-          {/* BIG card — appointments */}
-          <BentoCard delay={0} className="sm:col-span-2 lg:col-span-2 row-span-2 min-h-[420px]" inView={inView}
-            gradient="from-violet-600/20 via-purple-600/10 to-transparent">
-            <div className="flex flex-col h-full">
-              <div className="mb-5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl mb-4 shadow-lg shadow-violet-900/40">📅</div>
-                <h3 className="text-2xl font-black text-white mb-2">{t('feat1_title' as any)}</h3>
-                <p className="text-white/45 text-sm leading-relaxed">{t('feat1_desc' as any)}</p>
+          {/* LARGE — Appointments */}
+          <GlassCard delay={0} inView={inView} className="sm:col-span-2 min-h-[400px]"
+            accent={['#7c3aed', '#6d28d9']}>
+            <div className="flex flex-col sm:flex-row h-full gap-8 items-start sm:items-end">
+              <div className="flex-1 z-10">
+                <FeatureIcon colors={['#7c3aed', '#6d28d9']}>📅</FeatureIcon>
+                <h3 className="text-2xl font-black text-white mt-4 mb-2">{t('feat1_title' as any)}</h3>
+                <p className="text-white/40 text-sm leading-relaxed max-w-xs">{t('feat1_desc' as any)}</p>
               </div>
-              <div className="flex-1 flex items-end justify-center overflow-hidden rounded-2xl">
-                <div className="w-full max-w-[240px] mx-auto">
-                  <PhoneFrame img="/images/screenshots/2.jpeg" glow size="sm" />
-                </div>
+              <div className="flex-shrink-0 pointer-events-none select-none z-10">
+                <PremiumPhone img="/images/screenshots/2.jpeg" size="sm" />
               </div>
             </div>
-          </BentoCard>
+          </GlassCard>
 
-          {/* Small card — CRM */}
-          <BentoCard delay={0.1} inView={inView} gradient="from-blue-600/20 to-transparent">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-xl mb-4 shadow-lg">👥</div>
-            <h3 className="text-lg font-black text-white mb-2">{t('feat2_title' as any)}</h3>
-            <p className="text-white/45 text-sm leading-relaxed">{t('feat2_desc' as any)}</p>
-          </BentoCard>
+          {/* SMALL — CRM */}
+          <GlassCard delay={0.1} inView={inView} accent={['#2563eb', '#1d4ed8']}>
+            <FeatureIcon colors={['#2563eb', '#1d4ed8']}>👥</FeatureIcon>
+            <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat2_title' as any)}</h3>
+            <p className="text-white/40 text-sm leading-relaxed">{t('feat2_desc' as any)}</p>
+          </GlassCard>
 
-          {/* Small card — Finance */}
-          <BentoCard delay={0.15} inView={inView} gradient="from-emerald-600/20 to-transparent">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xl mb-4 shadow-lg">📊</div>
-            <h3 className="text-lg font-black text-white mb-2">{t('feat3_title' as any)}</h3>
-            <p className="text-white/45 text-sm leading-relaxed">{t('feat3_desc' as any)}</p>
-          </BentoCard>
+          {/* SMALL — Finance */}
+          <GlassCard delay={0.15} inView={inView} accent={['#059669', '#047857']}>
+            <FeatureIcon colors={['#059669', '#047857']}>📊</FeatureIcon>
+            <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat3_title' as any)}</h3>
+            <p className="text-white/40 text-sm leading-relaxed">{t('feat3_desc' as any)}</p>
+          </GlassCard>
 
-          {/* Medium card — customers phone */}
-          <BentoCard delay={0.2} className="lg:col-span-1 row-span-2 min-h-[380px]" inView={inView}
-            gradient="from-pink-600/20 to-transparent">
-            <div className="flex flex-col h-full">
-              <div className="mb-5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-xl mb-4 shadow-lg">👤</div>
-                <h3 className="text-lg font-black text-white mb-2">{t('feat5_title' as any)}</h3>
-                <p className="text-white/45 text-sm leading-relaxed">{t('feat5_desc' as any)}</p>
-              </div>
-              <div className="flex-1 flex items-end justify-center overflow-hidden">
-                <div className="w-full max-w-[180px] mx-auto">
-                  <PhoneFrame img="/images/screenshots/5.jpeg" glow={false} size="sm" />
-                </div>
-              </div>
+          {/* TALL — Staff w/ phone */}
+          <GlassCard delay={0.2} inView={inView} className="row-span-2 min-h-[380px]" accent={['#db2777', '#be185d']}>
+            <FeatureIcon colors={['#db2777', '#be185d']}>👤</FeatureIcon>
+            <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat5_title' as any)}</h3>
+            <p className="text-white/40 text-sm leading-relaxed mb-6">{t('feat5_desc' as any)}</p>
+            <div className="flex justify-center pointer-events-none select-none mt-auto">
+              <PremiumPhone img="/images/screenshots/5.jpeg" size="xs" />
             </div>
-          </BentoCard>
+          </GlassCard>
 
-          {/* Small card — Stock */}
-          <BentoCard delay={0.25} inView={inView} gradient="from-orange-600/20 to-transparent">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-xl mb-4 shadow-lg">📦</div>
-            <h3 className="text-lg font-black text-white mb-2">{t('feat4_title' as any)}</h3>
-            <p className="text-white/45 text-sm leading-relaxed">{t('feat4_desc' as any)}</p>
-          </BentoCard>
+          {/* SMALL — Inventory */}
+          <GlassCard delay={0.25} inView={inView} accent={['#d97706', '#b45309']}>
+            <FeatureIcon colors={['#d97706', '#b45309']}>📦</FeatureIcon>
+            <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat4_title' as any)}</h3>
+            <p className="text-white/40 text-sm leading-relaxed">{t('feat4_desc' as any)}</p>
+          </GlassCard>
 
-          {/* Small card — Notifications */}
-          <BentoCard delay={0.3} inView={inView} gradient="from-red-600/20 to-transparent">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-xl mb-4 shadow-lg">🔔</div>
-            <h3 className="text-lg font-black text-white mb-2">{t('feat6_title' as any)}</h3>
-            <p className="text-white/45 text-sm leading-relaxed">{t('feat6_desc' as any)}</p>
-          </BentoCard>
+          {/* SMALL — Notifications */}
+          <GlassCard delay={0.3} inView={inView} accent={['#dc2626', '#b91c1c']}>
+            <FeatureIcon colors={['#dc2626', '#b91c1c']}>🔔</FeatureIcon>
+            <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat6_title' as any)}</h3>
+            <p className="text-white/40 text-sm leading-relaxed">{t('feat6_desc' as any)}</p>
+          </GlassCard>
 
-          {/* Wide card — reports */}
-          <BentoCard delay={0.35} className="sm:col-span-2 min-h-[260px]" inView={inView}
-            gradient="from-violet-800/25 via-indigo-700/15 to-transparent">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8 h-full">
+          {/* WIDE — Reports + phone */}
+          <GlassCard delay={0.35} inView={inView} className="sm:col-span-2 min-h-[280px]" accent={['#0891b2', '#0e7490']}>
+            <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center h-full">
               <div className="flex-1">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xl mb-4 shadow-lg">📊</div>
-                <h3 className="text-2xl font-black text-white mb-2">{t('screen5_title' as any)}</h3>
-                <p className="text-white/45 text-sm leading-relaxed max-w-sm">{t('screen5_sub' as any)}</p>
+                <FeatureIcon colors={['#0891b2', '#0e7490']}>📈</FeatureIcon>
+                <h3 className="text-2xl font-black text-white mt-4 mb-2">{t('screen5_title' as any)}</h3>
+                <p className="text-white/40 text-sm leading-relaxed max-w-sm">{t('screen5_sub' as any)}</p>
               </div>
               <div className="flex-shrink-0 pointer-events-none select-none">
-                <PhoneFrame img="/images/screenshots/6.jpeg" glow size="sm" />
+                <PremiumPhone img="/images/screenshots/6.jpeg" size="sm" />
               </div>
             </div>
-          </BentoCard>
+          </GlassCard>
 
         </div>
       </div>
@@ -313,118 +362,178 @@ function BentoSection({ t, locale }: { t: any; locale: string }) {
   )
 }
 
-/* ─────────────────── STATS ─────────────────── */
-function StatsSection({ t }: { t: any }) {
+/* ─────── SHOWCASE ─────── */
+function ShowcaseSection({ t }: { t: any }) {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-  const stats = [
-    { value: '500+', key: 'stats_business', icon: '🏪' },
-    { value: '50K+', key: 'stats_appointments', icon: '📅' },
-    { value: '98%', key: 'stats_satisfaction', icon: '⭐' },
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const screens = [
+    { img: '/images/screenshots/1.jpeg', titleKey: 'screen1_title', subKey: 'screen1_sub' },
+    { img: '/images/screenshots/4.jpeg', titleKey: 'screen3_title', subKey: 'screen3_sub' },
   ]
   return (
-    <section ref={ref} className="py-20 px-5 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-violet-950/50 via-purple-950/50 to-indigo-950/50 pointer-events-none" />
-      <div className="absolute inset-0 border-y border-white/5 pointer-events-none" />
-      <div className="max-w-4xl mx-auto relative z-10">
-        <div className="grid grid-cols-3 gap-6 sm:gap-12 text-center">
-          {stats.map(({ value, key, icon }, i) => (
-            <motion.div key={key}
-              initial={{ opacity: 0, y: 24 }}
+    <section ref={ref} className="py-24 px-4 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-violet-900/10 rounded-full blur-[120px]" />
+      </div>
+      <div className="max-w-6xl mx-auto">
+        {screens.map((s, i) => {
+          const isEven = i % 2 === 0
+          return (
+            <motion.div key={s.img}
+              initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.1 }}>
-              <div className="text-3xl mb-2">{icon}</div>
-              <div className="text-4xl sm:text-5xl font-black bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent mb-1">{value}</div>
-              <div className="text-white/40 text-sm font-medium">{t(key as any)}</div>
+              transition={{ duration: 0.7, delay: i * 0.15 }}
+              className={`flex flex-col md:flex-row items-center gap-16 mb-28 last:mb-0 ${isEven ? '' : 'md:flex-row-reverse'}`}
+            >
+              {/* Phone */}
+              <div className="flex-shrink-0 relative pointer-events-none select-none">
+                <div className="absolute -inset-8 bg-violet-600/10 rounded-full blur-3xl" />
+                <PremiumPhone img={s.img} featured />
+              </div>
+              {/* Text */}
+              <div className={`flex-1 ${isEven ? '' : 'md:text-right'}`}>
+                <div className="inline-flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase text-violet-400/70 mb-5">
+                  <span className="w-8 h-px bg-violet-500/50" />
+                  0{i + 1} Feature
+                </div>
+                <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-5 leading-tight">
+                  {t(s.titleKey as any)}
+                </h2>
+                <p className="text-white/40 text-lg leading-relaxed max-w-md font-light">
+                  {t(s.subKey as any)}
+                </p>
+                <div className={`flex flex-wrap gap-2 mt-8 ${isEven ? '' : 'md:justify-end'}`}>
+                  {(['⚡ Fast', '✦ Simple', '🔒 Secure'] as string[]).map(b => (
+                    <span key={b} className="px-3 py-1.5 text-xs font-semibold text-white/50 rounded-full border border-white/8 bg-white/3">
+                      {b}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </motion.div>
-          ))}
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+/* ─────── STATS ─────── */
+function StatsSection({ t }: { t: any }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  return (
+    <section ref={ref} className="py-24 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="rounded-3xl border border-white/6 overflow-hidden relative"
+          style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(16,16,40,0.8) 100%)', backdropFilter: 'blur(20px)' }}>
+          <div className="absolute inset-0 opacity-[0.04]"
+            style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+          <div className="relative z-10 grid grid-cols-3 gap-px">
+            {[
+              { v: '500+', k: 'stats_business', icon: '🏪', sub: (l: string) => l === 'tr' ? 'Aktif İşletme' : 'Active Businesses' },
+              { v: '50K+', k: 'stats_appointments', icon: '📅', sub: (l: string) => l === 'tr' ? 'Toplam Randevu' : 'Total Appointments' },
+              { v: '98%', k: 'stats_satisfaction', icon: '⭐', sub: (l: string) => l === 'tr' ? 'Memnuniyet Oranı' : 'Satisfaction Rate' },
+            ].map(({ v, k, icon, sub }, i) => (
+              <motion.div key={k}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
+                className="p-8 sm:p-12 text-center border-r border-white/5 last:border-0 hover:bg-white/2 transition">
+                <div className="text-3xl mb-3">{icon}</div>
+                <div className="text-4xl sm:text-6xl font-black mb-1"
+                  style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundImage: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.5) 100%)' }}>
+                  {v}
+                </div>
+                <div className="text-white/35 text-sm font-medium">{t(k as any)}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
   )
 }
 
-/* ─────────────────── CTA ─────────────────── */
+/* ─────── CTA ─────── */
 function CtaSection({ t }: { t: any }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-40px' })
   return (
-    <section ref={ref} id="download" className="py-24 px-5">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={inView ? { opacity: 1, scale: 1 } : {}}
-        transition={{ duration: 0.6 }}
-        className="max-w-2xl mx-auto relative"
-      >
-        {/* glow behind card */}
-        <div className="absolute -inset-4 bg-violet-600/15 rounded-3xl blur-2xl pointer-events-none" />
-        <div className="relative rounded-3xl overflow-hidden border border-white/10 p-10 sm:p-16 text-center"
-          style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(109,40,217,0.15) 50%, rgba(16,16,32,0.9) 100%)', backdropFilter: 'blur(20px)' }}>
-          {/* grid inside card */}
-          <div className="absolute inset-0 opacity-[0.06]"
-            style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-          <div className="relative z-10">
-            <div className="text-5xl mb-5">🚀</div>
+    <section ref={ref} id="download" className="py-28 px-4">
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
+        className="max-w-3xl mx-auto text-center relative">
+        {/* outer glow */}
+        <div className="absolute -inset-10 bg-violet-600/8 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Shine border card */}
+        <div className="relative rounded-3xl overflow-hidden"
+          style={{ background: 'linear-gradient(#0d0d1a, #0d0d1a) padding-box, linear-gradient(135deg, rgba(124,58,237,0.6), rgba(168,85,247,0.3), rgba(236,72,153,0.3), rgba(124,58,237,0.6)) border-box', border: '1px solid transparent', animation: 'shine-border 4s linear infinite' }}>
+          <div className="absolute inset-0 opacity-[0.04]"
+            style={{ backgroundImage: 'radial-gradient(circle, #a78bfa 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+          <div className="relative z-10 p-12 sm:p-20">
+            <div className="text-6xl mb-6">🚀</div>
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-3 tracking-tight">{t('download_title')}</h2>
-            <p className="text-white/45 mb-8 text-base">{t('download_subtitle')}</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <StoreBtn store="apple" />
-              <StoreBtn store="google" outline />
+            <p className="text-white/35 text-lg mb-10 font-light">{t('download_subtitle')}</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <StoreBtnPremium store="apple" />
+              <StoreBtnPremium store="google" ghost />
             </div>
           </div>
         </div>
+        <style>{`
+          @keyframes shine-border {
+            0% { border-image-source: linear-gradient(135deg, rgba(124,58,237,0.8), rgba(168,85,247,0.4), rgba(236,72,153,0.4), rgba(124,58,237,0.8)); }
+          }
+        `}</style>
       </motion.div>
     </section>
   )
 }
 
-/* ─────────────────── FOOTER ─────────────────── */
+/* ─────── FOOTER ─────── */
 function FooterSection({ t, locale }: { t: any; locale: string }) {
-  const legalLinks = [
-    { href: `/${locale}/gizlilik`,          label: locale === 'tr' ? 'Gizlilik'       : locale === 'de' ? 'Datenschutz'    : locale === 'ar' ? 'الخصوصية'    : 'Privacy' },
-    { href: `/${locale}/kullanim-sartlari`, label: locale === 'tr' ? 'Kullanım Şartları' : locale === 'de' ? 'Nutzungsbedingungen' : locale === 'ar' ? 'الشروط'   : 'Terms' },
-    { href: `/${locale}/cerez-politikasi`,  label: locale === 'tr' ? 'Çerez'          : locale === 'de' ? 'Cookies'         : locale === 'ar' ? 'الكوكيز'     : 'Cookies' },
-    { href: `/${locale}/kvkk`,              label: locale === 'tr' ? 'KVKK'           : locale === 'de' ? 'DSGVO'           : locale === 'ar' ? 'حماية البيانات' : 'GDPR' },
-    { href: `/${locale}/hesap-silme`,       label: locale === 'tr' ? 'Hesap Sil'      : locale === 'de' ? 'Konto löschen'   : locale === 'ar' ? 'حذف الحساب'  : 'Delete Account' },
+  const legal = [
+    { href: `/${locale}/gizlilik`,          label: locale === 'tr' ? 'Gizlilik' : locale === 'de' ? 'Datenschutz' : locale === 'ar' ? 'الخصوصية' : 'Privacy' },
+    { href: `/${locale}/kullanim-sartlari`, label: locale === 'tr' ? 'Kullanım Şartları' : locale === 'de' ? 'Nutzungsbedingungen' : locale === 'ar' ? 'الشروط' : 'Terms' },
+    { href: `/${locale}/cerez-politikasi`,  label: locale === 'tr' ? 'Çerez' : locale === 'de' ? 'Cookies' : locale === 'ar' ? 'الكوكيز' : 'Cookies' },
+    { href: `/${locale}/kvkk`,              label: locale === 'tr' ? 'KVKK' : locale === 'de' ? 'DSGVO' : locale === 'ar' ? 'حماية البيانات' : 'GDPR' },
+    { href: `/${locale}/hesap-silme`,       label: locale === 'tr' ? 'Hesap Sil' : locale === 'de' ? 'Konto löschen' : locale === 'ar' ? 'حذف الحساب' : 'Delete Account' },
   ]
-
   return (
-    <footer className="border-t border-white/5 py-12 px-5">
+    <footer className="border-t border-white/5 py-14 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
-          {/* Brand */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-10 mb-10">
           <div>
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <Image src="/icons/favicon.png" alt="Hemensalon" width={26} height={26} className="rounded-none" />
-              <span className="font-black text-white text-base">Hemensalon</span>
+              <span className="font-black text-white">Hemensalon</span>
             </div>
-            <p className="text-white/30 text-sm max-w-[200px] leading-relaxed">
-              {locale === 'tr' ? 'Kuaför & güzellik salonları için akıllı randevu.' :
-               locale === 'de' ? 'Intelligentes Terminsystem für Salons.' :
+            <p className="text-white/25 text-sm max-w-[220px] leading-relaxed">
+              {locale === 'tr' ? 'Kuaför & güzellik salonları için akıllı randevu sistemi.' :
+               locale === 'de' ? 'Intelligentes Terminsystem für Friseursalons.' :
                locale === 'ar' ? 'نظام مواعيد ذكي للصالونات.' :
-               'Smart appointment system for salons.'}
+               'Smart appointment system for hair & beauty salons.'}
             </p>
           </div>
-          {/* Legal */}
           <div>
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/25 mb-3">
+            <p className="text-[10px] tracking-[0.25em] uppercase font-bold text-white/20 mb-4">
               {locale === 'tr' ? 'Yasal' : locale === 'de' ? 'Rechtliches' : locale === 'ar' ? 'قانوني' : 'Legal'}
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {legalLinks.map(l => (
-                <Link key={l.href} href={l.href} className="text-sm text-white/35 hover:text-violet-400 transition">{l.label}</Link>
+            </p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {legal.map(l => (
+                <Link key={l.href} href={l.href} className="text-sm text-white/30 hover:text-violet-400 transition">{l.label}</Link>
               ))}
             </div>
           </div>
         </div>
-        {/* Bottom */}
-        <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-white/20 text-xs">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-white/15 text-xs">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
           <div className="flex gap-1.5">
             {LOCALES.map(l => (
               <Link key={l.code} href={`/${l.code}`}
-                className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition border ${l.code === locale ? 'border-violet-500/60 bg-violet-500/15 text-white' : 'border-white/8 bg-white/3 text-white/50 hover:bg-white/8'}`}
-                title={l.label}>{l.flag}
+                className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition border ${l.code === locale ? 'border-violet-500/50 bg-violet-500/12' : 'border-white/6 bg-white/2 hover:bg-white/6 hover:border-white/12'}`}>
+                {l.flag}
               </Link>
             ))}
           </div>
@@ -434,58 +543,86 @@ function FooterSection({ t, locale }: { t: any; locale: string }) {
   )
 }
 
-/* ─────────────────── BENTO CARD ─────────────────── */
-function BentoCard({ children, className = '', delay = 0, inView, gradient }:
-  { children: React.ReactNode; className?: string; delay?: number; inView: boolean; gradient?: string }) {
+/* ─────── GLASS CARD ─────── */
+function GlassCard({ children, className = '', delay = 0, inView, accent }: {
+  children: React.ReactNode; className?: string; delay?: number; inView: boolean; accent: [string, string]
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouseX.set(e.clientX - rect.left)
+    mouseY.set(e.clientY - rect.top)
+  }
+  const bg = useMotionTemplate`radial-gradient(250px circle at ${mouseX}px ${mouseY}px, ${accent[0]}18, transparent 70%)`
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay }}
-      className={`relative rounded-3xl border border-white/8 overflow-hidden p-6 bg-white/[0.04] hover:bg-white/[0.07] transition-colors group ${className}`}
+      initial={{ opacity: 0, y: 28, scale: 0.98 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.55, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      onMouseMove={handleMouse}
+      className={`relative rounded-2xl border border-white/7 overflow-hidden group p-6 bg-white/[0.03] hover:border-white/14 transition-all duration-300 ${className}`}
     >
-      {/* gradient bg */}
-      {gradient && <div className={`absolute inset-0 bg-gradient-to-br ${gradient} pointer-events-none`} />}
-      {/* shimmer on hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: 'radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139,92,246,0.08), transparent 40%)' }} />
-      <div className="relative z-10 h-full">{children}</div>
+      {/* accent top glow */}
+      <div className="absolute top-0 left-6 right-6 h-px opacity-30 pointer-events-none"
+        style={{ background: `linear-gradient(90deg, transparent, ${accent[0]}, transparent)` }} />
+      {/* mouse follow glow */}
+      <motion.div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: bg }} />
+      <div className="relative z-10 h-full flex flex-col">{children}</div>
     </motion.div>
   )
 }
 
-/* ─────────────────── PHONE FRAME ─────────────────── */
-function PhoneFrame({ img, glow = false, size = 'md' }: { img: string; glow?: boolean; size?: 'sm' | 'md' | 'lg' }) {
-  const w = size === 'lg' ? 'w-[220px] sm:w-[260px]' : size === 'md' ? 'w-[180px] sm:w-[210px]' : 'w-[150px] sm:w-[180px]'
+/* ─────── FEATURE ICON ─────── */
+function FeatureIcon({ children, colors }: { children: React.ReactNode; colors: [string, string] }) {
   return (
-    <div className={`relative ${w} drop-shadow-2xl`}>
-      {glow && <div className="absolute -inset-4 bg-violet-500/20 rounded-full blur-2xl pointer-events-none" />}
-      <div className="relative rounded-[2.6rem]"
-        style={{ background: 'linear-gradient(145deg, #2a2a3a, #111118)', padding: '3px', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08) inset' }}>
-        {/* side buttons */}
-        <div className="absolute left-[-3px] top-[80px] w-[3px] h-7 bg-white/15 rounded-l-full" />
-        <div className="absolute left-[-3px] top-[116px] w-[3px] h-9 bg-white/15 rounded-l-full" />
-        <div className="absolute left-[-3px] top-[156px] w-[3px] h-9 bg-white/15 rounded-l-full" />
-        <div className="absolute right-[-3px] top-[106px] w-[3px] h-11 bg-white/15 rounded-r-full" />
-        <div className="rounded-[2.4rem] overflow-hidden bg-black relative" style={{ aspectRatio: '9/19.5' }}>
-          <Image src={img} alt="app screen" fill className="object-cover object-top" />
-        </div>
-      </div>
-      <div className="absolute -bottom-3 left-10 right-10 h-4 bg-violet-500/20 blur-xl rounded-full pointer-events-none" />
+    <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-lg relative overflow-hidden"
+      style={{ background: `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`, boxShadow: `0 8px 24px ${colors[0]}40` }}>
+      {children}
     </div>
   )
 }
 
-/* ─────────────────── STORE BUTTON ─────────────────── */
-function StoreBtn({ store, outline = false }: { store: 'apple' | 'google'; outline?: boolean }) {
+/* ─────── PREMIUM PHONE ─────── */
+function PremiumPhone({ img, featured = false, size = 'md' }: { img: string; featured?: boolean; size?: 'xs' | 'sm' | 'md' | 'lg' }) {
+  const widths = { xs: 'w-[130px]', sm: 'w-[160px] sm:w-[180px]', md: 'w-[190px] sm:w-[220px]', lg: 'w-[220px] sm:w-[260px]' }
+  return (
+    <div className={`relative ${widths[size]}`}>
+      <div className="relative rounded-[2.8rem]"
+        style={{
+          background: 'linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04))',
+          padding: '2.5px',
+          boxShadow: featured
+            ? '0 50px 100px rgba(0,0,0,0.7), 0 20px 40px rgba(124,58,237,0.2), 0 0 0 1px rgba(255,255,255,0.1) inset'
+            : '0 30px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06) inset',
+        }}>
+        {/* side buttons */}
+        <div className="absolute left-[-3px] top-[80px] w-[3px] h-6 bg-white/12 rounded-l-full" />
+        <div className="absolute left-[-3px] top-[114px] w-[3px] h-8 bg-white/12 rounded-l-full" />
+        <div className="absolute left-[-3px] top-[152px] w-[3px] h-8 bg-white/12 rounded-l-full" />
+        <div className="absolute right-[-3px] top-[106px] w-[3px] h-10 bg-white/12 rounded-r-full" />
+        <div className="rounded-[2.6rem] overflow-hidden bg-black relative" style={{ aspectRatio: '9/19.5' }}>
+          <Image src={img} alt="app" fill className="object-cover object-top" />
+        </div>
+      </div>
+      {featured && (
+        <div className="absolute -bottom-3 left-8 right-8 h-5 bg-violet-500/25 blur-xl rounded-full pointer-events-none" />
+      )}
+    </div>
+  )
+}
+
+/* ─────── STORE BUTTON PREMIUM ─────── */
+function StoreBtnPremium({ store, ghost = false }: { store: 'apple' | 'google'; ghost?: boolean }) {
   const isApple = store === 'apple'
   return (
     <a href={isApple ? 'https://apps.apple.com' : 'https://play.google.com'}
       target="_blank" rel="noopener noreferrer"
-      className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl font-bold transition-all justify-center ${
-        outline
-          ? 'bg-white/8 hover:bg-white/15 text-white border border-white/15 backdrop-blur'
-          : 'bg-white hover:bg-gray-100 text-gray-900 shadow-xl shadow-black/20'
+      className={`group flex items-center gap-3 px-6 py-3.5 rounded-2xl font-bold transition-all justify-center ${ghost
+        ? 'border border-white/12 bg-white/4 hover:bg-white/8 hover:border-white/20 text-white'
+        : 'bg-white hover:bg-gray-50 text-gray-900 shadow-2xl shadow-black/30 hover:shadow-violet-500/10 hover:-translate-y-0.5'
       }`}>
       {isApple ? (
         <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -500,7 +637,7 @@ function StoreBtn({ store, outline = false }: { store: 'apple' | 'google'; outli
         </svg>
       )}
       <div className="text-left">
-        <div className={`text-[10px] font-medium leading-none ${outline ? 'text-white/50' : 'text-gray-400'}`}>
+        <div className={`text-[10px] font-medium leading-none ${ghost ? 'text-white/40' : 'text-gray-400'}`}>
           {isApple ? 'Download on the' : 'Get it on'}
         </div>
         <div className="text-sm font-black leading-tight mt-0.5">{isApple ? 'App Store' : 'Google Play'}</div>
