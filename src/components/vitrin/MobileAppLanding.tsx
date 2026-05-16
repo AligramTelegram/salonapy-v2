@@ -127,7 +127,10 @@ export function MobileAppLanding() {
           <p className="text-white/25 text-sm">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
           <div className="flex gap-1.5">
             {LOCALES.map(l => (
-              <Link key={l.code} href={`/${l.code}`} className="w-8 h-8 rounded-lg flex items-center justify-center text-sm bg-white/5 hover:bg-white/10 transition" title={l.label}>{l.flag}</Link>
+              <Link key={l.code} href={`/${l.code}`}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-base transition ${l.code === locale ? 'bg-violet-600/40 ring-1 ring-violet-400/60' : 'bg-white/10 hover:bg-white/20'}`}
+                title={l.label}>{l.flag}
+              </Link>
             ))}
           </div>
         </div>
@@ -210,8 +213,8 @@ function DownloadCTA({ t }: { t: any }) {
           <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{t('download_title')}</h2>
           <p className="text-white/55 mb-7 text-sm">{t('download_subtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <StoreButton store="apple" />
-            <StoreButton store="google" />
+            <StoreButton store="apple" light />
+            <StoreButton store="google" light />
           </div>
         </div>
       </motion.div>
@@ -220,11 +223,15 @@ function DownloadCTA({ t }: { t: any }) {
 }
 
 /* ── Store button ── */
-function StoreButton({ store, dark = false }: { store: 'apple' | 'google'; dark?: boolean }) {
+function StoreButton({ store, dark = false, light = false }: { store: 'apple' | 'google'; dark?: boolean; light?: boolean }) {
   const isApple = store === 'apple'
+  let cls = 'bg-white hover:bg-gray-50 text-gray-900 shadow-white/20'
+  if (dark) cls = 'bg-gray-900 hover:bg-gray-800 text-white border border-white/10'
+  if (light) cls = 'bg-white hover:bg-gray-100 text-gray-900'
+  const subColor = dark ? 'text-white/50' : 'text-gray-400'
   return (
     <a href={isApple ? 'https://apps.apple.com' : 'https://play.google.com'} target="_blank" rel="noopener noreferrer"
-      className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all justify-center font-bold shadow-lg ${dark ? 'bg-gray-900 hover:bg-gray-800 text-white' : 'bg-white hover:bg-gray-50 text-gray-900 shadow-white/20'}`}>
+      className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all justify-center font-bold shadow-lg ${cls}`}>
       {isApple ? (
         <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
@@ -235,7 +242,7 @@ function StoreButton({ store, dark = false }: { store: 'apple' | 'google'; dark?
         </svg>
       )}
       <div className="text-left">
-        <div className={`text-[10px] font-medium leading-none ${dark ? 'text-white/50' : 'text-gray-400'}`}>{isApple ? 'Download on the' : 'Get it on'}</div>
+        <div className={`text-[10px] font-medium leading-none ${subColor}`}>{isApple ? 'Download on the' : 'Get it on'}</div>
         <div className="text-sm font-black leading-tight">{isApple ? 'App Store' : 'Google Play'}</div>
       </div>
     </a>
@@ -247,29 +254,17 @@ function IPhoneFrame({ children, size = 'md' }: { children: React.ReactNode; siz
   const w = size === 'sm' ? 'w-[180px] sm:w-[200px]' : 'w-[200px] sm:w-[240px]'
   return (
     <div className={`relative ${w}`}>
-      <div className="relative rounded-[2.8rem] overflow-hidden"
-        style={{ background: '#111', padding: '3px', boxShadow: '0 30px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.12) inset, 0 6px 20px rgba(109,40,217,0.25)' }}>
+      {/* outer bezel */}
+      <div className="relative rounded-[2.8rem]"
+        style={{ background: '#1a1a1a', padding: '3px', boxShadow: '0 30px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset, 0 6px 20px rgba(109,40,217,0.3)' }}>
         {/* side buttons */}
         <div className="absolute left-[-3px] top-[80px] w-[3px] h-7 bg-gray-600 rounded-l-full" />
         <div className="absolute left-[-3px] top-[116px] w-[3px] h-9 bg-gray-600 rounded-l-full" />
         <div className="absolute left-[-3px] top-[156px] w-[3px] h-9 bg-gray-600 rounded-l-full" />
         <div className="absolute right-[-3px] top-[110px] w-[3px] h-11 bg-gray-600 rounded-r-full" />
 
+        {/* screen — screenshot fills 100%, no overlays */}
         <div className="rounded-[2.6rem] overflow-hidden bg-black relative" style={{ aspectRatio: '9/19.5' }}>
-          {/* dynamic island */}
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 w-20 h-6 bg-black rounded-full" />
-          {/* status bar */}
-          <div className="absolute top-0 left-0 right-0 z-10 h-9 flex items-center justify-between px-5 pt-2">
-            <span className="text-white text-[9px] font-bold">10:19</span>
-            <div className="flex items-center gap-1">
-              {[2,3,3,3].map((h, i) => (
-                <div key={i} className="w-[3px] bg-white rounded-sm" style={{ height: h * 2 + 2, opacity: i === 0 ? 0.4 : 1 }} />
-              ))}
-              <div className="w-4 h-2 border border-white/60 rounded-sm relative ml-0.5">
-                <div className="absolute inset-[1px] right-1 bg-white rounded-sm" />
-              </div>
-            </div>
-          </div>
           <div className="absolute inset-0">{children}</div>
         </div>
       </div>
