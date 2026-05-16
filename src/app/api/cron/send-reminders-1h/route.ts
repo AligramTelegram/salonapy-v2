@@ -65,12 +65,15 @@ export async function GET(request: NextRequest) {
     if (!apt.customer.phone) { skipped++; continue }
     if (!isTurkishPhone(apt.tenant.phone)) { skipped++; continue }
 
-    // Sadece 1h SMS için dedup — 24h ile karışmasın
+    // 1h SMS dedup — hem cron hem worker prefix'ini kontrol et
     const existing = await prisma.notification.findMany({
       where: {
         appointmentId: apt.id,
         channel: 'SMS',
-        message: { startsWith: 'REMINDER_1H_SMS:' },
+        OR: [
+          { message: { startsWith: 'REMINDER_1H_SMS:' } },
+          { message: { startsWith: 'WORKER_1H_SMS:' } },
+        ],
       },
       select: { status: true },
     })

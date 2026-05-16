@@ -4,7 +4,6 @@ import { z } from 'zod'
 import { startOfDay, endOfDay, parseISO, parse, startOfMonth, addMonths, format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { sendPushToTenant } from '@/lib/pushNotification'
-import { addReminderJob } from '@/lib/queue'
 import { sendAppointmentConfirmation } from '@/lib/resend'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
 import { getLimit } from '@/lib/plan-features'
@@ -283,28 +282,10 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Randevu zamanını hesapla ve hatırlatma job'larını kuyruğa ekle
-  const [apptHours, apptMinutes] = startTime.split(':').map(Number)
-  const appointmentDateTime = new Date(normalizedDate)
-  appointmentDateTime.setHours(apptHours, apptMinutes, 0, 0)
-
-  const now = Date.now()
-  const apptTime = appointmentDateTime.getTime()
-  const delay24h = apptTime - 24 * 60 * 60 * 1000 - now
-  const delay1h = apptTime - 60 * 60 * 1000 - now
-
-  const jobData = {
-    appointmentId: appointment.id,
-    tenantId,
-    customerPhone: customer.phone,
-  }
-
-  if (delay24h > 0) {
-    await addReminderJob({ ...jobData, type: 'reminder-24h' }, delay24h)
-  }
-  if (delay1h > 0) {
-    await addReminderJob({ ...jobData, type: 'reminder-1h' }, delay1h)
-  }
+  // Hatırlatma SMS'leri Vercel cron job'ları tarafından gönderilir:
+  // - /api/cron/send-reminders      → 24 saat öncesi (saatte bir çalışır)
+  // - /api/cron/send-reminders-1h   → 1 saat öncesi  (saatte bir çalışır)
+  // BullMQ queue sistemi kaldırıldı — çift SMS gönderimini önlemek için.
 
   // Fire-and-forget push notification to salon owner
   sendPushToTenant(
