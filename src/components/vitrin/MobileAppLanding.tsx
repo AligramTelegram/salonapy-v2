@@ -32,7 +32,7 @@ export function MobileAppLanding() {
   const isRtl = locale === 'ar'
 
   return (
-    <div dir={isRtl ? 'rtl' : 'ltr'} className="min-h-screen bg-[#02020a] text-white font-sans overflow-x-hidden selection:bg-violet-500/30">
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="min-h-screen bg-[#07071a] text-white font-sans overflow-x-hidden selection:bg-violet-500/30">
 
       {/* ── Navbar ── */}
       <Navbar locale={locale} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -73,7 +73,7 @@ function Navbar({ locale, menuOpen, setMenuOpen }: any) {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
       <div className="max-w-6xl mx-auto px-4">
-        <div className={`flex items-center justify-between px-5 h-12 rounded-2xl transition-all duration-300 ${scrolled ? 'bg-black/60 backdrop-blur-2xl border border-white/8 shadow-2xl shadow-black/40' : 'bg-transparent'}`}>
+        <div className={`flex items-center justify-between px-5 h-12 rounded-2xl transition-all duration-300 ${scrolled ? 'bg-[#0d0d28]/80 backdrop-blur-2xl border border-white/12 shadow-2xl shadow-black/30' : 'bg-transparent'}`}>
           <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
             <div className="relative">
               <div className="absolute inset-0 bg-violet-500/40 blur-md rounded-lg group-hover:bg-violet-500/60 transition" />
@@ -91,10 +91,10 @@ function Navbar({ locale, menuOpen, setMenuOpen }: any) {
                 <svg className="w-3 h-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </button>
               {menuOpen && (
-                <div className="absolute top-full mt-2 right-0 bg-[#0d0d18] rounded-2xl shadow-2xl border border-white/8 overflow-hidden z-50 min-w-[152px]">
+                <div className="absolute top-full mt-2 right-0 bg-[#12122a] rounded-2xl shadow-2xl border border-white/15 overflow-hidden z-50 min-w-[152px]">
                   {LOCALES.map(l => (
                     <Link key={l.code} href={`/${l.code}`} onClick={() => setMenuOpen(false)}
-                      className={`flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-white/6 transition ${l.code === locale ? 'text-violet-400 font-bold bg-violet-500/8' : 'text-white/60'}`}>
+                      className={`flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-white/10 transition ${l.code === locale ? 'text-violet-300 font-bold bg-violet-500/12' : 'text-white/70'}`}>
                       <span>{l.flag}</span><span>{l.label}</span>
                     </Link>
                   ))}
@@ -121,7 +121,7 @@ function HeroSection({ t }: { t: any }) {
   const mouseY = useMotionValue(0)
   const springX = useSpring(mouseX, { stiffness: 50, damping: 20 })
   const springY = useSpring(mouseY, { stiffness: 50, damping: 20 })
-  const background = useMotionTemplate`radial-gradient(600px circle at ${springX}px ${springY}px, rgba(124,58,237,0.12), transparent 60%)`
+  const background = useMotionTemplate`radial-gradient(600px circle at ${springX}px ${springY}px, rgba(124,58,237,0.18), transparent 60%)`
 
   const handleMouse = useCallback((e: React.MouseEvent) => {
     mouseX.set(e.clientX)
@@ -141,7 +141,7 @@ function HeroSection({ t }: { t: any }) {
         <div className="absolute inset-0 [perspective:200px]">
           <div className="absolute inset-0 origin-top"
             style={{ transform: 'rotateX(65deg)', transformOrigin: '50% 0%' }}>
-            <div className="animate-retrogrid absolute inset-0 opacity-[0.18]"
+            <div className="animate-retrogrid absolute inset-0 opacity-[0.28]"
               style={{
                 backgroundImage: 'linear-gradient(rgba(124,58,237,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.4) 1px, transparent 1px)',
                 backgroundSize: '60px 60px',
@@ -151,14 +151,14 @@ function HeroSection({ t }: { t: any }) {
           </div>
         </div>
         {/* Fade bottom of grid */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#02020a] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#07071a] to-transparent" />
       </div>
 
       {/* Orbs */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-violet-700/15 rounded-full blur-[80px]" />
-        <div className="absolute top-20 right-10 w-72 h-72 bg-purple-600/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 left-10 w-60 h-60 bg-indigo-700/8 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-violet-600/25 rounded-full blur-[80px]" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-10 w-60 h-60 bg-indigo-600/15 rounded-full blur-3xl" />
       </div>
 
       {/* Content */}
@@ -187,7 +187,7 @@ function HeroSection({ t }: { t: any }) {
         </motion.div>
 
         <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
-          className="text-white/40 text-lg sm:text-xl max-w-xl mx-auto mb-10 leading-relaxed font-light">
+          className="text-white/60 text-lg sm:text-xl max-w-xl mx-auto mb-10 leading-relaxed font-light">
           {t('hero_subtitle')}
         </motion.p>
 
@@ -199,7 +199,7 @@ function HeroSection({ t }: { t: any }) {
         </motion.div>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="text-white/25 text-sm mb-20">✦ {t('hero_free')} · No credit card required</motion.p>
+          className="text-white/40 text-sm mb-20">✦ {t('hero_free')} · No credit card required</motion.p>
       </div>
 
       {/* Hero phones — cinematic 3-phone spread */}
@@ -253,12 +253,12 @@ function TrustBand({ t }: { t: any }) {
   ]
   const doubled = [...items, ...items]
   return (
-    <div className="relative border-y border-white/5 py-4 overflow-hidden">
-      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#02020a] to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#02020a] to-transparent z-10" />
+    <div className="relative border-y border-white/10 py-4 overflow-hidden bg-white/[0.02]">
+      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#07071a] to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#07071a] to-transparent z-10" />
       <div className="flex gap-5 whitespace-nowrap" style={{ animation: 'marquee 25s linear infinite' }}>
         {doubled.map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-2 text-xs font-semibold text-white/30 flex-shrink-0 px-3 py-1 rounded-full border border-white/6">
+          <span key={i} className="inline-flex items-center gap-2 text-xs font-semibold text-white/55 flex-shrink-0 px-3 py-1 rounded-full border border-white/12">
             {item}
           </span>
         ))}
@@ -283,7 +283,7 @@ function BentoFeatures({ t }: { t: any }) {
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-5">
             <span className="text-white">{t('feat_title')}</span>
           </h2>
-          <p className="text-white/35 text-lg max-w-md mx-auto font-light">{t('feat_subtitle')}</p>
+          <p className="text-white/55 text-lg max-w-md mx-auto font-light">{t('feat_subtitle')}</p>
         </motion.div>
 
         {/* Grid */}
@@ -296,7 +296,7 @@ function BentoFeatures({ t }: { t: any }) {
               <div className="flex-1 z-10">
                 <FeatureIcon colors={['#7c3aed', '#6d28d9']}>📅</FeatureIcon>
                 <h3 className="text-2xl font-black text-white mt-4 mb-2">{t('feat1_title' as any)}</h3>
-                <p className="text-white/40 text-sm leading-relaxed max-w-xs">{t('feat1_desc' as any)}</p>
+                <p className="text-white/60 text-sm leading-relaxed max-w-xs">{t('feat1_desc' as any)}</p>
               </div>
               <div className="flex-shrink-0 pointer-events-none select-none z-10">
                 <PremiumPhone img="/images/screenshots/2.jpeg" size="sm" />
@@ -308,21 +308,21 @@ function BentoFeatures({ t }: { t: any }) {
           <GlassCard delay={0.1} inView={inView} accent={['#2563eb', '#1d4ed8']}>
             <FeatureIcon colors={['#2563eb', '#1d4ed8']}>👥</FeatureIcon>
             <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat2_title' as any)}</h3>
-            <p className="text-white/40 text-sm leading-relaxed">{t('feat2_desc' as any)}</p>
+            <p className="text-white/60 text-sm leading-relaxed">{t('feat2_desc' as any)}</p>
           </GlassCard>
 
           {/* SMALL — Finance */}
           <GlassCard delay={0.15} inView={inView} accent={['#059669', '#047857']}>
             <FeatureIcon colors={['#059669', '#047857']}>📊</FeatureIcon>
             <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat3_title' as any)}</h3>
-            <p className="text-white/40 text-sm leading-relaxed">{t('feat3_desc' as any)}</p>
+            <p className="text-white/60 text-sm leading-relaxed">{t('feat3_desc' as any)}</p>
           </GlassCard>
 
           {/* TALL — Staff w/ phone */}
           <GlassCard delay={0.2} inView={inView} className="row-span-2 min-h-[380px]" accent={['#db2777', '#be185d']}>
             <FeatureIcon colors={['#db2777', '#be185d']}>👤</FeatureIcon>
             <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat5_title' as any)}</h3>
-            <p className="text-white/40 text-sm leading-relaxed mb-6">{t('feat5_desc' as any)}</p>
+            <p className="text-white/60 text-sm leading-relaxed mb-6">{t('feat5_desc' as any)}</p>
             <div className="flex justify-center pointer-events-none select-none mt-auto">
               <PremiumPhone img="/images/screenshots/5.jpeg" size="xs" />
             </div>
@@ -332,14 +332,14 @@ function BentoFeatures({ t }: { t: any }) {
           <GlassCard delay={0.25} inView={inView} accent={['#d97706', '#b45309']}>
             <FeatureIcon colors={['#d97706', '#b45309']}>📦</FeatureIcon>
             <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat4_title' as any)}</h3>
-            <p className="text-white/40 text-sm leading-relaxed">{t('feat4_desc' as any)}</p>
+            <p className="text-white/60 text-sm leading-relaxed">{t('feat4_desc' as any)}</p>
           </GlassCard>
 
           {/* SMALL — Notifications */}
           <GlassCard delay={0.3} inView={inView} accent={['#dc2626', '#b91c1c']}>
             <FeatureIcon colors={['#dc2626', '#b91c1c']}>🔔</FeatureIcon>
             <h3 className="text-xl font-black text-white mt-4 mb-2">{t('feat6_title' as any)}</h3>
-            <p className="text-white/40 text-sm leading-relaxed">{t('feat6_desc' as any)}</p>
+            <p className="text-white/60 text-sm leading-relaxed">{t('feat6_desc' as any)}</p>
           </GlassCard>
 
           {/* WIDE — Reports + phone */}
@@ -348,7 +348,7 @@ function BentoFeatures({ t }: { t: any }) {
               <div className="flex-1">
                 <FeatureIcon colors={['#0891b2', '#0e7490']}>📈</FeatureIcon>
                 <h3 className="text-2xl font-black text-white mt-4 mb-2">{t('screen5_title' as any)}</h3>
-                <p className="text-white/40 text-sm leading-relaxed max-w-sm">{t('screen5_sub' as any)}</p>
+                <p className="text-white/60 text-sm leading-relaxed max-w-sm">{t('screen5_sub' as any)}</p>
               </div>
               <div className="flex-shrink-0 pointer-events-none select-none">
                 <PremiumPhone img="/images/screenshots/6.jpeg" size="sm" />
@@ -399,12 +399,12 @@ function ShowcaseSection({ t }: { t: any }) {
                 <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-5 leading-tight">
                   {t(s.titleKey as any)}
                 </h2>
-                <p className="text-white/40 text-lg leading-relaxed max-w-md font-light">
+                <p className="text-white/60 text-lg leading-relaxed max-w-md font-light">
                   {t(s.subKey as any)}
                 </p>
                 <div className={`flex flex-wrap gap-2 mt-8 ${isEven ? '' : 'md:justify-end'}`}>
                   {(['⚡ Fast', '✦ Simple', '🔒 Secure'] as string[]).map(b => (
-                    <span key={b} className="px-3 py-1.5 text-xs font-semibold text-white/50 rounded-full border border-white/8 bg-white/3">
+                    <span key={b} className="px-3 py-1.5 text-xs font-semibold text-white/65 rounded-full border border-white/15 bg-white/6">
                       {b}
                     </span>
                   ))}
@@ -426,7 +426,7 @@ function StatsSection({ t }: { t: any }) {
     <section ref={ref} className="py-24 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="rounded-3xl border border-white/6 overflow-hidden relative"
-          style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(16,16,40,0.8) 100%)', backdropFilter: 'blur(20px)' }}>
+          style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(20,20,55,0.9) 100%)', backdropFilter: 'blur(20px)' }}>
           <div className="absolute inset-0 opacity-[0.04]"
             style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
           <div className="relative z-10 grid grid-cols-3 gap-px">
@@ -445,7 +445,7 @@ function StatsSection({ t }: { t: any }) {
                   style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundImage: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.5) 100%)' }}>
                   {v}
                 </div>
-                <div className="text-white/35 text-sm font-medium">{t(k as any)}</div>
+                <div className="text-white/55 text-sm font-medium">{t(k as any)}</div>
               </motion.div>
             ))}
           </div>
@@ -468,13 +468,13 @@ function CtaSection({ t }: { t: any }) {
 
         {/* Shine border card */}
         <div className="relative rounded-3xl overflow-hidden"
-          style={{ background: 'linear-gradient(#0d0d1a, #0d0d1a) padding-box, linear-gradient(135deg, rgba(124,58,237,0.6), rgba(168,85,247,0.3), rgba(236,72,153,0.3), rgba(124,58,237,0.6)) border-box', border: '1px solid transparent', animation: 'shine-border 4s linear infinite' }}>
+          style={{ background: 'linear-gradient(#12122a, #12122a) padding-box, linear-gradient(135deg, rgba(124,58,237,0.7), rgba(168,85,247,0.5), rgba(236,72,153,0.4), rgba(124,58,237,0.7)) border-box', border: '1px solid transparent', animation: 'shine-border 4s linear infinite' }}>
           <div className="absolute inset-0 opacity-[0.04]"
             style={{ backgroundImage: 'radial-gradient(circle, #a78bfa 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
           <div className="relative z-10 p-12 sm:p-20">
             <div className="text-6xl mb-6">🚀</div>
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-3 tracking-tight">{t('download_title')}</h2>
-            <p className="text-white/35 text-lg mb-10 font-light">{t('download_subtitle')}</p>
+            <p className="text-white/60 text-lg mb-10 font-light">{t('download_subtitle')}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <StoreBtnPremium store="apple" />
               <StoreBtnPremium store="google" ghost />
@@ -501,7 +501,7 @@ function FooterSection({ t, locale }: { t: any; locale: string }) {
     { href: `/${locale}/hesap-silme`,       label: locale === 'tr' ? 'Hesap Sil' : locale === 'de' ? 'Konto löschen' : locale === 'ar' ? 'حذف الحساب' : 'Delete Account' },
   ]
   return (
-    <footer className="border-t border-white/5 py-14 px-4">
+    <footer className="border-t border-white/10 py-14 px-4 bg-white/[0.02]">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-start justify-between gap-10 mb-10">
           <div>
@@ -509,7 +509,7 @@ function FooterSection({ t, locale }: { t: any; locale: string }) {
               <Image src="/icons/favicon.png" alt="Hemensalon" width={26} height={26} className="rounded-none" />
               <span className="font-black text-white">Hemensalon</span>
             </div>
-            <p className="text-white/25 text-sm max-w-[220px] leading-relaxed">
+            <p className="text-white/50 text-sm max-w-[220px] leading-relaxed">
               {locale === 'tr' ? 'Kuaför & güzellik salonları için akıllı randevu sistemi.' :
                locale === 'de' ? 'Intelligentes Terminsystem für Friseursalons.' :
                locale === 'ar' ? 'نظام مواعيد ذكي للصالونات.' :
@@ -517,22 +517,22 @@ function FooterSection({ t, locale }: { t: any; locale: string }) {
             </p>
           </div>
           <div>
-            <p className="text-[10px] tracking-[0.25em] uppercase font-bold text-white/20 mb-4">
+            <p className="text-[10px] tracking-[0.25em] uppercase font-bold text-white/40 mb-4">
               {locale === 'tr' ? 'Yasal' : locale === 'de' ? 'Rechtliches' : locale === 'ar' ? 'قانوني' : 'Legal'}
             </p>
             <div className="flex flex-wrap gap-x-5 gap-y-2">
               {legal.map(l => (
-                <Link key={l.href} href={l.href} className="text-sm text-white/30 hover:text-violet-400 transition">{l.label}</Link>
+                <Link key={l.href} href={l.href} className="text-sm text-white/50 hover:text-violet-300 transition">{l.label}</Link>
               ))}
             </div>
           </div>
         </div>
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-white/15 text-xs">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-white/35 text-xs">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
           <div className="flex gap-1.5">
             {LOCALES.map(l => (
               <Link key={l.code} href={`/${l.code}`}
-                className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition border ${l.code === locale ? 'border-violet-500/50 bg-violet-500/12' : 'border-white/6 bg-white/2 hover:bg-white/6 hover:border-white/12'}`}>
+                className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition border ${l.code === locale ? 'border-violet-400/60 bg-violet-500/20' : 'border-white/12 bg-white/4 hover:bg-white/10 hover:border-white/20'}`}>
                 {l.flag}
               </Link>
             ))}
@@ -563,7 +563,7 @@ function GlassCard({ children, className = '', delay = 0, inView, accent }: {
       animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ duration: 0.55, delay, ease: [0.25, 0.1, 0.25, 1] }}
       onMouseMove={handleMouse}
-      className={`relative rounded-2xl border border-white/7 overflow-hidden group p-6 bg-white/[0.03] hover:border-white/14 transition-all duration-300 ${className}`}
+      className={`relative rounded-2xl border border-white/10 overflow-hidden group p-6 bg-white/[0.05] hover:border-white/20 transition-all duration-300 ${className}`}
     >
       {/* accent top glow */}
       <div className="absolute top-0 left-6 right-6 h-px opacity-30 pointer-events-none"
