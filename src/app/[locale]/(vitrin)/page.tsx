@@ -1,48 +1,30 @@
 import type { Metadata } from 'next'
-import { getTranslations, getLocale } from 'next-intl/server'
-import lazy from 'next/dynamic'
-import { Hero } from '@/components/vitrin/Hero'
-import { Features } from '@/components/vitrin/Features'
-import { BlogPreview } from '@/components/vitrin/BlogPreview'
-
-const SectorGuide = lazy(() => import('@/components/vitrin/SectorGuide').then(m => ({ default: m.SectorGuide })))
-const Pricing = lazy(() => import('@/components/vitrin/Pricing').then(m => ({ default: m.Pricing })))
-const Testimonials = lazy(() => import('@/components/vitrin/Testimonials').then(m => ({ default: m.Testimonials })))
-const Analytics = lazy(() => import('@/components/vitrin/Analytics').then(m => ({ default: m.Analytics })))
-const FaqSection = lazy(() => import('@/components/vitrin/FaqSection').then(m => ({ default: m.FaqSection })))
-
-export const revalidate = 60
+import { getLocale } from 'next-intl/server'
+import { MobileAppLanding } from '@/components/vitrin/MobileAppLanding'
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hemensalon.com'
 
+const titles: Record<string, string> = {
+  tr: 'Hemensalon – Salonunuzu Avucunuzda Yönetin | iOS & Android',
+  en: 'Hemensalon – Manage Your Salon From Your Pocket | iOS & Android',
+  de: 'Hemensalon – Verwalten Sie Ihren Salon in der Tasche | iOS & Android',
+  ar: 'هيمنسالون – أدِر صالونك من جيبك | iOS & Android',
+}
+const descs: Record<string, string> = {
+  tr: 'Kuaför, berber ve güzellik salonları için mobil uygulama. Randevu, müşteri, personel, stok ve finans yönetimi. 3 gün ücretsiz.',
+  en: 'Mobile app for hair salons, barbers and beauty studios. Appointment, customer, staff, inventory and finance management. 3-day free trial.',
+  de: 'Mobile App für Friseursalons, Barbiere und Beauty-Studios. Termin-, Kunden-, Personal-, Lager- und Finanzverwaltung. 3 Tage kostenlos.',
+  ar: 'تطبيق جوال لصالونات الشعر والحلاقة ومراكز التجميل. إدارة المواعيد والعملاء والموظفين والمخزون والمالية. 3 أيام مجانية.',
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const t = await getTranslations('hero')
-
-  const titles: Record<string, string> = {
-    tr: 'Online Randevu Sistemi | Kuaför, Berber ve Güzellik Salonu Yazılımı – Hemensalon',
-    en: 'Online Booking System | Hair Salon & Beauty Software – Hemensalon',
-    de: 'Online-Buchungssystem | Friseur & Beauty-Salon Software – Hemensalon',
-    ar: 'نظام الحجز الإلكتروني | برنامج صالون الحلاقة والتجميل – Hemensalon',
-  }
-  const descs: Record<string, string> = {
-    tr: "Kuaför, berber, güzellik merkezi ve klinikler için Türkiye'nin lider online randevu sistemi. SMS hatırlatmaları, personel yönetimi, WhatsApp bildirimleri. 3 gün ücretsiz.",
-    en: 'The leading online booking system for hair salons, barbers, beauty centers and clinics. SMS reminders, staff management, WhatsApp notifications. 3-day free trial.',
-    de: 'Das führende Online-Buchungssystem für Friseursalons, Barbiere und Beauty-Center. SMS-Erinnerungen, Personalverwaltung, WhatsApp-Benachrichtigungen. 3 Tage kostenlos.',
-    ar: 'نظام الحجز الإلكتروني الرائد لصالونات الحلاقة ومراكز التجميل والعيادات. تذكيرات SMS، إدارة الموظفين، إشعارات واتساب. تجربة مجانية 3 أيام.',
-  }
-
   return {
     title: titles[locale] ?? titles.tr,
     description: descs[locale] ?? descs.tr,
     alternates: {
       canonical: `${BASE_URL}/${locale}`,
-      languages: {
-        'tr': `${BASE_URL}/tr`,
-        'en': `${BASE_URL}/en`,
-        'de': `${BASE_URL}/de`,
-        'ar': `${BASE_URL}/ar`,
-      },
+      languages: { tr: `${BASE_URL}/tr`, en: `${BASE_URL}/en`, de: `${BASE_URL}/de`, ar: `${BASE_URL}/ar` },
     },
     openGraph: {
       type: 'website',
@@ -56,16 +38,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function HomePage() {
-  return (
-    <>
-      <Hero />
-      <Features />
-      <SectorGuide />
-      <Pricing />
-      <Testimonials />
-      <Analytics />
-      <FaqSection />
-      <BlogPreview />
-    </>
-  )
+  return <MobileAppLanding />
 }
