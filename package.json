@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@21st-dev/magic": "^0.1.0",
     "@anthropic-ai/sdk": "^0.90.0",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",

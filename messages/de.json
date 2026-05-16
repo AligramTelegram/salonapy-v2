@@ -138,6 +138,19 @@
     "download_title": "Jetzt loslegen",
     "download_subtitle": "3 Tage kostenlos. Keine Kreditkarte erforderlich.",
     "footer_rights": "Alle Rechte vorbehalten.",
-    "lang_label": "Sprache"
+    "lang_label": "Sprache",
+    "screen1_title": "Verwalten Sie Ihren Salon",
+    "screen1_sub": "Termin-, Kunden- und Teamverwaltung in einer App.",
+    "screen2_title": "Intelligentes Terminsystem",
+    "screen2_sub": "Kundenbuchungen in Sekunden verwalten.",
+    "screen3_title": "Kalender an einem Ort",
+    "screen3_sub": "Tägliche, wöchentliche und monatliche Termine einfach verfolgen.",
+    "screen4_title": "Kundenverlauf anzeigen",
+    "screen4_sub": "Transaktionsnotizen, vergangene Termine und Zahlungsdetails.",
+    "screen5_title": "Ihr Geschäft ausbauen",
+    "screen5_sub": "Finanzen, Personal und Lagerverwaltung in einem Panel.",
+    "badge_fast": "⚡ Schnell",
+    "badge_simple": "✦ Einfach",
+    "badge_secure": "🔒 Sicher"
   }
 }

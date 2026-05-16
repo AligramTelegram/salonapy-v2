@@ -138,6 +138,19 @@
     "download_title": "Hemen başlayın",
     "download_subtitle": "3 gün ücretsiz. Kredi kartı gerekmez.",
     "footer_rights": "Tüm hakları saklıdır.",
-    "lang_label": "Dil"
+    "lang_label": "Dil",
+    "screen1_title": "Salonunuzu Kolayca Yönetin",
+    "screen1_sub": "Randevu, müşteri ve ekip yönetimi tek uygulamada.",
+    "screen2_title": "Akıllı Randevu Sistemi",
+    "screen2_sub": "Müşteri rezervasyonlarını saniyeler içinde yönetin.",
+    "screen3_title": "Takvim Tek Yerde",
+    "screen3_sub": "Günlük, haftalık ve aylık randevuları kolayca takip edin.",
+    "screen4_title": "Müşteri Geçmişini Görün",
+    "screen4_sub": "İşlem notları, geçmiş randevular ve ödeme detayları.",
+    "screen5_title": "İşletmenizi Büyütün",
+    "screen5_sub": "Finans, personel ve stok yönetimi tek panelde.",
+    "badge_fast": "⚡ Hızlı",
+    "badge_simple": "✦ Basit",
+    "badge_secure": "🔒 Güvenli"
   }
 }

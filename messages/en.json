@@ -138,6 +138,19 @@
     "download_title": "Get started today",
     "download_subtitle": "3 days free. No credit card required.",
     "footer_rights": "All rights reserved.",
-    "lang_label": "Language"
+    "lang_label": "Language",
+    "screen1_title": "Easily Manage Your Salon",
+    "screen1_sub": "Appointment, customer and team management in one app.",
+    "screen2_title": "Smart Appointment System",
+    "screen2_sub": "Manage customer bookings in seconds.",
+    "screen3_title": "Calendar In One Place",
+    "screen3_sub": "Easily track daily, weekly and monthly appointments.",
+    "screen4_title": "View Customer History",
+    "screen4_sub": "Transaction notes, past appointments and payment details.",
+    "screen5_title": "Grow Your Business",
+    "screen5_sub": "Finance, personnel and inventory management in one panel.",
+    "badge_fast": "⚡ Fast",
+    "badge_simple": "✦ Simple",
+    "badge_secure": "🔒 Secure"
   }
 }
