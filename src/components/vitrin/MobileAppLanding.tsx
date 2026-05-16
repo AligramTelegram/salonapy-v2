@@ -118,20 +118,53 @@ export function MobileAppLanding() {
       <DownloadCTA t={t} />
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-8 px-5">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="rounded-none" />
-            <span className="font-bold text-gray-500 text-sm">Hemensalon</span>
+      <footer className="bg-gray-50 border-t border-gray-200 py-12 px-5">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-10 justify-between mb-10">
+            {/* Brand */}
+            <div className="flex-shrink-0">
+              <div className="flex items-center gap-2 mb-3">
+                <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="rounded-none" />
+                <span className="font-black text-gray-800">Hemensalon</span>
+              </div>
+              <p className="text-gray-400 text-sm max-w-[200px] leading-relaxed">
+                {locale === 'tr' ? 'Kuaför ve güzellik salonları için akıllı randevu sistemi.' :
+                 locale === 'de' ? 'Intelligentes Terminsystem für Friseursalons.' :
+                 locale === 'ar' ? 'نظام مواعيد ذكي لصالونات الشعر.' :
+                 'Smart appointment system for hair salons.'}
+              </p>
+            </div>
+            {/* Legal links */}
+            <div>
+              <div className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+                {locale === 'tr' ? 'Yasal' : locale === 'de' ? 'Rechtliches' : locale === 'ar' ? 'قانوني' : 'Legal'}
+              </div>
+              <ul className="space-y-2.5">
+                {[
+                  { href: `/${locale}/gizlilik`,          label: locale === 'tr' ? 'Gizlilik Politikası'  : locale === 'de' ? 'Datenschutzrichtlinie' : locale === 'ar' ? 'سياسة الخصوصية'             : 'Privacy Policy' },
+                  { href: `/${locale}/kullanim-sartlari`, label: locale === 'tr' ? 'Kullanım Şartları'    : locale === 'de' ? 'Nutzungsbedingungen'    : locale === 'ar' ? 'شروط الخدمة'                : 'Terms of Service' },
+                  { href: `/${locale}/cerez-politikasi`,  label: locale === 'tr' ? 'Çerez Politikası'     : locale === 'de' ? 'Cookie-Richtlinie'      : locale === 'ar' ? 'سياسة ملفات تعريف الارتباط' : 'Cookie Policy' },
+                  { href: `/${locale}/kvkk`,              label: locale === 'tr' ? 'KVKK'                 : locale === 'de' ? 'DSGVO / Datenschutz'    : locale === 'ar' ? 'حماية البيانات'             : 'GDPR / Data Protection' },
+                  { href: `/${locale}/hesap-silme`,       label: locale === 'tr' ? 'Hesap Silme'          : locale === 'de' ? 'Konto löschen'          : locale === 'ar' ? 'حذف الحساب'                 : 'Account Deletion' },
+                ].map(link => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-sm text-gray-500 hover:text-violet-600 transition">{link.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
-          <div className="flex gap-1.5">
-            {LOCALES.map(l => (
-              <Link key={l.code} href={`/${l.code}`}
-                className={`w-9 h-9 rounded-xl flex items-center justify-center text-base transition border ${l.code === locale ? 'bg-violet-50 border-violet-300 ring-1 ring-violet-400' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
-                title={l.label}>{l.flag}
-              </Link>
-            ))}
+          {/* Bottom */}
+          <div className="pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
+            <div className="flex gap-1.5">
+              {LOCALES.map(l => (
+                <Link key={l.code} href={`/${l.code}`}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-base border transition ${l.code === locale ? 'bg-violet-50 border-violet-300 ring-1 ring-violet-400' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+                  title={l.label}>{l.flag}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </footer>
