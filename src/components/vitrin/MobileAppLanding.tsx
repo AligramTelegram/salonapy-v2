@@ -34,7 +34,7 @@ export function MobileAppLanding() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image src="/icons/favicon.png" alt="Hemensalon" width={32} height={32} className="rounded-xl" />
+            <Image src="/icons/favicon.png" alt="Hemensalon" width={32} height={32} className="rounded-none" />
             <span className="font-black text-gray-900 text-lg tracking-tight">{t('nav_logo')}</span>
           </div>
           <div className="flex items-center gap-2">
@@ -118,17 +118,17 @@ export function MobileAppLanding() {
       <DownloadCTA t={t} />
 
       {/* Footer */}
-      <footer className="bg-gray-950 py-8 px-5">
+      <footer className="bg-white border-t border-gray-100 py-8 px-5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="rounded-lg" />
-            <span className="font-bold text-white/60 text-sm">Hemensalon</span>
+            <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="rounded-none" />
+            <span className="font-bold text-gray-500 text-sm">Hemensalon</span>
           </div>
-          <p className="text-white/25 text-sm">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
+          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
           <div className="flex gap-1.5">
             {LOCALES.map(l => (
               <Link key={l.code} href={`/${l.code}`}
-                className={`w-9 h-9 rounded-xl flex items-center justify-center text-base transition ${l.code === locale ? 'bg-violet-600/40 ring-1 ring-violet-400/60' : 'bg-white/10 hover:bg-white/20'}`}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-base transition border ${l.code === locale ? 'bg-violet-50 border-violet-300 ring-1 ring-violet-400' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
                 title={l.label}>{l.flag}
               </Link>
             ))}
@@ -237,8 +237,11 @@ function StoreButton({ store, dark = false, light = false }: { store: 'apple' | 
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
         </svg>
       ) : (
-        <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M3.18 23.76c.28.15.6.19.93.09l11.44-6.59-2.54-2.54-9.83 9.04zm-1.81-20.6C1.12 3.46 1 3.82 1 4.23v15.54c0 .41.12.77.37 1.07l.06.06 8.7-8.71v-.21L1.43 3.1l-.06.06zm19.1 8.44l-2.5-1.44-2.81 2.81 2.81 2.81 2.52-1.45c.72-.41.72-1.31-.02-1.73zm-17.65 9.97l9.84-5.67-2.54-2.53-7.3 8.2z" />
+        <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 512 512" fill="none">
+          <path d="M48 28.9C34.3 36.4 25 51 25 68.2v375.6c0 17.2 9.3 31.8 23 39.3l210-241.1L48 28.9z" fill="#4FC3F7"/>
+          <path d="M338.9 174.1L97.3 28.3 48 28.9l210 213L338.9 174.1z" fill="#81D4FA"/>
+          <path d="M338.9 337.9L258 242l-210 213 49.3.6 241.6-117.7z" fill="#0288D1"/>
+          <path d="M463 222.7l-124.1-48.6L258 242l80.9 95.9L463 289.3c19.8-11.4 19.8-55.2 0-66.6z" fill="#FFC107"/>
         </svg>
       )}
       <div className="text-left">
@@ -251,7 +254,7 @@ function StoreButton({ store, dark = false, light = false }: { store: 'apple' | 
 
 /* ── iPhone frame ── */
 function IPhoneFrame({ children, size = 'md' }: { children: React.ReactNode; size?: 'sm' | 'md' }) {
-  const w = size === 'sm' ? 'w-[180px] sm:w-[200px]' : 'w-[200px] sm:w-[240px]'
+  const w = size === 'sm' ? 'w-[140px] sm:w-[160px]' : 'w-[160px] sm:w-[190px]'
   return (
     <div className={`relative ${w}`}>
       {/* outer bezel */}
