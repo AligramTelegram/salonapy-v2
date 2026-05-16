@@ -84,7 +84,7 @@ export async function POST(request: Request) {
           paymentProvider: 'trial',
           status: 'TRIAL',
           startDate: now,
-          endDate: addDays(now, 14),
+          endDate: addDays(now, 3),
           autoRenew: false,
         },
       })
