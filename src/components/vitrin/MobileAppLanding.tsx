@@ -34,9 +34,7 @@ export function MobileAppLanding() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 flex items-center justify-center shadow-md shadow-purple-200">
-              <span className="text-white text-sm font-black">H</span>
-            </div>
+            <Image src="/icons/favicon.png" alt="Hemensalon" width={32} height={32} className="rounded-xl" />
             <span className="font-black text-gray-900 text-lg tracking-tight">{t('nav_logo')}</span>
           </div>
           <div className="flex items-center gap-2">
@@ -123,9 +121,7 @@ export function MobileAppLanding() {
       <footer className="bg-gray-950 py-8 px-5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
-              <span className="text-white text-xs font-black">H</span>
-            </div>
+            <Image src="/icons/favicon.png" alt="Hemensalon" width={28} height={28} className="rounded-lg" />
             <span className="font-bold text-white/60 text-sm">Hemensalon</span>
           </div>
           <p className="text-white/25 text-sm">© {new Date().getFullYear()} Hemensalon. {t('footer_rights')}</p>
