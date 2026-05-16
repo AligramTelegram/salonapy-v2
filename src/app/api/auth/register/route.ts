@@ -38,7 +38,7 @@ const PAID_PLANS = ['PROFESYONEL', 'ISLETME']
 
 export async function POST(request: Request) {
   try {
-    const { supabaseId, email, name, businessName, phone, plan } = await request.json()
+    const { supabaseId, email, name, businessName, phone, plan, sector } = await request.json()
 
     if (!supabaseId || !email || !name || !businessName) {
       return NextResponse.json({ error: 'Eksik bilgi: supabaseId, email, name, businessName zorunlu' }, { status: 400 })
@@ -57,6 +57,7 @@ export async function POST(request: Request) {
         slug,
         email,
         phone: phone || null,
+        sector: sector || 'HAIR',
         // Ücretli planlar ödeme tamamlanana kadar inaktif başlar
         isActive: !isPaidPlan,
         plan: isPaidPlan ? normalizedPlan : 'BASLANGIC',

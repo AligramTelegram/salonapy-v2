@@ -60,6 +60,7 @@ model Tenant {
   waUsed         Int      @default(0)
   sms24hReminder Boolean  @default(true)
   sms1hReminder  Boolean  @default(true)
+  sector        String   @default("HAIR")
   country       String   @default("TR")
   currency      String   @default("TRY")
   timezone      String   @default("Europe/Istanbul")

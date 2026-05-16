@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     select: {
       id: true, name: true, slug: true, phone: true, email: true,
       address: true, plan: true, planEndsAt: true,
-      smsUsed: true, smsCredits: true,
+      smsUsed: true, smsCredits: true, sector: true,
       subscription: { select: { endDate: true, status: true } },
     },
   })
@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
     smsCredits: tenant.smsCredits,
     smsMonthlyLimit: SMS_PLAN_LIMITS[tenant.plan] ?? 0,
     isTurkish: isTurkishPhone(tenant.phone),
+    sector: tenant.sector ?? 'HAIR',
   })
 }
 
@@ -52,7 +53,7 @@ export async function PUT(request: NextRequest) {
   if (!tenantId) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
   const body = await request.json()
-  const { name, phone, email, address } = body
+  const { name, phone, email, address, sector } = body
 
   const tenant = await prisma.tenant.update({
     where: { id: tenantId },
@@ -61,10 +62,11 @@ export async function PUT(request: NextRequest) {
       ...(phone !== undefined && { phone }),
       ...(email !== undefined && { email }),
       ...(address !== undefined && { address }),
+      ...(sector !== undefined && { sector }),
     },
     select: {
       id: true, name: true, slug: true, phone: true, email: true,
-      address: true, plan: true, planEndsAt: true, smsUsed: true, smsCredits: true,
+      address: true, plan: true, planEndsAt: true, smsUsed: true, smsCredits: true, sector: true,
     },
   })
 
