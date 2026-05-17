@@ -27,15 +27,21 @@ export async function GET(request: NextRequest) {
   }
 
   const now = new Date()
-  const windowStart = new Date(now.getTime() + 30 * 60 * 1000)
-  const windowEnd   = new Date(now.getTime() + 90 * 60 * 1000)
+  // Pencereyi daralt: 50-70 dakika (cron saatte bir çalışıyor, 20dk overlap güvenli)
+  const windowStart = new Date(now.getTime() + 50 * 60 * 1000)
+  const windowEnd   = new Date(now.getTime() + 70 * 60 * 1000)
 
-  const today = new Date(now); today.setHours(0, 0, 0, 0)
-  const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999)
+  // Türkiye UTC+3 — gece yarısı İstanbul (00:00-02:59) UTC'de önceki gün sayılır.
+  // Bu yüzden 2 günlük aralık filtresi kullanıyoruz.
+  const ISTANBUL_OFFSET_MS = 3 * 60 * 60 * 1000
+  const rangeStart = new Date(windowStart.getTime() - ISTANBUL_OFFSET_MS)
+  rangeStart.setUTCHours(0, 0, 0, 0)
+  const rangeEnd = new Date(windowEnd.getTime() - ISTANBUL_OFFSET_MS)
+  rangeEnd.setUTCHours(23, 59, 59, 999)
 
   const appointments = await prisma.appointment.findMany({
     where: {
-      date: { gte: today, lte: todayEnd },
+      date: { gte: rangeStart, lte: rangeEnd },
       status: { in: ['BEKLIYOR', 'ONAYLANDI'] },
       tenant: { sms1hReminder: true, isActive: true },
     },
@@ -49,8 +55,11 @@ export async function GET(request: NextRequest) {
 
   const toSend = appointments.filter((apt) => {
     const [h, m] = apt.startTime.split(':').map(Number)
-    const aptTime = new Date(apt.date)
-    aptTime.setHours(h, m, 0, 0)
+    // apt.date UTC gece yarısı; dateStr'yi UTC'den çekiyoruz
+    const dateStr = apt.date.toISOString().split('T')[0] // "YYYY-MM-DD"
+    const [yr, mo, da] = dateStr.split('-').map(Number)
+    // İstanbul yerel saatini UTC'ye çeviriyoruz (UTC+3 → -3h)
+    const aptTime = new Date(Date.UTC(yr, mo - 1, da, h, m, 0, 0) - ISTANBUL_OFFSET_MS)
     return aptTime >= windowStart && aptTime <= windowEnd
   })
 

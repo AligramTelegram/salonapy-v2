@@ -47,10 +47,16 @@ export async function GET(request: NextRequest) {
     },
   })
 
+  // Türkiye her zaman UTC+3 (2016'dan beri yaz saati yok)
+  const ISTANBUL_OFFSET_MS = 3 * 60 * 60 * 1000
+
   const toSend = appointments.filter((apt) => {
     const [h, m] = apt.startTime.split(':').map(Number)
-    const aptTime = new Date(apt.date)
-    aptTime.setHours(h, m, 0, 0)
+    // apt.date Prisma'dan UTC gece yarısı gelir; dateStr'yi UTC'den çekiyoruz
+    const dateStr = apt.date.toISOString().split('T')[0] // "YYYY-MM-DD"
+    const [yr, mo, da] = dateStr.split('-').map(Number)
+    // İstanbul yerel saatini UTC'ye çeviriyoruz
+    const aptTime = new Date(Date.UTC(yr, mo - 1, da, h, m, 0, 0) - ISTANBUL_OFFSET_MS)
     return aptTime >= windowStart && aptTime <= windowEnd
   })
 
