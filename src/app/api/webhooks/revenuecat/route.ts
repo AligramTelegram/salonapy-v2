@@ -23,13 +23,11 @@ const EXPIRE_EVENT_TYPES = new Set([
 ])
 
 export async function POST(request: NextRequest) {
-  // RevenueCat webhook secret doğrulama
+  // RevenueCat webhook secret doğrulama (zorunlu)
   const secret = process.env.REVENUECAT_WEBHOOK_SECRET
-  if (secret) {
-    const authHeader = request.headers.get('authorization')
-    if (authHeader !== secret) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  const authHeader = request.headers.get('authorization')
+  if (!secret || authHeader !== secret) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   let body: any

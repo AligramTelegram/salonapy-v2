@@ -6,14 +6,12 @@ export const dynamic = 'force-dynamic'
 
 // POST /api/payments/iyzico/webhook — İyzico event notifications
 export async function POST(request: NextRequest) {
-  // Optional secret key verification — set IYZICO_WEBHOOK_SECRET in env
+  // Webhook secret doğrulama (zorunlu — IYZICO_WEBHOOK_SECRET env set edilmeli)
   const webhookSecret = process.env.IYZICO_WEBHOOK_SECRET
-  if (webhookSecret) {
-    const incoming = request.headers.get('x-iyzico-signature') ?? request.headers.get('authorization')
-    if (!incoming || incoming !== webhookSecret) {
-      console.warn('[IyzicoWebhook] Unauthorized webhook attempt')
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-    }
+  const incoming = request.headers.get('x-iyzico-signature') ?? request.headers.get('authorization')
+  if (!webhookSecret || !incoming || incoming !== webhookSecret) {
+    console.warn('[IyzicoWebhook] Unauthorized webhook attempt')
+    return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
   }
 
   let body: unknown
