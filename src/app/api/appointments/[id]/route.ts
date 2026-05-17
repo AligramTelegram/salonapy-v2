@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { parse } from 'date-fns'
 import { getTenantIdFromRequest } from '@/lib/getTenantId'
+import { sendPushToTenant } from '@/lib/pushNotification'
+import { isTurkishPhone } from '@/lib/country-detect'
 
 export const dynamic = 'force-dynamic'
 
@@ -160,6 +162,38 @@ export async function PUT(
           lastVisitAt: new Date(),
         },
       })
+    }
+  }
+
+  // Durum değişince salon sahibine push bildirimi
+  if (parsed.data.status && parsed.data.status !== existing.status) {
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { phone: true } })
+    const isTR = isTurkishPhone(tenant?.phone ?? '')
+    const customerName = updated.customer.name
+    const serviceName  = updated.service.name
+    const timeLabel    = `${updated.startTime}`
+
+    const STATUS_PUSH: Record<string, { title: string; body: string }> = isTR ? {
+      ONAYLANDI:   { title: '✅ Randevu Onaylandı',  body: `${customerName} • ${serviceName} • ${timeLabel}` },
+      TAMAMLANDI:  { title: '🎉 Randevu Tamamlandı', body: `${customerName} • ${serviceName}` },
+      IPTAL:       { title: '❌ Randevu İptal',      body: `${customerName} • ${serviceName} • ${timeLabel}` },
+      GELMEDI:     { title: '⚠️ Müşteri Gelmedi',    body: `${customerName} • ${serviceName} • ${timeLabel}` },
+      BEKLIYOR:    { title: '🕐 Randevu Bekleniyor', body: `${customerName} • ${serviceName} • ${timeLabel}` },
+    } : {
+      ONAYLANDI:   { title: '✅ Appointment Confirmed', body: `${customerName} • ${serviceName} • ${timeLabel}` },
+      TAMAMLANDI:  { title: '🎉 Appointment Completed', body: `${customerName} • ${serviceName}` },
+      IPTAL:       { title: '❌ Appointment Cancelled',  body: `${customerName} • ${serviceName} • ${timeLabel}` },
+      GELMEDI:     { title: '⚠️ Customer No-Show',       body: `${customerName} • ${serviceName} • ${timeLabel}` },
+      BEKLIYOR:    { title: '🕐 Appointment Pending',    body: `${customerName} • ${serviceName} • ${timeLabel}` },
+    }
+
+    const msg = STATUS_PUSH[parsed.data.status]
+    if (msg) {
+      sendPushToTenant(tenantId, msg.title, msg.body, {
+        appointmentId: params.id,
+        status: parsed.data.status,
+        type: 'appointment_status',
+      }).catch(() => {})
     }
   }
 

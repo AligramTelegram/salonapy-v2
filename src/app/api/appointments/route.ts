@@ -287,12 +287,13 @@ export async function POST(request: NextRequest) {
   // - /api/cron/send-reminders-1h   → 1 saat öncesi  (saatte bir çalışır)
   // BullMQ queue sistemi kaldırıldı — çift SMS gönderimini önlemek için.
 
-  // Fire-and-forget push notification to salon owner
+  // Salon sahibine push bildirimi
+  const isTR = isTurkishPhone(tenantForEmail?.phone ?? '')
   sendPushToTenant(
     tenantId,
-    '📅 Yeni Randevu',
-    `${customer.name} • ${appointment.date.toString().split('T')[0]} ${appointment.startTime}`,
-    { appointmentId: appointment.id }
+    isTR ? '📅 Yeni Randevu' : '📅 New Appointment',
+    `${customer.name} • ${appointment.date.toISOString().split('T')[0]} ${appointment.startTime}`,
+    { appointmentId: appointment.id, type: 'new_appointment' }
   ).catch(() => {})
 
   return NextResponse.json(appointment, { status: 201 })
