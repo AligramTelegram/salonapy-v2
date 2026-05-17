@@ -5,9 +5,9 @@ import { addDays } from 'date-fns'
 export const dynamic = 'force-dynamic'
 
 const PRODUCT_TO_PLAN: Record<string, 'BASLANGIC' | 'PROFESYONEL' | 'ISLETME'> = {
-  baslangic_monthly:   'BASLANGIC',
-  profesyonel_monthly: 'PROFESYONEL',
-  isletme_monthly:     'ISLETME',
+  hemensalon_starter_monthly:      'BASLANGIC',
+  hemensalon_professional_monthly: 'PROFESYONEL',
+  hemensalon_business_monthly:     'ISLETME',
 }
 
 const ACTIVE_EVENT_TYPES = new Set([
