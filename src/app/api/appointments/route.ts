@@ -288,7 +288,8 @@ export async function POST(request: NextRequest) {
   // BullMQ queue sistemi kaldırıldı — çift SMS gönderimini önlemek için.
 
   // Salon sahibine push bildirimi
-  const isTR = isTurkishPhone(tenantForEmail?.phone ?? '')
+  const tenantPhone = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { phone: true } }).then(t => t?.phone ?? '')
+  const isTR = isTurkishPhone(tenantPhone)
   sendPushToTenant(
     tenantId,
     isTR ? '📅 Yeni Randevu' : '📅 New Appointment',
